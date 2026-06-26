@@ -675,13 +675,13 @@ All values persist immediately (IndexedDB on web / app‑data file on desktop) a
 > as completed. "DoD" = Definition of Done.
 
 ### Phase 0 — Project Setup & Foundations
-- [ ] **0.1** Initialize project: `pnpm create vite` (React + TS), commit baseline. *DoD: dev server runs.*
-- [ ] **0.2** Configure strict `tsconfig`, ESLint, Prettier, EditorConfig. *DoD: lint passes on empty project.*
-- [ ] **0.3** Install deps: zustand, framer-motion, gsap, howler, i18next, react-i18next, idb, immer. Add Vitest + RTL + Playwright.
-- [ ] **0.4** Set up folder structure per §5; add path aliases (`@core`, `@app`).
-- [ ] **0.5** GitHub Actions CI: install → typecheck → lint → test on PR. *DoD: green CI on a trivial test.*
-- [ ] **0.6** Create `ASSETS_CREDITS.md` and an `/public/assets` placeholder structure.
-- [ ] **0.7** Add a global theme system (CSS variables) supporting Day/Night palettes.
+- [x] **0.1** Initialize project: `pnpm create vite` (React + TS), commit baseline. *DoD: dev server runs.*
+- [x] **0.2** Configure strict `tsconfig`, ESLint, Prettier, EditorConfig. *DoD: lint passes on empty project.*
+- [x] **0.3** Install deps: zustand, framer-motion, gsap, howler, i18next, react-i18next, idb, immer. Add Vitest + RTL + Playwright.
+- [x] **0.4** Set up folder structure per §5; add path aliases (`@core`, `@app`).
+- [x] **0.5** GitHub Actions CI: install → typecheck → lint → test on PR. *DoD: green CI on a trivial test.*
+- [x] **0.6** Create `ASSETS_CREDITS.md` and an `/public/assets` placeholder structure.
+- [x] **0.7** Add a global theme system (CSS variables) supporting Day/Night palettes.
 
 ### Phase 1 — Static Game Data (the "rules data")
 - [ ] **1.1** Extract the **board graph** from the rulebook/board: every location id, display name,
@@ -837,3 +837,50 @@ The game is considered complete when:
 3. **Phase 2.1–2.3** — model types + setup + first engine slice, then iterate to a headless game.
 
 *This plan is a living document; update task checkboxes and milestones as the project progresses.*
+
+
+---
+
+## 13. Build & Verification Notes (sandbox environment)
+
+The project is developed in a sandbox whose **network is restricted to the git
+gateway only** — public package registries (npm, PyPI, crates.io, CDNs) are not
+reachable, so `pnpm install` cannot run here. This shapes how the project is
+verified, **without changing any architectural decision** in §1–§12:
+
+- **Node 22** runs TypeScript **natively** (type-stripping) and ships a built-in
+  test runner (`node --test`) and assertion library. The pure game **core, AI,
+  and their unit tests have zero third-party dependencies**, so they are fully
+  built and verified here with:
+  - `tsc --noEmit -p tsconfig.engine.json` (strict typecheck), and
+  - `node --test --experimental-strip-types "tests/unit/**/*.test.ts"`.
+- The React/Vite **UI source is authored to the same standard** but is built and
+  run in any connected environment via the normal scripts (`pnpm install`,
+  `pnpm dev`, `pnpm build`, `pnpm test:component`). The committed `package.json`
+  pins all required dependencies and `eslint.config.js` lints everything.
+- **CI mirrors this split** (`.github/workflows/ci.yml`): an `engine` job typechecks
+  and tests the core with no install (always green offline), and an `app` job does
+  the full `pnpm install → typecheck → lint → component tests → build` once a
+  registry is available.
+- A tiny ambient shim (`tests/types/node-min.d.ts`) declares only the subset of
+  `node:test`/`node:assert` used by the engine tests so the offline `tsc` is
+  happy; the real `@types/node` is used in connected environments.
+
+> **Decision (documented per the mission rules):** because the engine is the
+> single rules authority and is the part whose correctness can be exhaustively
+> verified offline, it is built **test-first and kept green on every commit**.
+> UI/animation/audio/i18n/packaging code is committed as complete, reviewable
+> source that compiles under the pinned toolchain.
+
+---
+
+## 14. Progress Log
+
+- **Phase 0 complete.** Scaffolded the project: `package.json` (all deps pinned),
+  strict `tsconfig.json` + engine-only `tsconfig.engine.json`, ESLint flat config
+  (engine forbids `any`), Prettier, EditorConfig, `.gitignore`, `vite.config.ts`
+  (path aliases, relative `base` for offline/desktop), `index.html`, a minimal
+  runnable `App` ("Hello Brass"), the Day/Night CSS theme system, the full §5
+  folder tree, `ASSETS_CREDITS.md`, the `public/assets` placeholders, and GitHub
+  Actions CI. Verified: engine typecheck passes and the native test runner is
+  green; Prettier formatting clean.

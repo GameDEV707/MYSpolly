@@ -1,0 +1,35 @@
+{
+  /*
+   * Engine-only typecheck configuration.
+   *
+   * The pure game core, AI and their tests do not depend on React/DOM or any
+   * third-party packages, so this config can be typechecked with the globally
+   * available `tsc` even in an offline sandbox (no node_modules required).
+   *
+   * Run: tsc --noEmit -p tsconfig.engine.json
+   */
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "types": []
+  },
+  "include": ["src/core", "src/ai", "tests/unit", "tests/types"]
+}

@@ -1,0 +1,116 @@
+/*
+ * Global theme system for MYSpolly.
+ * Uses CSS custom properties so the board can switch between Day and Night
+ * palettes (and a colour-blind-friendly variant) with zero runtime cost.
+ */
+
+:root {
+  /* Brand */
+  --font-display: 'Cinzel', 'Times New Roman', serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Player colours (industrial palette) */
+  --player-red: #c0392b;
+  --player-blue: #2e6da4;
+  --player-green: #4f8a3d;
+  --player-yellow: #d4a017;
+
+  /* Resource colours */
+  --coal: #2b2b2b;
+  --iron: #d77a2b;
+  --beer: #c89b3c;
+  --money: #e8c95a;
+  --vp: #7b4fa3;
+  --income: #3a8f6c;
+
+  /* Animation timing (overridden by settings: slow/normal/fast/instant) */
+  --anim-scale: 1;
+  --anim-fast: calc(150ms * var(--anim-scale));
+  --anim-base: calc(300ms * var(--anim-scale));
+  --anim-slow: calc(600ms * var(--anim-scale));
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  --radius: 8px;
+  --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+/* Night side (default) */
+:root,
+[data-board='night'] {
+  --bg: #14110e;
+  --bg-elevated: #211c17;
+  --bg-panel: #2a241d;
+  --surface: #342c22;
+  --text: #f0e6d2;
+  --text-muted: #b6a98e;
+  --border: #4a3f30;
+  --accent: #d4a017;
+  --board-water: #1f3b4d;
+  --board-land: #2c2418;
+}
+
+/* Day side */
+[data-board='day'] {
+  --bg: #e9e0cc;
+  --bg-elevated: #f3ead6;
+  --bg-panel: #fbf4e4;
+  --surface: #fffaf0;
+  --text: #2a2118;
+  --text-muted: #6b5d45;
+  --border: #c9b890;
+  --accent: #a8761a;
+  --board-water: #8fc1d4;
+  --board-land: #d9c79a;
+}
+
+/* Colour-blind-friendly palette overrides */
+[data-palette='colorblind'] {
+  --player-red: #d55e00;
+  --player-blue: #0072b2;
+  --player-green: #009e73;
+  --player-yellow: #f0e442;
+}
+
+/* Reduced motion / instant animation speed */
+[data-anim='instant'] {
+  --anim-scale: 0;
+}
+[data-anim='fast'] {
+  --anim-scale: 0.5;
+}
+[data-anim='slow'] {
+  --anim-scale: 1.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --anim-scale: 0;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
