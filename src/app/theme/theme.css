@@ -114,3 +114,34 @@ body {
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
 }
+
+
+/* Cinematic banner fade for era/round/game-over beats */
+@keyframes bannerFade {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  15% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Tile placement / flip helpers used by the board */
+@keyframes tileDrop {
+  from {
+    transform: translateY(-14px) scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}

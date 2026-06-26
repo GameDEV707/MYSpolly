@@ -194,5 +194,11 @@
     "blue": "Blue",
     "green": "Green",
     "yellow": "Yellow"
+  },
+  "banner": {
+    "roundEnd": "Round complete",
+    "eraEnd": "Era scoring",
+    "railBegins": "The Rail Era begins",
+    "gameOver": "Game Over"
   }
 }

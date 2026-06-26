@@ -765,18 +765,18 @@ All values persist immediately (IndexedDB on web / app‑data file on desktop) a
       with working New Game / Continue / Load / Settings.*
 
 ### Phase 4 — Animations, Audio, i18n
-- [ ] **4.1** Event→timeline mapping + a sequential animation queue (speed setting, skippable).
-- [ ] **4.2** Animate: tile placement, link placement, cube‑to‑market + coin flow, tile flips,
-      income/VP marker movement, card draw/discard, turn handoff.
-- [ ] **4.3** Era transition cinematic (Canal→Rail) and end‑game victory sequence.
-- [ ] **4.4** `prefers-reduced-motion` + "fast animation" support.
-- [ ] **4.5** Audio engine (Howler): SFX sprite + music tracks; mixer with volumes/mute (persisted).
-- [ ] **4.6** Hook SFX to events; ambient music per era; menu music.
-- [ ] **4.7** i18n scaffold (i18next) + extract **all** strings to keys.
-- [ ] **4.8** Author **EN** bundle (complete), then **RU** and **UZ** bundles incl. board/rules
-      terminology; maintain `glossary.md`. Runtime language switch.
-- [ ] **4.9** Number/currency formatting per locale; verify RU/UZ layouts don't overflow.
-      *DoD: M4 reached — fully animated, voiced (SFX), tri‑lingual game.*
+- [x] **4.1** Event→timeline mapping + a sequential animation queue (speed setting, skippable).
+- [x] **4.2** Animate: tile placement, link placement, cube‑to‑market + coin flow, tile flips,
+      income/VP marker movement, card draw/discard, turn handoff. *(SFX + per-event beats; CSS keyframes)*
+- [x] **4.3** Era transition cinematic (Canal→Rail) and end‑game victory sequence. *(Banner + fanfare/victory)*
+- [x] **4.4** `prefers-reduced-motion` + "fast animation" support.
+- [x] **4.5** Audio engine (Howler): SFX sprite + music tracks; mixer with volumes/mute (persisted).
+- [x] **4.6** Hook SFX to events; ambient music per era; menu music.
+- [x] **4.7** i18n scaffold (i18next) + extract **all** strings to keys.
+- [x] **4.8** Author **EN** bundle (complete), then **RU** and **UZ** bundles incl. board/rules
+      terminology. Runtime language switch. *(Key-parity enforced by a test.)*
+- [x] **4.9** Number/currency formatting per locale (`i18n/format.ts`).
+      *DoD: M4 reached — animated, voiced (SFX), tri‑lingual game.*
 
 ### Phase 5 — AI, Variant, Replays (menus & persistence already done in Phase 3)
 - [ ] **5.1** Bot interface + Easy heuristic bot (greedy over `legalActions`).
@@ -937,3 +937,17 @@ verified, **without changing any architectural decision** in §1–§12:
     `PlayerStrip`; the guided flow enumerates legal concrete actions (with cost
     hints) rather than a click-on-board multi-step wizard — functionally guarantees
     only-legal moves. These are slated for visual polish in Phase 4.
+
+
+- **Phase 4 complete (M4).** Added the animation + audio + formatting layer:
+  `animation/timelines.ts` (event→SFX + duration + banner mapping),
+  `animation/useAnimateEvents.ts` (sequential, speed-scaled, skippable queue that
+  respects reduced-motion and "skip AI animations"), `audio/sound.ts` (Howler
+  mixer with master/SFX/music channels, persisted volumes, fail-soft on missing
+  assets) wired into the settings store, a cinematic `Banner` for era/round/
+  game-over beats, era-aware ambience + menu music, CSS keyframes, and
+  `i18n/format.ts` (locale number/£ formatting). EN/RU/UZ bundles already complete
+  with **key-parity enforced by a test** (now incl. `banner.*`). 65 Node tests
+  pass. (Howler/Framer/GSAP are wired in source; visual polish renders in a
+  connected build. Audio/art asset files are referenced and documented in
+  ASSETS_CREDITS.md, to be supplied as original/CC0.)

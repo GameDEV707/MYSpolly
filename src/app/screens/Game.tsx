@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../store/appStore.ts';
+import { useSettings } from '../store/settings.ts';
 import { legalActions } from '../../core/selectors/legalActions.ts';
 import { BoardSvg } from '../components/board/BoardSvg.tsx';
 import { PlayerStrip } from '../components/player/PlayerStrip.tsx';
@@ -8,6 +9,9 @@ import { Markets } from '../components/market/Markets.tsx';
 import { Hand } from '../components/cards/Hand.tsx';
 import { ActionBar } from '../components/hud/ActionBar.tsx';
 import { Log } from '../components/hud/Log.tsx';
+import { Banner } from '../components/hud/Banner.tsx';
+import { useAnimateEvents } from '../animation/useAnimateEvents.ts';
+import { audio } from '../audio/sound.ts';
 import { Button, Panel } from '../components/ui.tsx';
 
 /**
@@ -21,14 +25,27 @@ export function GameScreen(props: { replay?: boolean }): JSX.Element {
   const dispatch = useApp((s) => s.dispatch);
   const aiThinking = useApp((s) => s.aiThinking);
   const goto = useApp((s) => s.goto);
+  const { settings } = useSettings();
+
+  const activeState = game ? game.players[game.activePlayer] : undefined;
+  const skipAnims = !!activeState?.isAI && settings.skipAiAnimations;
+  const { banner, skip } = useAnimateEvents(events, skipAnims);
+
+  // Play era-appropriate ambience.
+  useEffect(() => {
+    if (game) audio.playMusic(game.era === 'rail' ? 'rail' : 'canal');
+    return () => audio.stopMusic();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [game?.era]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
       if (e.key === 'Escape') goto('pause');
+      if (e.key === ' ') skip();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [goto]);
+  }, [goto, skip]);
 
   const highlights = useMemo(() => {
     if (!game) return { locs: new Set<string>(), lines: new Set<string>() };
@@ -63,6 +80,7 @@ export function GameScreen(props: { replay?: boolean }): JSX.Element {
         padding: 'var(--space-3)',
       }}
     >
+      <Banner messageKey={banner} />
       {/* Left: header + board */}
       <div
         style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', minHeight: 0 }}

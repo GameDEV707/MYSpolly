@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import type { Lang } from '../i18n/index.ts';
 import { setLanguage } from '../i18n/index.ts';
 import { getSetting, setSetting } from '../../persistence/db.ts';
+import { audio } from '../audio/sound.ts';
 
 export type AnimSpeed = 'slow' | 'normal' | 'fast' | 'instant';
 export type AiSpeed = 'slow' | 'normal' | 'fast';
@@ -75,18 +76,21 @@ export const useSettings = create<SettingsStore>((set, get) => ({
     const settings = { ...DEFAULT_SETTINGS, ...(saved ?? {}) };
     set({ settings, loaded: true });
     applySettingsToDom(settings);
+    audio.applySettings(settings);
     setLanguage(settings.lang);
   },
   update(patch) {
     const settings = { ...get().settings, ...patch };
     set({ settings });
     applySettingsToDom(settings);
+    audio.applySettings(settings);
     if (patch.lang) setLanguage(patch.lang);
     void setSetting(SETTINGS_KEY, settings);
   },
   reset() {
     set({ settings: DEFAULT_SETTINGS });
     applySettingsToDom(DEFAULT_SETTINGS);
+    audio.applySettings(DEFAULT_SETTINGS);
     setLanguage(DEFAULT_SETTINGS.lang);
     void setSetting(SETTINGS_KEY, DEFAULT_SETTINGS);
   },

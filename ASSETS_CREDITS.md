@@ -42,9 +42,14 @@ categories above and the rulebook PDF must be excluded from distribution.
 
 ## Audio (`public/assets/audio/`)
 
+The audio engine (`src/app/audio/sound.ts`) references these clip paths. Each is
+to be supplied as an **original or CC0** asset; until present, the engine fails
+soft (the game runs silently). SFX: `sfx/{tile-place,link-place,cube,coin,card-draw,card-discard,flip,button,error,era-fanfare,victory}.mp3`. Music: `music/{menu,canal,rail}.mp3`.
+
 | File | Description | Source | Author | License |
 | ---- | ----------- | ------ | ------ | ------- |
-| _(to be added in Phase 4 — CC0 / original SFX & music only)_ | SFX sprite + music | TBD | TBD | CC0 / original |
+| `sfx/*.mp3` | UI & game sound effects | TBD | TBD | CC0 / original |
+| `music/*.mp3` | Menu + per-era ambience | TBD | TBD | CC0 / original |
 
 ## Fonts (`public/assets/fonts/`)
 

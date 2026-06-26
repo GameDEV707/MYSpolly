@@ -194,5 +194,11 @@
     "blue": "Koʻk",
     "green": "Yashil",
     "yellow": "Sariq"
+  },
+  "banner": {
+    "roundEnd": "Raund tugadi",
+    "eraEnd": "Davr hisobi",
+    "railBegins": "Temir yoʻl davri boshlandi",
+    "gameOver": "Oʻyin tugadi"
   }
 }

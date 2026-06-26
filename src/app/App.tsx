@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useApp } from './store/appStore.ts';
 import { useSettings } from './store/settings.ts';
 import { initI18n } from './i18n/index.ts';
+import { audio } from './audio/sound.ts';
 import { Splash } from './screens/Splash.tsx';
 import { MainMenu } from './screens/MainMenu.tsx';
 import { GameSetup } from './screens/GameSetup.tsx';
@@ -25,6 +26,12 @@ export function App(): JSX.Element {
     initI18n();
     void loadSettings();
   }, [loadSettings]);
+
+  // Menu ambience on non-game screens; the Game screen drives era music itself.
+  useEffect(() => {
+    const inGame = screen === 'game' || screen === 'replay';
+    if (!inGame) audio.playMusic('menu');
+  }, [screen]);
 
   switch (screen) {
     case 'splash':
