@@ -1,0 +1,14 @@
+{
+  "identifier": "default",
+  "description": "Core window, dialog and scoped filesystem access for save export/import.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "dialog:default",
+    "fs:default",
+    {
+      "identifier": "fs:scope",
+      "allow": [{ "path": "$APPDATA/**" }, { "path": "$DOWNLOAD/**" }, { "path": "$DOCUMENT/**" }]
+    }
+  ]
+}
