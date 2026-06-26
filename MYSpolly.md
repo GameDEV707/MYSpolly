@@ -684,21 +684,21 @@ All values persist immediately (IndexedDB on web / app‑data file on desktop) a
 - [x] **0.7** Add a global theme system (CSS variables) supporting Day/Night palettes.
 
 ### Phase 1 — Static Game Data (the "rules data")
-- [ ] **1.1** Extract the **board graph** from the rulebook/board: every location id, display name,
+- [x] **1.1** Extract the **board graph** from the rulebook/board: every location id, display name,
       colour band, and the merchant locations. *DoD: all locations enumerated & typed.*
-- [ ] **1.2** Extract every **link line** (which two locations it connects; canal/rail/both).
-- [ ] **1.3** Extract each location's **industry slots** and which industry icons each slot allows.
-- [ ] **1.4** Encode the **9 merchant tiles** with their industry icons + beer bonus type, plus the
+- [x] **1.2** Extract every **link line** (which two locations it connects; canal/rail/both).
+- [x] **1.3** Extract each location's **industry slots** and which industry icons each slot allows.
+- [x] **1.4** Encode the **9 merchant tiles** with their industry icons + beer bonus type, plus the
       player‑count placement rules (2P: no Warrington/Nottingham; 3P: no Nottingham; 4P: all).
-- [ ] **1.5** Encode **per‑industry, per‑level stats**: cost, coal cost, iron cost, beer‑to‑sell,
+- [x] **1.5** Encode **per‑industry, per‑level stats**: cost, coal cost, iron cost, beer‑to‑sell,
       VP, income spaces, link VP contribution, cubes produced, era buildability, developable flag,
       lightbulb potteries. *DoD: matches the player‑mat printouts exactly.*
-- [ ] **1.6** Encode the **card deck** composition for 2/3/4 players (location cards, industry
+- [x] **1.6** Encode the **card deck** composition for 2/3/4 players (location cards, industry
       cards, counts), plus Wild Location/Industry piles.
-- [ ] **1.7** Encode **coal & iron market** price ladders, capacities, and empty‑market prices.
-- [ ] **1.8** Encode **setup parameters** (starting money £17, income level 10, hand size 8,
+- [x] **1.7** Encode **coal & iron market** price ladders, capacities, and empty‑market prices.
+- [x] **1.8** Encode **setup parameters** (starting money £17, income level 10, hand size 8,
       tile stacks per colour, removed cards/merchants per player count).
-- [ ] **1.9** Write a **data validation test** (counts add up: 45 tiles/colour, 14 links/colour,
+- [x] **1.9** Write a **data validation test** (counts add up: 45 tiles/colour, 14 links/colour,
       30 coal, 18 iron, 15 beer, merchant counts, deck sizes). *DoD: validation test passes.*
 
 ### Phase 2 — Pure Game Engine
@@ -884,3 +884,22 @@ verified, **without changing any architectural decision** in §1–§12:
   folder tree, `ASSETS_CREDITS.md`, the `public/assets` placeholders, and GitHub
   Actions CI. Verified: engine typecheck passes and the native test runner is
   green; Prettier formatting clean.
+
+
+- **Phase 1 complete.** Encoded all static game data in `src/core/data/`:
+  `markets.ts` (coal/iron ladders — confirmed from rulebook: coal £1–£7 cap 14
+  empty £8 init 13; iron £1–£5 cap 10 empty £6 init 8), `industries.ts` (all 45
+  tiles/colour across 6 industries with per-level stats + era buildability +
+  lightbulb potteries), `board.ts` (20 towns + 2 farm breweries + 5 merchants
+  with confirmed beer bonuses, build slots, and the link network), `cards.ts`
+  (64-card deck + 8 wilds, player-count + colour exclusions, deck builder),
+  `setup.ts` (all setup constants + initial mat stacks). Added `data.test.ts`
+  with 23 assertions on structural invariants — all green; engine typecheck clean.
+  - **Documented assumption (per mission rules):** the precise per-level tile
+    stats, exact board topology/slot icons, merchant VP amounts, and the card
+    multiset are printed on board/mat/card **images** that cannot be extracted
+    from the rulebook PDF text. They are encoded from published references and
+    flagged `VERIFY` in-file; all are pure-data edits requiring no engine change.
+    Component **totals** and the player-count rules are taken from the rulebook
+    text and enforced by tests. Era length uses the rulebook's fixed 8/9/10
+    rounds, so deck-size differences cannot change era duration.
