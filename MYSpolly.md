@@ -301,6 +301,9 @@ game state directly.
   animation/audio layers subscribe and react. The engine itself has zero knowledge of pixels.
 - **Single rules authority**: humans and AI both go through `legalActions()` +
   `reduce()`. There is exactly one implementation of the rules.
+- **No auto‑start**: the application always boots to the **Main Menu**. A game session begins
+  only on explicit user choice (*New Game* → setup, or *Continue*/*Load*). UI/navigation state
+  (`AppScreen`) is kept separate from the pure `GameState`. See §7.10.
 
 ---
 
@@ -356,7 +359,7 @@ MYSpolly/
 │   │   └─ difficulty.ts
 │   ├─ app/                             # React application
 │   │   ├─ store/                       # Zustand store wrapping the core
-│   │   ├─ screens/ (MainMenu, GameSetup, Game, Settings, Results)
+│   │   ├─ screens/ (Splash, MainMenu, GameSetup, LoadGame, Game, PauseMenu, Settings, Rules, Credits, Results, Replay)
 │   │   ├─ components/
 │   │   │   ├─ board/ (BoardSvg, Location, LinkLine, MerchantTile)
 │   │   │   ├─ tiles/ (IndustryTile, LinkTileView)
@@ -547,6 +550,97 @@ type GameEvent =
 - **Electron (fallback)**: documented alternative if the Rust toolchain is unavailable; larger
   binary but simpler. Same web bundle is loaded either way.
 
+### 7.10 Application Flow, Main Menu, Settings & Continue/Resume
+
+> **Core rule: the game NEVER auto‑starts.** On launch the app always lands on the **Main Menu**.
+> A game session only begins after the player explicitly chooses *New Game* (and confirms setup)
+> or *Continue*. This is a hard requirement, not optional polish.
+
+#### 7.10.1 Screen / navigation state machine
+The app is driven by a top‑level `AppScreen` state (held in the Zustand UI store, **separate**
+from the pure `GameState`). Valid screens and transitions:
+
+```
+                 ┌───────────────────────────────────────────────┐
+                 v                                                 │
+   (launch) → SPLASH → MAIN_MENU ──New Game──▶ GAME_SETUP ──Start──┼─▶ GAME
+                          │  ▲                     │  (Back)        │     │
+                          │  │ ◀───────────────────┘                │     │ (Pause/Esc)
+                          │  │                                       │     ▼
+                          │  ├──Continue──▶ GAME (loaded autosave) ──┘   PAUSE_MENU
+                          │  ├──Load Game──▶ LOAD_GAME ──▶ GAME            │
+                          │  ├──Settings──▶ SETTINGS ──Back──▶ MAIN_MENU   ├─Resume─▶ GAME
+                          │  ├──How to Play──▶ RULES ──Back──▶ MAIN_MENU   ├─Settings─▶ SETTINGS
+                          │  ├──Credits──▶ CREDITS ──Back──▶ MAIN_MENU     ├─Save & Quit─▶ MAIN_MENU
+                          │  └──Quit──▶ (desktop: close app / web: confirm)└─Abandon──▶ MAIN_MENU
+                          │                                                       │
+                          └───────────────────── GAME_OVER (Results) ◀────────────┘
+                                     │  ├─Rematch──▶ GAME_SETUP (prefilled)
+                                     │  ├─Main Menu──▶ MAIN_MENU
+                                     │  └─View Replay──▶ REPLAY
+```
+
+- `SPLASH`: short branded logo/loading screen while assets + saved data are loaded; auto‑advances
+  to `MAIN_MENU` (skippable on key/click). Never advances straight into a game.
+- All screens are reachable only through explicit user input; there is no implicit auto‑start.
+
+#### 7.10.2 Main Menu screen
+A dedicated `MainMenu` screen (animated background, logo, version number, current language flag).
+Menu items, top to bottom:
+
+1. **Continue** — resumes the most recent autosaved game in one click.
+   - **Enabled only when an autosave exists.** When none exists it is shown **disabled/greyed
+     out** (or hidden, configurable) with a tooltip "No game in progress".
+   - Shows a small summary on hover/focus: era, round, player count, last‑played timestamp.
+2. **New Game** — opens `GAME_SETUP`. If an in‑progress autosave exists, first show a confirm
+   dialog: "Starting a new game will keep your saved game in the Load list" (the autosave is
+   moved to a named slot, not destroyed).
+3. **Load Game** — opens `LOAD_GAME` (list of all saved slots; see §7.10.4).
+4. **Settings** — opens `SETTINGS` (see §7.10.3).
+5. **How to Play / Rules** — opens an in‑app rules/help screen (localized).
+6. **Credits** — asset attributions and project credits.
+7. **Quit** — desktop: closes the window (with confirm); web: returns to splash / shows confirm.
+
+Behaviour & UX:
+- Keyboard navigable (↑/↓/Enter/Esc), gamepad‑friendly, fully localized (EN/RU/UZ).
+- Language selector and master mute are quick‑accessible from the menu corner.
+- Menu music plays (respecting saved volume/mute).
+
+#### 7.10.3 Settings screen
+A dedicated `Settings` screen, openable from **both** the Main Menu and the in‑game Pause Menu.
+All values persist immediately (IndexedDB on web / app‑data file on desktop) and apply live.
+
+- **Language**: English / Русский / Oʻzbekcha — instant switch, no reload.
+- **Audio**: master volume, music volume, SFX volume (sliders) + master mute toggle.
+- **Animations**: speed (Slow / Normal / Fast / Instant), toggle for `prefers-reduced-motion`,
+  toggle "skip animations on opponent/AI turns".
+- **Board**: Day / Night side, zoom sensitivity, optional colour‑blind‑friendly palette.
+- **Gameplay**: confirm‑before‑ending‑turn toggle, show legal‑move highlights toggle,
+  show rule tooltips toggle, AI thinking‑speed.
+- **Data**: manage save slots (rename/delete), export/import a save file (desktop file dialog /
+  web download‑upload), clear all data (with confirm).
+- Each setting has sensible defaults; a **Reset to defaults** button is provided.
+
+#### 7.10.4 Save / Continue / Load (resume previous game)
+- **Autosave**: after every completed turn (and at each round/era transition) the full
+  `GameState` is serialized to a dedicated **"current game" autosave slot**. Because state is
+  seeded + action‑logged, saves are compact and deterministic.
+- **Continue** = load the autosave slot and jump straight into `GAME`.
+- **Manual save slots**: players can name and keep multiple saves. `LOAD_GAME` lists slots with
+  metadata: name, player count + colours, era/round, VP standings, timestamp, thumbnail.
+- **Load flow**: selecting a slot validates the save `version` (migrate or warn if incompatible),
+  restores `GameState`, rebuilds the UI store, and enters `GAME` exactly where it left off —
+  including mid‑turn state if the autosave was taken mid‑turn.
+- **Crash/quit safety**: on launch, if an autosave exists it powers the **Continue** button; the
+  app still opens to the Main Menu first (never auto‑loads into the game).
+- **Delete/overwrite**: deleting a slot or starting a brand‑new game asks for confirmation so a
+  saved game is never lost silently.
+
+#### 7.10.5 Pause / in‑game menu
+- Pressing **Esc** (or a Pause button) during a game opens a `PAUSE_MENU` overlay:
+  **Resume**, **Settings**, **Save Game** (to a named slot), **How to Play**, **Save & Quit to
+  Main Menu**, **Abandon Game** (confirm). The game state is untouched while paused.
+
 ---
 
 ## 8. Testing & Quality Strategy
@@ -568,7 +662,7 @@ type GameEvent =
 | **M0** | Repo scaffolded, runs `Hello Brass` in browser. |
 | **M1** | Complete static game data (board graph, tiles, cards) verified. |
 | **M2** | Pure engine passes full rules unit tests (headless game playable in code). |
-| **M3** | Interactive board + hot‑seat UI: a full human 2P game playable in browser. |
+| **M3** | Front‑end shell complete: app boots to **Main Menu** (New Game / Continue / Load / Settings); interactive board + hot‑seat UI; a full human 2P game playable in browser. |
 | **M4** | Animations + audio + 3‑language i18n complete. |
 | **M5** | AI bots fill seats; save/load + settings; introductory variant. |
 | **M6** | Tauri desktop builds for Windows/macOS/Linux; CI artifacts; polish & release. |
@@ -639,23 +733,47 @@ type GameEvent =
       *DoD: M2 reached — a complete game is playable headlessly via code.*
 
 ### Phase 3 — UI: Interactive Board & Hot‑seat Play
-- [ ] **3.1** Zustand store wrapping the core: `dispatch(action)`, exposes state + event stream.
-- [ ] **3.2** Screens shell: MainMenu → GameSetup → Game → Results; routing & layout.
-- [ ] **3.3** GameSetup screen: player count (2–4), human/AI per seat, colours, board side,
-      language, intro mode; start game.
-- [ ] **3.4** **BoardSvg**: render locations, link lines, merchants from data; responsive zoom/pan.
-- [ ] **3.5** **IndustryTile** & **LinkTileView** components (level/owner/flipped faces, resources).
-- [ ] **3.6** **PlayerMat**: stacked tiles with costs, income track, VP track per player.
-- [ ] **3.7** **Hand** + **DiscardPile**: render cards, select for actions.
-- [ ] **3.8** **Coal/Iron Market** panels + merchant beer indicators.
-- [ ] **3.9** **TurnOrderTrack** with spent‑money display.
-- [ ] **3.10** **ActionBar**: 7 actions, disabled when illegal (from `legalActions`).
-- [ ] **3.11** **Guided action flows** (pick card → target → resource choices → confirm) with a
+- [ ] **3.1** Zustand UI store wrapping the core: `dispatch(action)`, exposes state + event
+      stream, **plus a separate `AppScreen` navigation state** (see §7.10.1). The pure
+      `GameState` and the UI/navigation state are kept distinct.
+- [ ] **3.2** Screen router + transitions implementing the full state machine in §7.10.1
+      (Splash → Main Menu → Setup/Load/Settings/Rules/Credits → Game ↔ Pause → Results/Replay).
+      **The app must always open to the Main Menu and never auto‑start a game.**
+- [ ] **3.3** **Splash screen**: branded logo + asset/saved‑data preload, skippable, auto‑advances
+      to Main Menu only (never into a game).
+- [ ] **3.4** **Main Menu screen** (§7.10.2): Continue, New Game, Load Game, Settings, How to Play,
+      Credits, Quit. **Continue is enabled only when an autosave exists** (greyed out otherwise,
+      with a tooltip + last‑session summary on hover). Keyboard/gamepad navigable, localized,
+      animated background + menu music.
+- [ ] **3.5** **GameSetup screen**: player count (2–4), human/AI per seat + AI difficulty,
+      colours, board side (Day/Night), language, intro‑variant toggle; Start + Back to Menu.
+      If an autosave exists, confirm before starting a new game (preserve the existing save).
+- [ ] **3.6** **Settings screen** (§7.10.3): language, audio volumes + mute, animation speed +
+      reduced‑motion, board side/zoom/colour‑blind palette, gameplay toggles, data management
+      (manage/rename/delete slots, export/import, reset). Reachable from Main Menu **and** Pause
+      Menu; persists immediately and applies live.
+- [ ] **3.7** **Save/Continue/Load system** (§7.10.4): autosave each turn + at round/era
+      transitions to the "current game" slot; **Continue** loads it; **Load Game** screen lists
+      named slots with metadata + thumbnail; load validates save `version` and restores exactly
+      (including mid‑turn). Delete/overwrite require confirmation.
+- [ ] **3.8** **Pause Menu** (§7.10.5): Esc/Pause overlay with Resume, Settings, Save Game,
+      How to Play, Save & Quit to Main Menu, Abandon Game (confirm). Game state untouched.
+- [ ] **3.9** **Rules / How‑to‑Play screen** and **Credits screen** (localized, asset attribution).
+- [ ] **3.10** **BoardSvg**: render locations, link lines, merchants from data; responsive zoom/pan.
+- [ ] **3.11** **IndustryTile** & **LinkTileView** components (level/owner/flipped faces, resources).
+- [ ] **3.12** **PlayerMat**: stacked tiles with costs, income track, VP track per player.
+- [ ] **3.13** **Hand** + **DiscardPile**: render cards, select for actions.
+- [ ] **3.14** **Coal/Iron Market** panels + merchant beer indicators.
+- [ ] **3.15** **TurnOrderTrack** with spent‑money display.
+- [ ] **3.16** **ActionBar**: 7 actions, disabled when illegal (from `legalActions`).
+- [ ] **3.17** **Guided action flows** (pick card → target → resource choices → confirm) with a
       live **cost preview** (money/coal/iron/beer). Cancel at any step.
-- [ ] **3.12** Legal‑placement highlighting on the board (valid slots/lines for current action).
-- [ ] **3.13** **Game log** panel + on‑board tooltips (i18n keys).
-- [ ] **3.14** End‑of‑round / end‑of‑era / results screens with score breakdowns.
-      *DoD: M3 reached — a full hot‑seat 2P game is playable in the browser.*
+- [ ] **3.18** Legal‑placement highlighting on the board (valid slots/lines for current action).
+- [ ] **3.19** **Game log** panel + on‑board tooltips (i18n keys).
+- [ ] **3.20** End‑of‑round / end‑of‑era / **Results** screens with score breakdowns, plus
+      Rematch (prefilled setup), Main Menu, and View Replay options.
+      *DoD: M3 reached — a full hot‑seat 2P game is playable in the browser, always starting from
+      the Main Menu, with working New Game / Continue / Load / Settings.*
 
 ### Phase 4 — Animations, Audio, i18n
 - [ ] **4.1** Event→timeline mapping + a sequential animation queue (speed setting, skippable).
@@ -671,13 +789,14 @@ type GameEvent =
 - [ ] **4.9** Number/currency formatting per locale; verify RU/UZ layouts don't overflow.
       *DoD: M4 reached — fully animated, voiced (SFX), tri‑lingual game.*
 
-### Phase 5 — AI, Persistence, Settings, Variant
+### Phase 5 — AI, Variant, Replays (menus & persistence already done in Phase 3)
 - [ ] **5.1** Bot interface + Easy heuristic bot (greedy over `legalActions`).
 - [ ] **5.2** Normal bot (1‑turn look‑ahead) and Hard bot (light MCTS/beam search).
 - [ ] **5.3** Bot "thinking" pacing + per‑seat difficulty selection in setup.
-- [ ] **5.4** Save/Load via IndexedDB (web); autosave each turn; resume from menu.
-- [ ] **5.5** Settings screen (language, volumes, animation speed, board side) persisted.
-- [ ] **5.6** Replay storage (seed + action log) + a basic replay viewer.
+- [ ] **5.4** Harden the Phase‑3 Save/Load: save‑version migration, slot thumbnails, mid‑turn
+      autosave integrity, and quota/error handling.
+- [ ] **5.5** Extend Settings with AI‑specific options (thinking speed, auto‑skip AI animations).
+- [ ] **5.6** Replay storage (seed + action log) + a basic replay viewer (from Results screen).
 - [ ] **5.7** Wire up the **introductory variant** end‑to‑end in the UI.
       *DoD: M5 reached — fill empty seats with AI; games are saveable/resumable.*
 
