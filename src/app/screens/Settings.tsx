@@ -1,8 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../store/appStore.ts';
-import { useSettings, type AnimSpeed } from '../store/settings.ts';
+import { useSettings, type AnimSpeed, type AiSpeed } from '../store/settings.ts';
 import { Button, Panel, ScreenShell } from '../components/ui.tsx';
 import { LANGUAGES, type Lang } from '../i18n/index.ts';
+import { downloadText, pickTextFile } from '../util/file.ts';
+import { loadAutosave } from '../../persistence/save.ts';
+import { serializeState, deserializeState } from '../../persistence/serialize.ts';
 
 function Row(props: { label: string; children: React.ReactNode }): JSX.Element {
   return (
@@ -26,7 +29,22 @@ export function SettingsScreen(): JSX.Element {
   const { t } = useTranslation();
   const back = useApp((s) => s.settingsReturn);
   const goto = useApp((s) => s.goto);
+  const loadGame = useApp((s) => s.loadGame);
   const { settings, update, reset } = useSettings();
+
+  async function exportSave(): Promise<void> {
+    const game = await loadAutosave();
+    if (game) downloadText('myspolly-save.json', serializeState(game));
+  }
+  async function importSave(): Promise<void> {
+    const text = await pickTextFile();
+    if (!text) return;
+    try {
+      loadGame(deserializeState(text));
+    } catch {
+      window.alert('Invalid or incompatible save file.');
+    }
+  }
 
   return (
     <ScreenShell
@@ -174,6 +192,35 @@ export function SettingsScreen(): JSX.Element {
               onChange={(e) => update({ showTooltips: e.target.checked })}
             />
           </Row>
+          <Row label={t('settings.aiThinkSpeed')}>
+            <select
+              value={settings.aiThinkSpeed}
+              onChange={(e) => update({ aiThinkSpeed: e.target.value as AiSpeed })}
+              style={{
+                background: 'var(--surface)',
+                color: 'var(--text)',
+                border: '1px solid var(--border)',
+                borderRadius: 6,
+                padding: 6,
+              }}
+            >
+              <option value="slow">{t('settings.slow')}</option>
+              <option value="normal">{t('settings.normal')}</option>
+              <option value="fast">{t('settings.fast')}</option>
+            </select>
+          </Row>
+        </Panel>
+
+        <Panel>
+          <h3>{t('settings.data')}</h3>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Button variant="ghost" onClick={() => void exportSave()}>
+              Export save
+            </Button>
+            <Button variant="ghost" onClick={() => void importSave()}>
+              Import save
+            </Button>
+          </div>
         </Panel>
 
         <Button variant="danger" onClick={reset} style={{ alignSelf: 'flex-start' }}>

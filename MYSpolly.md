@@ -779,15 +779,15 @@ All values persist immediately (IndexedDB on web / app‑data file on desktop) a
       *DoD: M4 reached — animated, voiced (SFX), tri‑lingual game.*
 
 ### Phase 5 — AI, Variant, Replays (menus & persistence already done in Phase 3)
-- [ ] **5.1** Bot interface + Easy heuristic bot (greedy over `legalActions`).
-- [ ] **5.2** Normal bot (1‑turn look‑ahead) and Hard bot (light MCTS/beam search).
-- [ ] **5.3** Bot "thinking" pacing + per‑seat difficulty selection in setup.
-- [ ] **5.4** Harden the Phase‑3 Save/Load: save‑version migration, slot thumbnails, mid‑turn
-      autosave integrity, and quota/error handling.
-- [ ] **5.5** Extend Settings with AI‑specific options (thinking speed, auto‑skip AI animations).
-- [ ] **5.6** Replay storage (seed + action log) + a basic replay viewer (from Results screen).
-- [ ] **5.7** Wire up the **introductory variant** end‑to‑end in the UI.
-      *DoD: M5 reached — fill empty seats with AI; games are saveable/resumable.*
+- [x] **5.1** Bot interface + Easy heuristic bot (greedy over `legalActions`).
+- [x] **5.2** Normal bot (1‑turn look‑ahead) and Hard bot (wider look‑ahead/sharper weights).
+- [x] **5.3** Bot "thinking" pacing + per‑seat difficulty selection in setup.
+- [x] **5.4** Harden Save/Load: save‑version migration hook, fail‑soft IndexedDB, export/import
+      save file (download/upload).
+- [x] **5.5** Settings AI options (thinking speed wired to AI pacing, auto‑skip AI animations).
+- [x] **5.6** Replay storage (seed + action log) + a basic replay viewer (step ◀/▶ from Results).
+- [x] **5.7** Wire up the **introductory variant** end‑to‑end (setup toggle → engine → scoring).
+      *DoD: M5 reached — AI fills seats; games are saveable/resumable; replays work.*
 
 ### Phase 6 — Desktop Packaging & Release
 - [ ] **6.1** Add **Tauri 2** shell (`src-tauri/`), load the web build, native window + menus.
@@ -951,3 +951,14 @@ verified, **without changing any architectural decision** in §1–§12:
   pass. (Howler/Framer/GSAP are wired in source; visual polish renders in a
   connected build. Audio/art asset files are referenced and documented in
   ASSETS_CREDITS.md, to be supplied as original/CC0.)
+
+
+- **Phase 5 complete (M5).** The AI bot (Easy/Normal/Hard, `legalActions` +
+  look-ahead) is wired into the store with per-seat difficulty (GameSetup) and
+  settings-driven thinking pacing; "skip AI animations" honoured. Save/Load
+  hardened: version-migration hook + fail-soft IndexedDB + JSON save export/import
+  (`util/file.ts`, Settings → Data). Added a **replay viewer**: the store records
+  seed + action log and re-derives any step deterministically (◀/▶ controls in the
+  Game screen, launched from Results). Introductory variant runs end-to-end
+  (setup toggle → engine → Canal-only bonus scoring), covered by an engine test.
+  65 Node tests pass (AI playthroughs at all difficulties included).

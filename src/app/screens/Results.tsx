@@ -9,6 +9,7 @@ export function Results(): JSX.Element {
   const goto = useApp((s) => s.goto);
   const lastConfig = useApp((s) => s.lastConfig);
   const newGame = useApp((s) => s.newGame);
+  const startReplay = useApp((s) => s.startReplay);
 
   if (!game || !game.ranking) {
     return (
@@ -83,7 +84,7 @@ export function Results(): JSX.Element {
           <Button variant="ghost" onClick={() => goto('mainMenu')}>
             {t('results.mainMenu')}
           </Button>
-          <Button variant="ghost" onClick={() => goto('replay')}>
+          <Button variant="ghost" onClick={() => startReplay()}>
             {t('results.viewReplay')}
           </Button>
         </div>

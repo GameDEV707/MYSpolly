@@ -7,6 +7,7 @@ import { buildInitialState, type PlayerSeat } from '../../core/engine/setup.ts';
 import { reduce } from '../../core/engine/reduce.ts';
 import { makeBot, type Bot, type Difficulty } from '../../ai/bot.ts';
 import { autosave, loadAutosave } from '../../persistence/save.ts';
+import { useSettings } from './settings.ts';
 
 export type AppScreen =
   | 'splash'
@@ -61,6 +62,10 @@ interface AppStore {
   loadGame: (state: GameState) => void;
   dispatch: (action: Action) => void;
   abandon: () => void;
+  startReplay: () => void;
+  replayStep: (dir: number) => void;
+  replayIndex: number;
+  replayActions: Action[];
 }
 
 function rebuildBots(
@@ -87,6 +92,8 @@ export const useApp = create<AppStore>((set, get) => ({
   actionLog: [],
   lastConfig: null,
   aiThinking: false,
+  replayIndex: 0,
+  replayActions: [],
 
   goto(screen) {
     set({ screen });
@@ -152,7 +159,47 @@ export const useApp = create<AppStore>((set, get) => ({
     bots.clear();
     set({ game: null, events: [], actionLog: [], screen: 'mainMenu' });
   },
+
+  /** Start replaying the just-finished game from its seed + recorded actions. */
+  startReplay() {
+    if (aiTimer) clearTimeout(aiTimer);
+    const { lastConfig, actionLog } = get();
+    if (!lastConfig) return;
+    const base = rebuildFromConfig(lastConfig);
+    set({
+      game: base,
+      replayActions: [...actionLog],
+      replayIndex: 0,
+      screen: 'replay',
+      events: [],
+    });
+  },
+
+  /** Step the replay forwards/backwards, recomputing state from the seed. */
+  replayStep(dir) {
+    const { lastConfig, replayActions, replayIndex } = get();
+    if (!lastConfig) return;
+    const idx = Math.max(0, Math.min(replayActions.length, replayIndex + dir));
+    let state = rebuildFromConfig(lastConfig);
+    let events: GameEvent[] = [];
+    for (let i = 0; i < idx; i += 1) {
+      const res = reduce(state, replayActions[i]!);
+      state = res.state;
+      events = res.events;
+    }
+    set({ game: state, replayIndex: idx, events });
+  },
 }));
+
+function rebuildFromConfig(config: NewGameConfig): GameState {
+  return buildInitialState({
+    seats: config.seats.map((s) => ({ color: s.color, name: s.name, isAI: s.isAI })),
+    seed: config.seed ?? 0,
+    introMode: config.introMode,
+    boardSide: config.boardSide,
+    lang: config.lang,
+  });
+}
 
 /** If the active player is an AI, schedule its move (with a "thinking" delay). */
 function maybeRunAi(get: () => AppStore, set: (p: Partial<AppStore>) => void): void {
@@ -164,8 +211,9 @@ function maybeRunAi(get: () => AppStore, set: (p: Partial<AppStore>) => void): v
     return;
   }
   set({ aiThinking: true });
-  // Pace AI moves; the speed is read lazily so settings changes apply.
+  // Pace AI moves; the speed is read from settings so changes apply immediately.
   if (aiTimer) clearTimeout(aiTimer);
+  const speed = useSettings.getState().settings.aiThinkSpeed;
   aiTimer = setTimeout(() => {
     const cur = get().game;
     if (!cur || cur.phase !== 'playing') {
@@ -183,5 +231,5 @@ function maybeRunAi(get: () => AppStore, set: (p: Partial<AppStore>) => void): v
     } catch {
       set({ aiThinking: false });
     }
-  }, AI_DELAY.normal);
+  }, AI_DELAY[speed] ?? AI_DELAY.normal);
 }

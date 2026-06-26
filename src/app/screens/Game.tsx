@@ -25,6 +25,9 @@ export function GameScreen(props: { replay?: boolean }): JSX.Element {
   const dispatch = useApp((s) => s.dispatch);
   const aiThinking = useApp((s) => s.aiThinking);
   const goto = useApp((s) => s.goto);
+  const replayStep = useApp((s) => s.replayStep);
+  const replayIndex = useApp((s) => s.replayIndex);
+  const replayActions = useApp((s) => s.replayActions);
   const { settings } = useSettings();
 
   const activeState = game ? game.players[game.activePlayer] : undefined;
@@ -97,9 +100,26 @@ export function GameScreen(props: { replay?: boolean }): JSX.Element {
                 ? t('game.yourTurn')
                 : t('game.turn', { name: active.name })}
           </div>
-          <Button variant="ghost" onClick={() => goto('pause')}>
-            ⏸
-          </Button>
+          {props.replay ? (
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+              <Button variant="ghost" onClick={() => replayStep(-1)}>
+                ◀
+              </Button>
+              <span style={{ fontSize: 13 }}>
+                {replayIndex}/{replayActions.length}
+              </span>
+              <Button variant="ghost" onClick={() => replayStep(1)}>
+                ▶
+              </Button>
+              <Button variant="ghost" onClick={() => goto('results')}>
+                ✕
+              </Button>
+            </div>
+          ) : (
+            <Button variant="ghost" onClick={() => goto('pause')}>
+              ⏸
+            </Button>
+          )}
         </Panel>
         <div style={{ flex: 1, minHeight: 0 }}>
           <BoardSvg
