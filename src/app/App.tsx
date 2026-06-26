@@ -1,36 +1,55 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useApp } from './store/appStore.ts';
+import { useSettings } from './store/settings.ts';
+import { initI18n } from './i18n/index.ts';
+import { Splash } from './screens/Splash.tsx';
+import { MainMenu } from './screens/MainMenu.tsx';
+import { GameSetup } from './screens/GameSetup.tsx';
+import { LoadGame } from './screens/LoadGame.tsx';
+import { SettingsScreen } from './screens/Settings.tsx';
+import { Rules } from './screens/Rules.tsx';
+import { Credits } from './screens/Credits.tsx';
+import { GameScreen } from './screens/Game.tsx';
+import { PauseMenu } from './screens/PauseMenu.tsx';
+import { Results } from './screens/Results.tsx';
 
 /**
- * M0 placeholder application shell.
- *
- * This renders a minimal "Hello Brass" screen so the offline web build is
- * runnable from the very first phase. It will be replaced in Phase 3 by the
- * full screen router (Splash → Main Menu → Game …) described in §7.10 of
- * MYSpolly.md. The application must always boot to the Main Menu and never
- * auto-start a game.
+ * Top-level screen router. The app ALWAYS boots to the Splash screen, which
+ * auto-advances to the Main Menu — never directly into a game (see §7.10).
  */
 export function App(): JSX.Element {
-  const [ready, setReady] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setReady(true), 50);
-    return () => clearTimeout(t);
-  }, []);
+  const screen = useApp((s) => s.screen);
+  const loadSettings = useSettings((s) => s.load);
 
-  return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100%',
-        gap: 'var(--space-4)',
-        textAlign: 'center',
-      }}
-    >
-      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 48, margin: 0 }}>MYSpolly</h1>
-      <p style={{ color: 'var(--text-muted)', margin: 0 }}>Brass: Birmingham — Desktop Edition</p>
-      <p style={{ color: 'var(--accent)' }}>{ready ? 'Hello Brass!' : 'Loading…'}</p>
-    </div>
-  );
+  useEffect(() => {
+    initI18n();
+    void loadSettings();
+  }, [loadSettings]);
+
+  switch (screen) {
+    case 'splash':
+      return <Splash />;
+    case 'mainMenu':
+      return <MainMenu />;
+    case 'setup':
+      return <GameSetup />;
+    case 'load':
+      return <LoadGame />;
+    case 'settings':
+      return <SettingsScreen />;
+    case 'rules':
+      return <Rules />;
+    case 'credits':
+      return <Credits />;
+    case 'game':
+      return <GameScreen />;
+    case 'pause':
+      return <PauseMenu />;
+    case 'results':
+      return <Results />;
+    case 'replay':
+      return <GameScreen replay />;
+    default:
+      return <MainMenu />;
+  }
 }

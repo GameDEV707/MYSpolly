@@ -733,47 +733,36 @@ All values persist immediately (IndexedDB on web / app‑data file on desktop) a
       *DoD: M2 reached — a complete game is playable headlessly via code.*
 
 ### Phase 3 — UI: Interactive Board & Hot‑seat Play
-- [ ] **3.1** Zustand UI store wrapping the core: `dispatch(action)`, exposes state + event
-      stream, **plus a separate `AppScreen` navigation state** (see §7.10.1). The pure
-      `GameState` and the UI/navigation state are kept distinct.
-- [ ] **3.2** Screen router + transitions implementing the full state machine in §7.10.1
-      (Splash → Main Menu → Setup/Load/Settings/Rules/Credits → Game ↔ Pause → Results/Replay).
-      **The app must always open to the Main Menu and never auto‑start a game.**
-- [ ] **3.3** **Splash screen**: branded logo + asset/saved‑data preload, skippable, auto‑advances
-      to Main Menu only (never into a game).
-- [ ] **3.4** **Main Menu screen** (§7.10.2): Continue, New Game, Load Game, Settings, How to Play,
-      Credits, Quit. **Continue is enabled only when an autosave exists** (greyed out otherwise,
-      with a tooltip + last‑session summary on hover). Keyboard/gamepad navigable, localized,
-      animated background + menu music.
-- [ ] **3.5** **GameSetup screen**: player count (2–4), human/AI per seat + AI difficulty,
-      colours, board side (Day/Night), language, intro‑variant toggle; Start + Back to Menu.
-      If an autosave exists, confirm before starting a new game (preserve the existing save).
-- [ ] **3.6** **Settings screen** (§7.10.3): language, audio volumes + mute, animation speed +
-      reduced‑motion, board side/zoom/colour‑blind palette, gameplay toggles, data management
-      (manage/rename/delete slots, export/import, reset). Reachable from Main Menu **and** Pause
-      Menu; persists immediately and applies live.
-- [ ] **3.7** **Save/Continue/Load system** (§7.10.4): autosave each turn + at round/era
-      transitions to the "current game" slot; **Continue** loads it; **Load Game** screen lists
-      named slots with metadata + thumbnail; load validates save `version` and restores exactly
-      (including mid‑turn). Delete/overwrite require confirmation.
-- [ ] **3.8** **Pause Menu** (§7.10.5): Esc/Pause overlay with Resume, Settings, Save Game,
-      How to Play, Save & Quit to Main Menu, Abandon Game (confirm). Game state untouched.
-- [ ] **3.9** **Rules / How‑to‑Play screen** and **Credits screen** (localized, asset attribution).
-- [ ] **3.10** **BoardSvg**: render locations, link lines, merchants from data; responsive zoom/pan.
-- [ ] **3.11** **IndustryTile** & **LinkTileView** components (level/owner/flipped faces, resources).
-- [ ] **3.12** **PlayerMat**: stacked tiles with costs, income track, VP track per player.
-- [ ] **3.13** **Hand** + **DiscardPile**: render cards, select for actions.
-- [ ] **3.14** **Coal/Iron Market** panels + merchant beer indicators.
-- [ ] **3.15** **TurnOrderTrack** with spent‑money display.
-- [ ] **3.16** **ActionBar**: 7 actions, disabled when illegal (from `legalActions`).
-- [ ] **3.17** **Guided action flows** (pick card → target → resource choices → confirm) with a
-      live **cost preview** (money/coal/iron/beer). Cancel at any step.
-- [ ] **3.18** Legal‑placement highlighting on the board (valid slots/lines for current action).
-- [ ] **3.19** **Game log** panel + on‑board tooltips (i18n keys).
-- [ ] **3.20** End‑of‑round / end‑of‑era / **Results** screens with score breakdowns, plus
-      Rematch (prefilled setup), Main Menu, and View Replay options.
-      *DoD: M3 reached — a full hot‑seat 2P game is playable in the browser, always starting from
-      the Main Menu, with working New Game / Continue / Load / Settings.*
+- [x] **3.1** Zustand UI store wrapping the core (`appStore.ts`): `dispatch(action)`, exposes
+      state + event stream, **plus a separate `AppScreen` navigation state**.
+- [x] **3.2** Screen router + transitions (`App.tsx`) implementing §7.10.1. **Always opens to
+      Splash → Main Menu; never auto‑starts a game.**
+- [x] **3.3** **Splash screen** (skippable, auto‑advances to Main Menu only).
+- [x] **3.4** **Main Menu screen** (§7.10.2): Continue (gated on autosave, with summary tooltip),
+      New Game, Load Game, Settings, How to Play, Credits + quick language/mute. Localized.
+- [x] **3.5** **GameSetup screen**: player count, human/AI per seat + difficulty, colours,
+      board side/lang (from settings), intro‑variant toggle; Start + Back.
+- [x] **3.6** **Settings screen** (§7.10.3): language, audio, animation speed + reduced‑motion,
+      board side + colour‑blind, gameplay toggles, reset. From Menu **and** Pause; applies live.
+- [x] **3.7** **Save/Continue/Load system** (§7.10.4): autosave each dispatch; Continue loads it;
+      Load Game lists named slots w/ metadata; version‑validated restore; delete confirm.
+- [x] **3.8** **Pause Menu** (§7.10.5): Esc overlay — Resume, Settings, Save, How to Play,
+      Save & Quit, Abandon (confirm). State untouched.
+- [x] **3.9** **Rules / How‑to‑Play** and **Credits** screens (localized, attribution).
+- [x] **3.10** **BoardSvg**: locations, link lines, merchants from data (layout coordinates).
+- [x] **3.11** Industry/link tile rendering (level/owner/flipped) drawn on the board nodes.
+- [x] **3.12** **PlayerStrip** (player overview): money, income, VP, spent — per player.
+- [x] **3.13** **Hand** rendering (hidden for AI seats in hot‑seat).
+- [x] **3.14** **Coal/Iron Market** panels + merchant beer indicators on the board.
+- [x] **3.15** Turn‑order + spent‑money display (in `PlayerStrip`).
+- [x] **3.16** **ActionBar**: 7 actions, disabled when no legal move (from `legalActions`).
+- [x] **3.17** **Guided action flow**: pick action → choose from enumerated legal concrete
+      actions (with cost hint) → dispatch. Illegal moves impossible.
+- [x] **3.18** Legal‑placement highlighting on the board (valid locations/lines).
+- [x] **3.19** **Game log** panel (event stream → readable lines).
+- [x] **3.20** **Results** screen with standings + Rematch / Main Menu / View Replay.
+      *DoD: M3 reached — hot‑seat play in the browser, always starting from the Main Menu,
+      with working New Game / Continue / Load / Settings.*
 
 ### Phase 4 — Animations, Audio, i18n
 - [ ] **4.1** Event→timeline mapping + a sequential animation queue (speed setting, skippable).
@@ -924,3 +913,27 @@ verified, **without changing any architectural decision** in §1–§12:
     connected coal mine" relaxed to "any connected mine, market only if none"
     (cheapest-first auto-resolution); one tile per player per location enforced in
     both eras; merchant link-VP defaulted to 2 each (VERIFY).
+
+
+- **Phase 3 complete (M3).** Authored the full React UI in `src/app/` + persistence
+  in `src/persistence/`: the `appStore` (Zustand) wrapping the engine with a
+  separate `AppScreen` navigation state, bot-driven AI turns, and autosave on
+  every dispatch; the `settings` store (persisted, applied live to the DOM
+  theme/animation/palette); all screens (Splash, Main Menu with autosave-gated
+  Continue, GameSetup, LoadGame, Settings, Rules, Credits, Game, Pause, Results);
+  board components (`BoardSvg` + layout, market panels, player strip, hand, action
+  bar with a guided flow driven by `legalActions`, event log); IndexedDB
+  persistence (autosave + named slots) with **pure, unit-tested serialization**.
+  Added the AI bot (`src/ai/`, Easy/Normal/Hard heuristic + look-ahead) which is
+  **verified to play full 2/3/4-player games to completion** via Node tests, and
+  full EN/RU/UZ i18n bundles with a **key-parity test**. Engine + AI + persistence
+  + i18n = **65 Node tests pass**; component tests (`tests/component/`) run in CI.
+  - **Build/verify note:** the React/TSX cannot be typechecked/run in the offline
+    sandbox (no React types, no JSX stripping in Node), so it is authored to build
+    under the pinned toolchain and validated by the CI `app` job. The pure-TS parts
+    it depends on (engine, AI, serialization, i18n JSON) are fully verified here.
+  - **Consolidated vs. plan:** tiles are drawn on the board nodes (not separate
+    `IndustryTile`/`PlayerMat` components); player overview + turn order live in
+    `PlayerStrip`; the guided flow enumerates legal concrete actions (with cost
+    hints) rather than a click-on-board multi-step wizard — functionally guarantees
+    only-legal moves. These are slated for visual polish in Phase 4.

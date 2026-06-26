@@ -39,8 +39,23 @@ declare module 'node:assert/strict' {
   export default assert;
 }
 
-
 // `structuredClone` is a Node 17+/browser global used for pure deep-cloning in
 // the reducer. It is in lib.dom / @types/node; declared here for the offline
 // engine typecheck (ES2022 lib only).
 declare function structuredClone<T>(value: T): T;
+
+
+// Additional Node builtins used by tests (offline typecheck only).
+declare module 'node:fs' {
+  export function readFileSync(path: string | URL, encoding: 'utf8'): string;
+}
+declare module 'node:url' {
+  export function fileURLToPath(url: string | URL): string;
+}
+declare class URL {
+  constructor(input: string, base?: string | URL);
+  href: string;
+}
+interface ImportMeta {
+  url: string;
+}
