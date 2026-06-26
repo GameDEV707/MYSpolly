@@ -64,10 +64,30 @@
   "build": {
     "appId": "dev.myspolly.app",
     "productName": "MYSpolly",
-    "files": ["dist/**/*", "electron/**/*"],
-    "directories": { "output": "release" },
-    "mac": { "category": "public.app-category.board-games", "target": ["dmg"] },
-    "win": { "target": ["nsis"] },
-    "linux": { "target": ["AppImage", "deb"], "category": "Game" }
+    "files": [
+      "dist/**/*",
+      "electron/**/*"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "mac": {
+      "category": "public.app-category.board-games",
+      "target": [
+        "dmg"
+      ]
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Game"
+    }
   }
 }

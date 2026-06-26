@@ -44,7 +44,6 @@ declare module 'node:assert/strict' {
 // engine typecheck (ES2022 lib only).
 declare function structuredClone<T>(value: T): T;
 
-
 // Additional Node builtins used by tests (offline typecheck only).
 declare module 'node:fs' {
   export function readFileSync(path: string | URL, encoding: 'utf8'): string;

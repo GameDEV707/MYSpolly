@@ -115,7 +115,6 @@ body {
   overflow: hidden;
 }
 
-
 /* Cinematic banner fade for era/round/game-over beats */
 @keyframes bannerFade {
   0% {
