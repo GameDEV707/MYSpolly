@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # Fast, dependency-free job: the pure engine is plain TypeScript and is run
+  # with Node's native type-stripping + built-in test runner. This always works
+  # even without access to a package registry.
+  engine:
+    name: Engine (typecheck + unit tests, no deps)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install TypeScript (for typecheck only)
+        run: npm i -g typescript@5
+      - name: Typecheck engine
+        run: tsc --noEmit -p tsconfig.engine.json
+      - name: Run engine unit tests
+        run: node --test --experimental-strip-types "tests/unit/**/*.test.ts"
+
+  # Full job: installs all dependencies and validates the app (UI + build).
+  app:
+    name: App (install + lint + typecheck + build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run typecheck
+      - run: pnpm run lint
+      - run: pnpm run test:component
+      - run: pnpm run build
