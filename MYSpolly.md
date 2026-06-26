@@ -702,34 +702,34 @@ All values persist immediately (IndexedDB on web / app‑data file on desktop) a
       30 coal, 18 iron, 15 beer, merchant counts, deck sizes). *DoD: validation test passes.*
 
 ### Phase 2 — Pure Game Engine
-- [ ] **2.1** Define model types (`state.ts`, `actions.ts`, `events.ts`) per §6.
-- [ ] **2.2** Implement seeded RNG (`rng.ts`) and a deterministic shuffle.
-- [ ] **2.3** Implement `buildInitialState(options, seed)` (full setup incl. player‑count rules).
-- [ ] **2.4** Implement connectivity selectors: graph build, `connected`, `distance`, `network`.
-- [ ] **2.5** Implement resource routing: `coalOptions`, `ironOptions`, `beerOptions`, cost calc,
+- [x] **2.1** Define model types (`state.ts`, `actions.ts`, `events.ts`) per §6.
+- [x] **2.2** Implement seeded RNG (`rng.ts`) and a deterministic shuffle.
+- [x] **2.3** Implement `buildInitialState(options, seed)` (full setup incl. player‑count rules).
+- [x] **2.4** Implement connectivity selectors: graph build, `connected`, `distance`, `network`.
+- [x] **2.5** Implement resource routing: `coalOptions`, `ironOptions`, `beerOptions`, cost calc,
       and market price computation.
-- [ ] **2.6** Implement **Build** action incl. slot rules, payment, coal/iron consumption,
+- [x] **2.6** Implement **Build** action incl. slot rules, payment, coal/iron consumption,
       cube‑to‑market movement, brewery beer placement, tile flips, overbuilding rules,
       "no tiles on board" case, and Farm Breweries.
-- [ ] **2.7** Implement **Network** action (Canal £3×1; Rail £5×1 or £15×2+beer; coal per rail link).
-- [ ] **2.8** Implement **Develop** action (1–2 removals, iron per removal, lightbulb restriction).
-- [ ] **2.9** Implement **Sell** action (merchant matching, beer consumption from all sources,
+- [x] **2.7** Implement **Network** action (Canal £3×1; Rail £5×1 or £15×2+beer; coal per rail link).
+- [x] **2.8** Implement **Develop** action (1–2 removals, iron per removal, lightbulb restriction).
+- [x] **2.9** Implement **Sell** action (merchant matching, beer consumption from all sources,
       merchant beer bonuses, multi‑tile sells, flips + income).
-- [ ] **2.10** Implement **Loan** (+£30, −3 income levels, −10 floor) and **Scout** (discard+2,
+- [x] **2.10** Implement **Loan** (+£30, −3 income levels, −10 floor) and **Scout** (discard+2,
       wild restriction) and **Pass**.
-- [ ] **2.11** Implement card discard/refill, action counting (1 in first Canal round else 2),
+- [x] **2.11** Implement card discard/refill, action counting (1 in first Canal round else 2),
       and spent‑money tracking on character tiles.
-- [ ] **2.12** Implement **end of round**: turn‑order re‑sort + income collection incl. negative
+- [x] **2.12** Implement **end of round**: turn‑order re‑sort + income collection incl. negative
       income, shortfall tile‑selling (half cost rounded down), and VP loss fallback.
-- [ ] **2.13** Implement **end of era scoring** (links by adjacent VP icons; flipped tiles' VP).
-- [ ] **2.14** Implement **end of Canal Era maintenance** (remove level‑1 board tiles, reset
+- [x] **2.13** Implement **end of era scoring** (links by adjacent VP icons; flipped tiles' VP).
+- [x] **2.14** Implement **end of Canal Era maintenance** (remove level‑1 board tiles, reset
       merchant beer, reshuffle discards, redraw hands) and the **Canal→Rail** transition.
-- [ ] **2.15** Implement **game over** + ranking with tiebreaks (VP → income → money → draw).
-- [ ] **2.16** Implement the **introductory variant** scoring (Canal‑only + bonus scoring).
-- [ ] **2.17** Implement `legalActions(state, player)` enumerating all legal moves (drives UI + AI).
-- [ ] **2.18** **Engine test suite**: unit tests for every action + all §3 edge cases.
-- [ ] **2.19** **Golden game test**: scripted full 2P/3P/4P games with asserted final scores.
-- [ ] **2.20** **Property test**: random legal play for N turns never throws / never corrupts state.
+- [x] **2.15** Implement **game over** + ranking with tiebreaks (VP → income → money → draw).
+- [x] **2.16** Implement the **introductory variant** scoring (Canal‑only + bonus scoring).
+- [x] **2.17** Implement `legalActions(state, player)` enumerating all legal moves (drives UI + AI).
+- [x] **2.18** **Engine test suite**: unit tests for every action + all §3 edge cases.
+- [x] **2.19** **Golden game test**: scripted full 2P/3P/4P games with asserted final scores.
+- [x] **2.20** **Property test**: random legal play for N turns never throws / never corrupts state.
       *DoD: M2 reached — a complete game is playable headlessly via code.*
 
 ### Phase 3 — UI: Interactive Board & Hot‑seat Play
@@ -903,3 +903,24 @@ verified, **without changing any architectural decision** in §1–§12:
     Component **totals** and the player-count rules are taken from the rulebook
     text and enforced by tests. Era length uses the rulebook's fixed 8/9/10
     rounds, so deck-size differences cannot change era duration.
+
+
+- **Phase 2 complete (M2).** Implemented the full pure engine in `src/core/`:
+  model types (`state/actions/events`), seeded RNG + shuffle, `buildInitialState`,
+  connectivity/network selectors, resource routing + market mechanics, all 7
+  actions (Build incl. overbuild/market-on-build/farm breweries, Network
+  canal/rail incl. double-link beer, Develop incl. lightbulb rule, Sell incl.
+  merchant beer bonuses, Loan, Scout, Pass), the turn/round/era phase machine
+  (1-action first Canal round, hand refill, cardless-player skipping, turn-order
+  re-sort, income with shortfall tile-selling + VP loss, end-of-era scoring,
+  Canal→Rail maintenance, game over with tiebreaks), the introductory variant,
+  and `legalActions`. `reduce` is pure (clones via `structuredClone`) and emits a
+  semantic event stream. **52 unit tests pass** (data + setup + purity + market +
+  per-action rules + edge cases + full random 2/3/4-player playthroughs to
+  completion + golden reproducibility + intro variant); engine typecheck clean.
+  - **Documented engine decisions:** linear income model (level==money; non-linear
+    high-income track flagged VERIFY); era length governed by fixed 8/9/10 rounds
+    (cardless players are skipped, hands reshuffled at Canal→Rail); "closest
+    connected coal mine" relaxed to "any connected mine, market only if none"
+    (cheapest-first auto-resolution); one tile per player per location enforced in
+    both eras; merchant link-VP defaulted to 2 each (VERIFY).

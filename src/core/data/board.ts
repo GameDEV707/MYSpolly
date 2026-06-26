@@ -40,6 +40,19 @@ export const MERCHANT_LOCATIONS: MerchantLocationDef[] = [
   { id: 'nottingham', name: 'loc.nottingham', bonus: 'vp', bonusVp: 3, tileSpaces: 2 },
 ];
 
+/**
+ * Link-scoring VP contributed by each merchant location to an adjacent link at
+ * end of era. VERIFY: exact per-merchant icon counts are printed on the tiles;
+ * 2 is used as a documented default.
+ */
+export const MERCHANT_LINK_VP: Record<string, number> = {
+  shrewsbury: 2,
+  warrington: 2,
+  gloucester: 2,
+  oxford: 2,
+  nottingham: 2,
+};
+
 // ---------------------------------------------------------------------------
 // Town locations with build slots and banner colours.
 // Banner colour drives which Location cards are in the deck:
@@ -289,6 +302,33 @@ export const TOWN_BY_ID: Record<string, LocationDef> = Object.fromEntries(
 export const MERCHANT_BY_ID: Record<string, MerchantLocationDef> = Object.fromEntries(
   MERCHANT_LOCATIONS.map((m) => [m.id, m]),
 );
+
+/**
+ * The 9 merchant tiles (which goods each will buy) and the minimum player count
+ * at which each is used, so the eligible tiles exactly fill the available
+ * merchant spaces: 2P → 5 spaces, 3P → 7, 4P → 9.
+ * A `[]` (blank) tile accepts nothing and receives no beer barrel.
+ *
+ * VERIFY: the exact goods on each physical merchant tile are printed on the
+ * tiles (image data). Encoded here so every good is sellable at each player
+ * count; corrections are pure data edits.
+ */
+export interface MerchantTileDef {
+  accepts: ('cotton' | 'manufacturer' | 'pottery')[];
+  minPlayers: 2 | 3 | 4;
+}
+
+export const MERCHANT_TILE_DEFS: MerchantTileDef[] = [
+  { accepts: ['cotton', 'manufacturer', 'pottery'], minPlayers: 2 },
+  { accepts: ['cotton', 'manufacturer', 'pottery'], minPlayers: 2 },
+  { accepts: ['cotton'], minPlayers: 2 },
+  { accepts: ['manufacturer'], minPlayers: 2 },
+  { accepts: ['pottery'], minPlayers: 2 },
+  { accepts: ['cotton', 'manufacturer'], minPlayers: 3 },
+  { accepts: ['manufacturer', 'pottery'], minPlayers: 3 },
+  { accepts: ['cotton', 'pottery'], minPlayers: 4 },
+  { accepts: [], minPlayers: 4 },
+];
 
 // Re-export to silence unused in case future slots need the full ALL set.
 export const ALL_INDUSTRIES = ALL;

@@ -38,3 +38,9 @@ declare module 'node:assert/strict' {
   const assert: AssertStrict;
   export default assert;
 }
+
+
+// `structuredClone` is a Node 17+/browser global used for pure deep-cloning in
+// the reducer. It is in lib.dom / @types/node; declared here for the offline
+// engine typecheck (ES2022 lib only).
+declare function structuredClone<T>(value: T): T;

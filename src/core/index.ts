@@ -13,3 +13,13 @@ export const STATE_VERSION = 1;
 
 /** Human-readable engine identifier, surfaced in logs and save metadata. */
 export const ENGINE_NAME = 'myspolly-core';
+
+// Public engine API.
+export { buildInitialState, type SetupConfig, type PlayerSeat } from './engine/setup.ts';
+export { reduce, validate } from './engine/reduce.ts';
+export { legalActions, hasNonPassAction } from './selectors/legalActions.ts';
+export { computeRanking } from './engine/phases.ts';
+export * from './model/types.ts';
+export type { GameState, PlayerState, PlacedTile, PlacedLink, Card } from './model/state.ts';
+export type { Action } from './model/actions.ts';
+export type { GameEvent, ReduceResult } from './model/events.ts';
