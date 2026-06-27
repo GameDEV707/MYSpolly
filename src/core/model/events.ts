@@ -23,6 +23,17 @@ export type GameEvent =
       player: PlayerColor;
     }
   | { t: 'TILE_FLIPPED'; tileId: string; incomeGain: number; player: PlayerColor }
+  | {
+      t: 'GOODS_SOLD';
+      player: PlayerColor;
+      tileId: string;
+      industry: IndustryType;
+      /** Producing factory's location id (delivery origin). */
+      from: string;
+      /** Destination merchant tile id + its location id. */
+      merchantId: string;
+      merchantLocationId: string;
+    }
   | { t: 'INCOME_CHANGED'; player: PlayerColor; delta: number; level: number }
   | { t: 'MONEY_CHANGED'; player: PlayerColor; delta: number; total: number }
   | { t: 'VP_CHANGED'; player: PlayerColor; delta: number; total: number }

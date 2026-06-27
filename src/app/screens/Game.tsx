@@ -20,6 +20,7 @@ import { HelpButton } from '../components/help/HelpButton.tsx';
 import { useFlow } from '../components/hud/flowStore.ts';
 import { flowHighlights, isBoardTargetStep } from '../components/hud/flow.ts';
 import { useAnimateEvents } from '../animation/useAnimateEvents.ts';
+import { GoodsDeliveryLayer } from '../animation/GoodsDelivery.tsx';
 import { audio } from '../audio/sound.ts';
 import { Button, Panel, PLAYER_CSS_VAR } from '../components/ui.tsx';
 
@@ -143,16 +144,19 @@ export function GameScreen(props: { replay?: boolean }): JSX.Element {
         >
           <BoardCamera>
             {(lod) => (
-              <BoardSvg
-                game={game}
-                lod={lod}
-                showTooltips={settings.showTooltips}
-                highlightLocations={highlights.locs}
-                highlightLines={highlights.lines}
-                dimUnhighlighted={dim}
-                onLocationClick={boardTargeting ? flow.pickLocation : undefined}
-                onLineClick={boardTargeting ? flow.pickLine : undefined}
-              />
+              <>
+                <BoardSvg
+                  game={game}
+                  lod={lod}
+                  showTooltips={settings.showTooltips}
+                  highlightLocations={highlights.locs}
+                  highlightLines={highlights.lines}
+                  dimUnhighlighted={dim}
+                  onLocationClick={boardTargeting ? flow.pickLocation : undefined}
+                  onLineClick={boardTargeting ? flow.pickLine : undefined}
+                />
+                <GoodsDeliveryLayer game={game} events={events} skipAll={skipAnims} />
+              </>
             )}
           </BoardCamera>
           <Legend />

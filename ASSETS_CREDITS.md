@@ -86,3 +86,17 @@ the multi-map system fully original/royalty-free.
 - **Map & location names** are localized i18n keys (EN/RU/UZ); Russian names are
   transliterated to Cyrillic and Uzbek uses the Latin form (consistent with how
   invented place names are rendered across scripts).
+
+
+## Goods-Delivery Transport SFX (Phase 8G / §7.4.1)
+
+The Sell goods-delivery animation plays a per-vehicle sound effect, referenced under
+`public/assets/audio/sfx/` and to be supplied as original or CC0 clips (recorded here):
+
+- `boat-horn.mp3` — Canal Era cargo boat/barge.
+- `train-whistle.mp3` — Rail Era freight train.
+- `plane-flyby.mp3` — Air Era cargo plane.
+
+Vehicle visuals use emoji glyphs (🛶 boat / 🚂 train / ✈️ plane) and a 📦 cargo token,
+drawn as original SVG markup; no third-party artwork is used. All clips fail soft (the
+game runs silently if an asset is absent).

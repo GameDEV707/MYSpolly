@@ -26,6 +26,10 @@ export function eventToFx(e: GameEvent): EventFx {
       return { sfx: 'cube', durationMs: 120 };
     case 'TILE_FLIPPED':
       return { sfx: 'flip', durationMs: 400 };
+    case 'GOODS_SOLD':
+      // The vehicle travels to the merchant during this beat; its SFX is played
+      // by the delivery layer (era-specific). The flip follows on arrival.
+      return { durationMs: 1300 };
     case 'MONEY_CHANGED':
       return { sfx: e.delta > 0 ? 'coin' : undefined, durationMs: 120 };
     case 'VP_CHANGED':

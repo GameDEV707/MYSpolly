@@ -20,7 +20,10 @@ export type Sfx =
   | 'error'
   | 'turnChange'
   | 'eraFanfare'
-  | 'victory';
+  | 'victory'
+  | 'boatHorn'
+  | 'trainWhistle'
+  | 'planeFlyby';
 
 export type Music = 'menu' | 'canal' | 'rail';
 
@@ -37,6 +40,9 @@ const SFX_SRC: Record<Sfx, string> = {
   turnChange: 'assets/audio/sfx/turn-change.mp3',
   eraFanfare: 'assets/audio/sfx/era-fanfare.mp3',
   victory: 'assets/audio/sfx/victory.mp3',
+  boatHorn: 'assets/audio/sfx/boat-horn.mp3',
+  trainWhistle: 'assets/audio/sfx/train-whistle.mp3',
+  planeFlyby: 'assets/audio/sfx/plane-flyby.mp3',
 };
 
 const MUSIC_SRC: Record<Music, string> = {

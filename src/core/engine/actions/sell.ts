@@ -45,6 +45,18 @@ export function applySell(
 ): void {
   for (const sale of a.sales) {
     const tile = findTile(state, sale.tileId);
+    const merchant = state.merchants.find((m) => m.id === sale.merchantId);
+    // Announce the delivery first so the UI can animate the goods travelling
+    // along the network to the merchant, then resolve the sale (flip/income).
+    events.push({
+      t: 'GOODS_SOLD',
+      player,
+      tileId: tile.id,
+      industry: tile.industry,
+      from: tile.locationId,
+      merchantId: sale.merchantId,
+      merchantLocationId: merchant?.locationId ?? sale.merchantId,
+    });
     const merchantJuiceUsed = consumeJuice(state, player, tile.locationId, sale.juice, events);
     flipTile(state, tile, events);
     for (const merchantId of merchantJuiceUsed) {

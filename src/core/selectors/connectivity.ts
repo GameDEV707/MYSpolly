@@ -67,6 +67,38 @@ export function distance(state: GameState, a: string, b: string): number {
 }
 
 /**
+ * Shortest path of location ids from `a` to `b` over the placed-link network
+ * (inclusive of both endpoints), or null if unconnected. Used by the UI to
+ * animate a goods-delivery vehicle along the actual route (§7.4.1 / Phase 8G).
+ */
+export function shortestPath(state: GameState, a: string, b: string): string[] | null {
+  if (a === b) return [a];
+  const adj = buildAdjacency(state);
+  const prev = new Map<string, string>();
+  const seen = new Set<string>([a]);
+  const queue = [a];
+  while (queue.length > 0) {
+    const cur = queue.shift()!;
+    for (const n of adj.get(cur) ?? []) {
+      if (seen.has(n)) continue;
+      seen.add(n);
+      prev.set(n, cur);
+      if (n === b) {
+        const path = [b];
+        let p: string | undefined = b;
+        while (p !== undefined && p !== a) {
+          p = prev.get(p);
+          if (p !== undefined) path.push(p);
+        }
+        return path.reverse();
+      }
+      queue.push(n);
+    }
+  }
+  return null;
+}
+
+/**
  * The set of locations in a player's network: any location holding one of the
  * player's industry tiles, plus any location adjacent to one of the player's
  * link tiles.

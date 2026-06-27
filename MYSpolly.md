@@ -1319,18 +1319,18 @@ Working names (finalize during implementation, keep consistent everywhere):
 > When a player sells, a vehicle visibly carries the goods from the producing factory, across the
 > network, to the merchant being sold to, delivers the cargo, then returns to its origin —
 > beautifully animated and matched to the era (boat → train → cargo plane).
-- [ ] **8G.1** Add a `GOODS_SOLD` (or extend the Sell) game event carrying the origin location,
+- [x] **8G.1** Add a `GOODS_SOLD` (or extend the Sell) game event carrying the origin location,
       destination merchant, and the sold industry, so the UI can animate the delivery.
-- [ ] **8G.2** Compute the **route path of links** from the selling factory to the target merchant
+- [x] **8G.2** Compute the **route path of links** from the selling factory to the target merchant
       (reuse the engine connectivity/route finding) and animate a vehicle following that polyline
       across the board with smooth easing — not a straight line.
-- [ ] **8G.3** **Era‑specific vehicle + route styling** (from the active era's `routeType`):
+- [x] **8G.3** **Era‑specific vehicle + route styling** (from the active era's `routeType`):
       **Canal → cargo boat/barge**, **Rail → freight train**, **Air → cargo plane** (flight arc).
-- [ ] **8G.4** Full sequence: spawn at factory → carry a visible cargo token → arrive at merchant →
+- [x] **8G.4** Full sequence: spawn at factory → carry a visible cargo token → arrive at merchant →
       **deliver** (cargo drop + the existing tile‑flip / income / coin animations) → **return to
       origin** and despawn.
-- [ ] **8G.5** Per‑vehicle **SFX** (boat horn / train / plane) hooked to the audio mixer.
-- [ ] **8G.6** Respect animation **speed/skip** and `prefers-reduced-motion` (graceful quick‑move
+- [x] **8G.5** Per‑vehicle **SFX** (boat horn / train / plane) hooked to the audio mixer.
+- [x] **8G.6** Respect animation **speed/skip** and `prefers-reduced-motion` (graceful quick‑move
       fallback); sequence/stagger **multiple deliveries** in one Sell action without blocking input
       longer than necessary; graceful fallback when no direct route exists.
       *DoD: every Sell shows an era‑appropriate vehicle carrying goods along the network to the
