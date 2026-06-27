@@ -43,6 +43,12 @@ export function eventToFx(e: GameEvent): EventFx {
       return { sfx: 'eraFanfare', durationMs: 1500, banner: 'banner.eraEnd' };
     case 'CANAL_MAINTENANCE':
       return { durationMs: 1200, banner: 'banner.railBegins' };
+    case 'ERA_MORPH':
+      return {
+        sfx: 'eraFanfare',
+        durationMs: 1600,
+        banner: e.to === 'air' ? 'banner.airBegins' : 'banner.eraMorph',
+      };
     case 'GAME_OVER':
       return { sfx: 'victory', durationMs: 2000, banner: 'banner.gameOver' };
     default:

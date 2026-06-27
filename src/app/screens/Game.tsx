@@ -48,7 +48,7 @@ export function GameScreen(props: { replay?: boolean }): JSX.Element {
 
   // Play era-appropriate ambience.
   useEffect(() => {
-    if (game) audio.playMusic(game.era === 'rail' ? 'rail' : 'canal');
+    if (game) audio.playMusic(game.era === 'canal' ? 'canal' : 'rail');
     return () => audio.stopMusic();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game?.era]);

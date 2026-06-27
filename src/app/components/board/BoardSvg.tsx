@@ -3,14 +3,12 @@ import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import type { GameState, PlacedTile } from '../../../core/model/state.ts';
 import type { IndustryType } from '../../../core/model/types.ts';
-import { LINK_LINES, TOWN_BY_ID, MERCHANT_BY_ID } from '../../../core/data/board.ts';
+import { boardContext } from '../../../core/maps/context.ts';
 import { playerNetwork } from '../../../core/selectors/connectivity.ts';
-import { LOCATION_XY, BOARD_W, BOARD_H } from './layout.ts';
+import { BOARD_W, BOARD_H } from './layout.ts';
 import { INDUSTRY_ICON, MERCHANT_BONUS_ICON, BAND_COLOR } from './icons.ts';
 import { PLAYER_CSS_VAR } from '../ui.tsx';
 import type { Lod } from './useBoardCamera.ts';
-
-const LINE_BY_ID = Object.fromEntries(LINK_LINES.map((l) => [l.id, l]));
 
 /** Unique allowed industries across a location's slots. */
 function buildableIndustries(slots: { allowed: IndustryType[] }[]): IndustryType[] {
@@ -28,11 +26,11 @@ function tileTooltip(t: TFunction, tile: PlacedTile): string {
 }
 
 /**
- * SVG board (§7.12). Renders the water, canal/rail link lines (built, buildable,
- * neutral), self-explanatory location nodes (region band, name, build slots with
- * industry icons, built tiles with owner/level/cubes/flip), and merchants
- * (accepted goods, bonus icon, juice barrel). Level-of-detail (`lod`) controls
- * density; valid targets glow and, while an action is targeting, invalid ones dim.
+ * SVG board (§7.12 + §7.15). Renders the active map's CURRENT-ERA topology:
+ * route lines styled per era (canal = dotted water, rail = solid ties, air =
+ * dashed flight-arcs), self-explanatory location nodes, built tiles, and
+ * merchants. Locations/links/merchants and their coordinates all come from the
+ * board context, so the board visibly morphs when the era advances.
  */
 export function BoardSvg(props: {
   game: GameState;
@@ -57,6 +55,15 @@ export function BoardSvg(props: {
   const { t } = useTranslation();
   const [hovered, setHovered] = useState<string | null>(null);
 
+  const ctx = useMemo(() => boardContext(game), [game.options.mapId, game.era]);
+  const layout = ctx.map.layout[game.era] ?? {};
+  const routeStyle = ctx.eraDef.routeStyle;
+  const isAir = ctx.eraDef.routeType === 'air';
+  const isCanalEra = ctx.eraDef.routeType === 'canal';
+
+  const nameOf = (id: string): string =>
+    t(ctx.locationById[id]?.name ?? ctx.merchantById[id]?.name ?? id);
+
   const network = useMemo(
     () => playerNetwork(game, game.activePlayer),
     [game.tiles, game.links, game.activePlayer],
@@ -78,56 +85,67 @@ export function BoardSvg(props: {
         </filter>
       </defs>
 
-      {/* Link lines (canal vs rail visually distinct). */}
+      {/* Route lines for the active era. */}
       <g>
-        {LINK_LINES.map((line) => {
-          const a = LOCATION_XY[line.a];
-          const b = LOCATION_XY[line.b];
+        {ctx.links.map((line) => {
+          const a = layout[line.a];
+          const b = layout[line.b];
           if (!a || !b) return null;
           const placed = game.links.find((l) => l.lineId === line.id);
           const highlighted = highlightLines?.has(line.id) ?? false;
           const dim = dimUnhighlighted && !highlighted && !placed;
-          const canalOnly = line.types.length === 1 && line.types[0] === 'canal';
-          const railOnly = line.types.length === 1 && line.types[0] === 'rail';
-          const isCanal = placed ? placed.type === 'canal' : canalOnly;
 
           const stroke = placed
             ? PLAYER_CSS_VAR[placed.owner]
             : highlighted
               ? 'var(--accent)'
-              : canalOnly
-                ? 'rgba(120,170,210,0.4)'
-                : railOnly
-                  ? 'rgba(200,150,110,0.4)'
-                  : 'rgba(255,255,255,0.18)';
-          const width = placed ? 7 : highlighted ? 6 : 3;
-          // Canal = dotted (water), rail = solid with light "tie" overlay.
-          const dash = isCanal ? '1 10' : highlighted ? '10 8' : undefined;
+              : routeStyle.color + '66';
+          const width = (placed ? 7 : highlighted ? 6 : 3) * routeStyle.width;
+          // Canal = dotted (water), air = dashed arc, rail = solid (with ties).
+          const dash = isCanalEra ? '1 10' : isAir ? '9 7' : highlighted ? '10 8' : undefined;
+
+          // Air routes bow into an arc; canal/rail are straight.
+          const path = isAir
+            ? `M ${a.x} ${a.y} Q ${(a.x + b.x) / 2} ${(a.y + b.y) / 2 - 60} ${b.x} ${b.y}`
+            : null;
 
           return (
             <g key={line.id} style={{ opacity: dim ? 0.25 : 1 }}>
-              <line
-                x1={a.x}
-                y1={a.y}
-                x2={b.x}
-                y2={b.y}
-                stroke={stroke}
-                strokeWidth={width}
-                strokeLinecap="round"
-                strokeDasharray={dash}
-                style={{ cursor: highlighted ? 'pointer' : 'default' }}
-                onClick={() => highlighted && onLineClick?.(line.id)}
-              >
-                {showTooltips && (
-                  <title>
-                    {`${t(TOWN_BY_ID[line.a]?.name ?? MERCHANT_BY_ID[line.a]?.name ?? line.a)} ↔ ${t(
-                      TOWN_BY_ID[line.b]?.name ?? MERCHANT_BY_ID[line.b]?.name ?? line.b,
-                    )} · ${isCanal ? t('legend.canal') : t('legend.rail')}`}
-                  </title>
-                )}
-              </line>
-              {/* Rail "ties": a light dashed overlay so rail reads differently to canal. */}
-              {placed && !isCanal && (
+              {path ? (
+                <path
+                  d={path}
+                  fill="none"
+                  stroke={stroke}
+                  strokeWidth={width}
+                  strokeLinecap="round"
+                  strokeDasharray={dash}
+                  style={{ cursor: highlighted ? 'pointer' : 'default' }}
+                  onClick={() => highlighted && onLineClick?.(line.id)}
+                >
+                  {showTooltips && (
+                    <title>{`${nameOf(line.a)} ↔ ${nameOf(line.b)} · ${t(routeStyle.labelKey)}`}</title>
+                  )}
+                </path>
+              ) : (
+                <line
+                  x1={a.x}
+                  y1={a.y}
+                  x2={b.x}
+                  y2={b.y}
+                  stroke={stroke}
+                  strokeWidth={width}
+                  strokeLinecap="round"
+                  strokeDasharray={dash}
+                  style={{ cursor: highlighted ? 'pointer' : 'default' }}
+                  onClick={() => highlighted && onLineClick?.(line.id)}
+                >
+                  {showTooltips && (
+                    <title>{`${nameOf(line.a)} ↔ ${nameOf(line.b)} · ${t(routeStyle.labelKey)}`}</title>
+                  )}
+                </line>
+              )}
+              {/* Rail "ties": a light dashed overlay so rail reads differently. */}
+              {placed && !isCanalEra && !isAir && (
                 <line
                   x1={a.x}
                   y1={a.y}
@@ -145,8 +163,8 @@ export function BoardSvg(props: {
       </g>
 
       {/* Town nodes. */}
-      {Object.values(TOWN_BY_ID).map((loc) => {
-        const xy = LOCATION_XY[loc.id];
+      {ctx.locations.map((loc) => {
+        const xy = layout[loc.id];
         if (!xy) return null;
         const tiles = game.tiles.filter((tl) => tl.locationId === loc.id);
         const highlighted = highlightLocations?.has(loc.id) ?? false;
@@ -194,7 +212,6 @@ export function BoardSvg(props: {
               strokeWidth={highlighted ? 3 : isHover ? 2 : 1}
               filter={highlighted ? 'url(#glow)' : undefined}
             />
-            {/* Region colour band. */}
             <rect
               x={-w / 2}
               y={-h / 2}
@@ -208,14 +225,7 @@ export function BoardSvg(props: {
                 {showTooltips && <title>{t('board.inNetwork')}</title>}
               </circle>
             )}
-            <text
-              x={0}
-              y={-h / 2 + (showSlots ? 17 : 17)}
-              textAnchor="middle"
-              fontSize={11}
-              fontWeight={600}
-              fill="var(--text)"
-            >
+            <text x={0} y={-h / 2 + 17} textAnchor="middle" fontSize={11} fontWeight={600} fill="var(--text)">
               {t(loc.name)}
             </text>
 
@@ -239,8 +249,8 @@ export function BoardSvg(props: {
       })}
 
       {/* Merchants. */}
-      {Object.values(MERCHANT_BY_ID).map((m) => {
-        const xy = LOCATION_XY[m.id];
+      {ctx.merchantLocations.map((m) => {
+        const xy = layout[m.id];
         if (!xy) return null;
         const states = game.merchants.filter((mm) => mm.locationId === m.id);
         const anyJuice = states.some((mm) => mm.hasJuice);
@@ -280,27 +290,17 @@ export function BoardSvg(props: {
               strokeWidth={highlighted ? 3 : isHover ? 2 : 1}
               filter={highlighted ? 'url(#glow)' : undefined}
             />
-            <text
-              x={0}
-              y={-28}
-              textAnchor="middle"
-              fontSize={11}
-              fontWeight={600}
-              fill="var(--text)"
-            >
+            <text x={0} y={-28} textAnchor="middle" fontSize={11} fontWeight={600} fill="var(--text)">
               {t(m.name)}
             </text>
-            {/* Bonus type icon. */}
             <text x={0} y={-4} textAnchor="middle" fontSize={14}>
               {bonus.glyph}
             </text>
-            {/* Accepted goods icons. */}
             {showSlots && (
               <text x={0} y={13} textAnchor="middle" fontSize={11}>
                 {accepts.length ? accepts.map((a) => INDUSTRY_ICON[a].glyph).join('') : '—'}
               </text>
             )}
-            {/* Merchant juice barrel. */}
             {anyJuice && (
               <g transform="translate(18,-16)">
                 <circle r={7} fill="var(--juice, #e8943a)" stroke="#000" strokeWidth={1} />
@@ -346,7 +346,6 @@ function BuiltTile(props: {
           L{tile.level}
         </text>
       )}
-      {/* Remaining cubes / juice badge. */}
       {tile.resourcesLeft > 0 && (
         <g transform={`translate(${r - 2},${-r + 2})`}>
           <circle r={6} fill="#111" stroke="#fff" strokeWidth={0.75} />

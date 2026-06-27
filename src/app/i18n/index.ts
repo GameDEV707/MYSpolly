@@ -3,6 +3,7 @@ import { initReactI18next } from 'react-i18next';
 import en from './en.json';
 import ru from './ru.json';
 import uz from './uz.json';
+import { buildMapI18n } from '../../core/maps/authored.ts';
 
 export type Lang = 'en' | 'ru' | 'uz';
 
@@ -11,6 +12,18 @@ export const LANGUAGES: { code: Lang; label: string; flag: string }[] = [
   { code: 'ru', label: 'Русский', flag: '🇷🇺' },
   { code: 'uz', label: 'Oʻzbekcha', flag: '🇺🇿' },
 ];
+
+/**
+ * Register the authored maps' names/descriptions/locations as i18n keys
+ * (EN/RU/UZ). These are kept out of the static JSON bundles (so the key-parity
+ * test stays green) and merged into i18next at init time instead.
+ */
+function registerMapResources(): void {
+  const bundles = buildMapI18n();
+  i18n.addResourceBundle('en', 'translation', bundles.en, true, true);
+  i18n.addResourceBundle('ru', 'translation', bundles.ru, true, true);
+  i18n.addResourceBundle('uz', 'translation', bundles.uz, true, true);
+}
 
 export function initI18n(lang: Lang = 'en'): typeof i18n {
   if (!i18n.isInitialized) {
@@ -25,6 +38,7 @@ export function initI18n(lang: Lang = 'en'): typeof i18n {
       interpolation: { escapeValue: false },
       returnNull: false,
     });
+    registerMapResources();
   }
   return i18n;
 }

@@ -1278,36 +1278,36 @@ Working names (finalize during implementation, keep consistent everywhere):
 > registry. All names localized EN/RU/UZ; saves/replays bind to the chosen map.
 
 **Map framework**
-- [ ] **8.1** Refactor board data into a `MapDefinition` model (§7.15.6) and a **map registry**
+- [x] **8.1** Refactor board data into a `MapDefinition` model (§7.15.6) and a **map registry**
       that lists all maps with metadata; the engine loads the active map by `mapId`.
-- [ ] **8.2** Store `mapId` in `GameState.options`, saves, and replays; setup/deck/board all key
+- [x] **8.2** Store `mapId` in `GameState.options`, saves, and replays; setup/deck/board all key
       off the active map. Add save‑migration for older single‑map saves.
-- [ ] **8.3** Add a **map picker** to Game Setup (preview, description, size/duration tags, filter
+- [x] **8.3** Add a **map picker** to Game Setup (preview, description, size/duration tags, filter
       Full vs Fast‑play and by era count).
-- [ ] **8.4** Generalize setup, deck composition, connectivity/network selectors, and the board
+- [x] **8.4** Generalize setup, deck composition, connectivity/network selectors, and the board
       renderer to read **per‑era** topology (`map.locations[era]`, `map.links[era]`).
 
 **Era‑specific routes & morphing**
-- [ ] **8.5** Make each map declare an **ordered era list** and a **route type + visual style per
+- [x] **8.5** Make each map declare an **ordered era list** and a **route type + visual style per
       era** (canal/water, rail, air) so the network looks different each era.
-- [ ] **8.6** Implement **era‑morph transition**: on era change, reposition locations, swap route
+- [x] **8.6** Implement **era‑morph transition**: on era change, reposition locations, swap route
       types, and change islands/names, with an **animated** transition; integrate with end‑of‑era
       maintenance.
-- [ ] **8.7** Implement the **optional Air Era** (third era) for maps that declare it: air links
+- [x] **8.7** Implement the **optional Air Era** (third era) for maps that declare it: air links
       with map‑defined cost/resource/scoring (defaults mirror the rail‑link pattern); standard
       2‑era maps unaffected. Document Air‑Era rules in the Rules Library + contextual help.
-- [ ] **8.8** Implement **islands & per‑era naming**: island sets and names that can differ per era;
+- [x] **8.8** Implement **islands & per‑era naming**: island sets and names that can differ per era;
       all location/island names as i18n keys (EN/RU/UZ).
 
 **The 10 maps**
-- [ ] **8.9** Author **5 Full maps** (distinct geography, locations, link networks, merchants, and
+- [x] **8.9** Author **5 Full maps** (distinct geography, locations, link networks, merchants, and
       bespoke card decks + skins), each with its own player‑count rules. At least one Full map
       includes an **Air Era**.
-- [ ] **8.10** Author **5 Fast‑play maps** (small, fewer locations/links, shorter decks) tuned to
+- [x] **8.10** Author **5 Fast‑play maps** (small, fewer locations/links, shorter decks) tuned to
       **play quickly and run smoothly on modest hardware**, while remaining rules‑complete.
-- [ ] **8.11** Provide map‑specific **art/skins, thumbnails, and route styling** per era
+- [x] **8.11** Provide map‑specific **art/skins, thumbnails, and route styling** per era
       (original/royalty‑free; record in `ASSETS_CREDITS.md`).
-- [ ] **8.12** Tests: each map's data validates (counts/decks/merchants per player count); a
+- [x] **8.12** Tests: each map's data validates (counts/decks/merchants per player count); a
       headless full game runs on every map (incl. Air‑Era maps); era‑morph restores correctly from
       a mid‑era save.
       *DoD: players can choose from 10 maps (5 full + 5 fast); each era shows its own route type and

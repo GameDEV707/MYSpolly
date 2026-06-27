@@ -40,6 +40,8 @@ export interface NewGameConfig {
   introMode: boolean;
   boardSide: 'day' | 'night';
   lang: 'en' | 'ru' | 'uz';
+  /** Selected map id (§7.15). */
+  mapId: string;
   seed?: number;
 }
 
@@ -143,6 +145,7 @@ export const useApp = create<AppStore>((set, get) => ({
       introMode: config.introMode,
       boardSide: config.boardSide,
       lang: config.lang,
+      mapId: config.mapId,
     });
     const difficulties = new Map(config.seats.map((s) => [s.color, s.difficulty]));
     rebuildBots(game, difficulties, seed);
@@ -235,6 +238,7 @@ function rebuildFromConfig(config: NewGameConfig): GameState {
     introMode: config.introMode,
     boardSide: config.boardSide,
     lang: config.lang,
+    mapId: config.mapId,
   });
 }
 

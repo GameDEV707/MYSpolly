@@ -2,16 +2,15 @@ import type { TFunction } from 'i18next';
 import type { GameState } from '../../../core/model/state.ts';
 import type { GameEvent } from '../../../core/model/events.ts';
 import type { PlayerColor } from '../../../core/model/types.ts';
-import { TOWN_BY_ID, MERCHANT_BY_ID, LINK_LINES } from '../../../core/data/board.ts';
-
-const LINE_BY_ID = Object.fromEntries(LINK_LINES.map((l) => [l.id, l]));
+import { boardContext } from '../../../core/maps/context.ts';
 
 function playerName(t: TFunction, game: GameState, color: PlayerColor): string {
   return game.players[color]?.name ?? t(`color.${color}`);
 }
 
-function locName(t: TFunction, id: string): string {
-  return t(TOWN_BY_ID[id]?.name ?? MERCHANT_BY_ID[id]?.name ?? id);
+function locName(t: TFunction, game: GameState, id: string): string {
+  const ctx = boardContext(game);
+  return t(ctx.locationById[id]?.name ?? ctx.merchantById[id]?.name ?? id);
 }
 
 /**
@@ -26,15 +25,15 @@ export function logLine(t: TFunction, game: GameState, e: GameEvent): string | n
         name: playerName(t, game, e.tile.owner),
         industry: t(`industry.${e.tile.industry}`),
         level: e.tile.level,
-        location: locName(t, e.tile.locationId),
+        location: locName(t, game, e.tile.locationId),
       });
     case 'LINK_PLACED': {
-      const line = LINE_BY_ID[e.link.lineId];
+      const line = boardContext(game).lineById[e.link.lineId];
       return t('log.link', {
         name: playerName(t, game, e.link.owner),
         type: t(`linkType.${e.link.type}`),
-        from: line ? locName(t, line.a) : '',
-        to: line ? locName(t, line.b) : '',
+        from: line ? locName(t, game, line.a) : '',
+        to: line ? locName(t, game, line.b) : '',
       });
     }
     case 'CUBE_TO_MARKET':
@@ -71,6 +70,8 @@ export function logLine(t: TFunction, game: GameState, e: GameEvent): string | n
       return t('log.roundEnded', { round: e.round });
     case 'ERA_ENDED':
       return t('log.eraEnded', { era: t(`game.${e.era}`) });
+    case 'ERA_MORPH':
+      return t('log.eraMorph', { era: t(`game.${e.to}`) });
     case 'TURN_ENDED':
       return t('log.turn', { name: playerName(t, game, e.next) });
     case 'GAME_OVER':

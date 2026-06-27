@@ -62,3 +62,27 @@ soft (the game runs silently). SFX: `sfx/{tile-place,link-place,cube,coin,card-d
 
 _Last reviewed: project bootstrap. The bundled `Brass-Birmingham-Rulebook.pdf`
 is a reference for engineering only and must **not** be redistributed._
+
+
+## Maps & Era-Morphing Boards (Phase 8 / §7.15)
+
+All 10 maps use **original, fictional geographies and invented place names** created
+for this project — no publisher board, artwork, or map data is reproduced. This keeps
+the multi-map system fully original/royalty-free.
+
+- **Full maps (5):** Birmingham (classic West-Midlands layout, original art),
+  Severn Vale, Highland Reach, Iron Coast, and **Skyward Dominion** (a three-era map
+  that adds an **Air Era** after the Rail Era).
+- **Fast-play maps (5):** Quill Hollow, Tin Brook, Maple Cross, Slate Pike, Amber Fen —
+  small, short-deck layouts tuned to play quickly and run smoothly on modest hardware.
+- **Per-era route styling** is generated procedurally from each era's `routeType`:
+  - Canal Era — blue dotted "water" routes; transport vehicle: cargo boat/barge.
+  - Rail Era — solid railway lines with tie overlays; transport vehicle: freight train.
+  - Air Era — purple dashed flight arcs; transport vehicle: cargo plane.
+- **Thumbnails / skins** are referenced by id under `public/assets/board/thumbnails/`
+  and selected by the in-app map picker; the picker degrades to emoji glyphs when a
+  thumbnail asset is not present. Any bitmap/vector art added later must be
+  original or CC0 and recorded here.
+- **Map & location names** are localized i18n keys (EN/RU/UZ); Russian names are
+  transliterated to Cyrillic and Uzbek uses the Latin form (consistent with how
+  invented place names are rendered across scripts).

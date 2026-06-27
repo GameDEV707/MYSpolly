@@ -1,12 +1,15 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApp, type UiSeat, type NewGameConfig } from '../store/appStore.ts';
 import { useSettings } from '../store/settings.ts';
 import { Button, Panel, ScreenShell, PLAYER_CSS_VAR } from '../components/ui.tsx';
 import type { PlayerColor } from '../../core/model/types.ts';
 import type { Difficulty } from '../../ai/bot.ts';
+import { listMapMeta, DEFAULT_MAP_ID, type MapMeta } from '../../core/maps/registry.ts';
 
 const COLORS: PlayerColor[] = ['red', 'blue', 'green', 'yellow'];
+
+type MapFilter = 'all' | 'full' | 'fast';
 
 function defaultSeats(n: number): UiSeat[] {
   return COLORS.slice(0, n).map((color, i) => ({
@@ -27,6 +30,13 @@ export function GameSetup(): JSX.Element {
   const [count, setCount] = useState(2);
   const [seats, setSeats] = useState<UiSeat[]>(defaultSeats(2));
   const [introMode, setIntroMode] = useState(false);
+  const [mapId, setMapId] = useState<string>(DEFAULT_MAP_ID);
+  const [mapFilter, setMapFilter] = useState<MapFilter>('all');
+
+  const allMaps = listMapMeta();
+  const visibleMaps = allMaps.filter((m) =>
+    mapFilter === 'all' ? true : mapFilter === 'fast' ? m.fastPlay : !m.fastPlay,
+  );
 
   function setPlayers(n: number): void {
     setCount(n);
@@ -42,6 +52,7 @@ export function GameSetup(): JSX.Element {
       introMode,
       boardSide: settings.boardSide,
       lang: settings.lang,
+      mapId,
     };
     newGame(config);
   }
@@ -66,6 +77,48 @@ export function GameSetup(): JSX.Element {
               >
                 {n}
               </Button>
+            ))}
+          </div>
+        </Panel>
+
+        <Panel>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 8,
+            }}
+          >
+            <label style={{ fontWeight: 600 }}>{t('map.picker.title')}</label>
+            <div style={{ display: 'flex', gap: 6 }}>
+              {(['all', 'full', 'fast'] as MapFilter[]).map((f) => (
+                <Button
+                  key={f}
+                  variant={mapFilter === f ? 'primary' : 'ghost'}
+                  onClick={() => setMapFilter(f)}
+                >
+                  {t(`map.picker.${f}`)}
+                </Button>
+              ))}
+            </div>
+          </div>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+              gap: 10,
+              marginTop: 10,
+            }}
+          >
+            {visibleMaps.map((m) => (
+              <MapCard
+                key={m.id}
+                meta={m}
+                selected={mapId === m.id}
+                onSelect={() => setMapId(m.id)}
+              />
             ))}
           </div>
         </Panel>
@@ -142,5 +195,69 @@ export function GameSetup(): JSX.Element {
         </Button>
       </div>
     </ScreenShell>
+  );
+}
+
+/** A selectable map tile in the picker, with preview, tags, and description. */
+function MapCard(props: { meta: MapMeta; selected: boolean; onSelect: () => void }): JSX.Element {
+  const { meta, selected, onSelect } = props;
+  const { t } = useTranslation();
+  return (
+    <button
+      onClick={onSelect}
+      style={{
+        textAlign: 'left',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 6,
+        padding: 10,
+        borderRadius: 10,
+        cursor: 'pointer',
+        background: selected ? 'var(--surface)' : 'transparent',
+        border: `2px solid ${selected ? 'var(--accent)' : 'var(--border)'}`,
+        color: 'var(--text)',
+      }}
+    >
+      <div
+        style={{
+          height: 64,
+          borderRadius: 6,
+          background: `linear-gradient(135deg, var(--bg-elevated), var(--surface))`,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 28,
+        }}
+        aria-hidden
+      >
+        {meta.fastPlay ? '⚡' : meta.hasAirEra ? '✈️' : '🗺️'}
+      </div>
+      <strong>{t(meta.nameKey)}</strong>
+      <span style={{ fontSize: 12, color: 'var(--text-muted)', minHeight: 30 }}>
+        {t(meta.descriptionKey)}
+      </span>
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', fontSize: 11 }}>
+        <Tag>{t(meta.fastPlay ? 'map.picker.fast' : 'map.picker.full')}</Tag>
+        <Tag>{t(`map.size.${meta.size}`)}</Tag>
+        <Tag>{t('map.picker.eras', { count: meta.eraCount })}</Tag>
+        <Tag>{t('map.picker.duration', { min: meta.estPlayMinutes })}</Tag>
+        {meta.hasAirEra && <Tag>{t('map.picker.airEra')}</Tag>}
+      </div>
+    </button>
+  );
+}
+
+function Tag(props: { children: ReactNode }): JSX.Element {
+  return (
+    <span
+      style={{
+        padding: '2px 6px',
+        borderRadius: 999,
+        background: 'var(--bg-elevated)',
+        border: '1px solid var(--border)',
+      }}
+    >
+      {props.children}
+    </span>
   );
 }

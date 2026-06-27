@@ -34,7 +34,8 @@
     "introVariant": "Introductory variant (Canal Era only)",
     "start": "Start Game",
     "back": "Back",
-    "confirmNewGame": "Starting a new game keeps your saved game in the Load list. Continue?"
+    "confirmNewGame": "Starting a new game keeps your saved game in the Load list. Continue?",
+    "map": "Map"
   },
   "settings": {
     "title": "Settings",
@@ -106,7 +107,8 @@
     "coalMarket": "Coal Market",
     "ironMarket": "Iron Market",
     "turnOrder": "Turn Order",
-    "spent": "spent"
+    "spent": "spent",
+    "air": "Air Era"
   },
   "action": {
     "build": "Build",
@@ -499,7 +501,9 @@
     "roundEnd": "Round complete",
     "eraEnd": "Era scoring",
     "railBegins": "The Rail Era begins",
-    "gameOver": "Game Over"
+    "gameOver": "Game Over",
+    "airBegins": "The Air Era begins",
+    "eraMorph": "The board transforms"
   },
   "handoff": {
     "turnOf": "{{name}}'s turn",
@@ -618,7 +622,8 @@
     "flipped": "Flipped tile (scored)",
     "buildSlot": "Empty build slot",
     "farmJuice": "Farm Juice Works (juice works only)",
-    "specialLink": "Special link"
+    "specialLink": "Special link",
+    "air": "Air route (flight path)"
   },
   "flow": {
     "back": "Back",
@@ -682,6 +687,34 @@
     "roundEnded": "Round {{round}} ended.",
     "eraEnded": "{{era}} ended.",
     "turn": "It is now {{name}}'s turn.",
-    "gameOver": "Game over — {{name}} wins!"
+    "gameOver": "Game over — {{name}} wins!",
+    "eraMorph": "The world morphs into the {{era}}."
+  },
+  "route": {
+    "canal": "Canal",
+    "rail": "Rail",
+    "air": "Air"
+  },
+  "map": {
+    "birmingham": {
+      "name": "Birmingham",
+      "desc": "The classic West-Midlands network across the Canal and Rail eras."
+    },
+    "picker": {
+      "title": "Choose a map",
+      "full": "Full maps",
+      "fast": "Fast-play",
+      "all": "All",
+      "eras": "{{count}} eras",
+      "airEra": "Air Era",
+      "duration": "~{{min}} min",
+      "size": "Size",
+      "players": "{{players}}P"
+    },
+    "size": {
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large"
+    }
   }
 }

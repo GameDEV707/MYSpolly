@@ -34,7 +34,8 @@
     "introVariant": "Kirish varianti (faqat Kanal davri)",
     "start": "Oʻyinni boshlash",
     "back": "Orqaga",
-    "confirmNewGame": "Yangi oʻyin saqlangan oʻyinni roʻyxatda saqlaydi. Davom etilsinmi?"
+    "confirmNewGame": "Yangi oʻyin saqlangan oʻyinni roʻyxatda saqlaydi. Davom etilsinmi?",
+    "map": "Xarita"
   },
   "settings": {
     "title": "Sozlamalar",
@@ -106,7 +107,8 @@
     "coalMarket": "Koʻmir bozori",
     "ironMarket": "Temir bozori",
     "turnOrder": "Yurish tartibi",
-    "spent": "sarflandi"
+    "spent": "sarflandi",
+    "air": "Havo davri"
   },
   "action": {
     "build": "Qurish",
@@ -499,7 +501,9 @@
     "roundEnd": "Raund tugadi",
     "eraEnd": "Davr hisobi",
     "railBegins": "Temir yoʻl davri boshlandi",
-    "gameOver": "Oʻyin tugadi"
+    "gameOver": "Oʻyin tugadi",
+    "airBegins": "Havo davri boshlanadi",
+    "eraMorph": "Maydon oʻzgaradi"
   },
   "handoff": {
     "turnOf": "{{name}} yurishi",
@@ -618,7 +622,8 @@
     "flipped": "Agʻdarilgan plitka (hisoblangan)",
     "buildSlot": "Boʻsh uya",
     "farmJuice": "Fermer sharbat zavodi (faqat sharbat zavodlari)",
-    "specialLink": "Maxsus aloqa"
+    "specialLink": "Maxsus aloqa",
+    "air": "Havo yoʻnalishi (parvoz yoʻli)"
   },
   "flow": {
     "back": "Orqaga",
@@ -682,6 +687,34 @@
     "roundEnded": "{{round}}-raund tugadi.",
     "eraEnded": "{{era}} tugadi.",
     "turn": "Endi {{name}} navbati.",
-    "gameOver": "Oʻyin tugadi — {{name}} gʻolib!"
+    "gameOver": "Oʻyin tugadi — {{name}} gʻolib!",
+    "eraMorph": "Dunyo {{era}} davriga aylanadi."
+  },
+  "route": {
+    "canal": "Kanal",
+    "rail": "Temir yoʻl",
+    "air": "Havo"
+  },
+  "map": {
+    "birmingham": {
+      "name": "Birmingem",
+      "desc": "Klassik West-Midlends tarmogʻi: kanal va temir yoʻl davrlari."
+    },
+    "picker": {
+      "title": "Xaritani tanlang",
+      "full": "Toʻliq",
+      "fast": "Tezkor",
+      "all": "Hammasi",
+      "eras": "{{count}} davr",
+      "airEra": "Havo davri",
+      "duration": "~{{min}} daq",
+      "size": "Hajmi",
+      "players": "{{players}}o"
+    },
+    "size": {
+      "small": "Kichik",
+      "medium": "Oʻrta",
+      "large": "Katta"
+    }
   }
 }
