@@ -774,8 +774,9 @@ The board is wrapped in a **camera/viewport controller** that applies a 2D trans
   needs to win the game. Since Brass has no fixed VP threshold, "to win" = the gap to the current
   leader: `max(0, (highest VP among the other players) − this player's VP + 1)`. The leader shows
   **0 / "Leading"**; everyone else shows the points needed to overtake the leader. This value
-  updates live as VP changes (builds/sells/era scoring) and is fully localized (EN/RU/UZ) with a
-  clear icon + tooltip ("Points needed to take the lead").
+  updates live as VP changes (builds/sells/era scoring), **reads from the same engine VP that the
+  scoring fix in task 3.12a verifies** (so it never shows a stale/incorrect number), and is fully
+  localized (EN/RU/UZ) with a clear icon + tooltip ("Points needed to take the lead").
 - **Turn handoff (player change) clarity**: when play passes from one player to the next, it must
   be **unmistakable whose turn it now is**. On every turn change show a brief, prominent
   transition cue — e.g. a centred "Player X's turn" banner/overlay in that player's colour (with
@@ -1049,13 +1050,37 @@ interface MapDefinition {
 - [x] **3.10** **BoardSvg**: locations, link lines, merchants from data (layout coordinates).
 - [x] **3.11** Industry/link tile rendering (level/owner/flipped) drawn on the board nodes.
 - [x] **3.12** **PlayerStrip** (player overview): money, income, VP, spent — per player.
-- [ ] **3.12a** **Per‑player "VP to win" indicator**: in each player's `PlayerStrip`, **next to
-      that player's own income and VP (star) icons**, show the points they still need to win =
-      `max(0, (highest VP among the other players) − this player's VP + 1)`; the current leader
-      shows **0 / "Leading"**. Update it live on every VP change and localize it EN/RU/UZ with an
-      icon + tooltip ("Points needed to take the lead").
-      *DoD: every player can see, beside their own income/VP, how many points they still need to
-      win, kept accurate as scores change.*
+- [ ] **3.12a** **BUGFIX: Victory‑Point (VP) scoring correctness + per‑player "VP to win"
+      indicator.**
+      *Observed bug:* the running VP totals shown during a game do not match the final result, and
+      the standings flip in a way that looks wrong. In a real game the running scores were
+      Me **27**, Abror **24**, Shodiyona **32** (Shodiyona leading), but the final scores were
+      Me **91**, Abror **84**, Shodiyona **69** — i.e. the in‑game leader ended last and the totals
+      jumped inconsistently. Investigate and fix so the displayed VP is always trustworthy and the
+      final score is correct per the rulebook (§3.11).
+      Sub‑tasks:
+      1. **Audit the running (in‑game) VP** shown in `PlayerStrip`/HUD vs. the engine's actual VP
+         state — they must always be the same number (no stale/cached/desynced display).
+      2. **Audit end‑of‑era & end‑of‑game scoring** in `scoring.ts` against the rules: link tiles
+         score **1 VP per VP‑icon in adjacent locations**; **only flipped** industry tiles score
+         their bottom‑left VP; **unflipped tiles score nothing**; links are **removed as scored**;
+         confirm **no double counting** and that VP isn't added twice across the Canal→Rail
+         transition. Verify the introductory‑variant scoring too.
+      3. **Reproduce the reported scenario with a deterministic test** (seeded game leading to
+         running 27/24/32 then a final around 91/84/69) and assert the math + final ordering are
+         correct; fix whatever discrepancy the test reveals (e.g. mis‑summed link adjacency,
+         scoring unflipped tiles, off‑by‑one, or a display/state mismatch).
+      4. **Make the standings + winner determination** use the engine VP only, with the rulebook
+         tie‑breaks (most VP → income → money). Ensure the **Results** screen breakdown (in‑game
+         VP + link VP + flipped‑tile VP = final) reconciles exactly and is shown to the player.
+      5. **Add the per‑player "VP to win" indicator** beside each player's own income/VP (star):
+         `pointsToWin = max(0, (highest VP among the OTHER players) − this player's VP + 1)`; the
+         current leader shows **0 / "Leading"**. It must read from the same corrected VP source,
+         update live on every VP change, and be localized EN/RU/UZ with an icon + tooltip.
+      *DoD: running VP always equals engine VP; end‑of‑era/end‑game scoring matches the rulebook
+      with a passing regression test for the reported scenario; the Results screen breakdown adds
+      up exactly; the winner/standings are correct; and each player sees an accurate "points needed
+      to win" beside their VP.*
 - [x] **3.13** **Hand** rendering (hidden for AI seats in hot‑seat).
 - [x] **3.14** **Coal/Iron Market** panels + merchant beer indicators on the board.
 - [x] **3.15** Turn‑order + spent‑money display (in `PlayerStrip`).
