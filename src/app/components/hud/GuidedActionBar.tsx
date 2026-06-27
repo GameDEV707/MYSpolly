@@ -4,16 +4,12 @@ import type { TFunction } from 'i18next';
 import type { GameState } from '../../../core/model/state.ts';
 import type { Action, ActionType } from '../../../core/model/actions.ts';
 import { legalActions } from '../../../core/selectors/legalActions.ts';
-import {
-  TOWN_BY_ID,
-  MERCHANT_BY_ID,
-  MERCHANT_LOCATIONS,
-  LINK_LINES,
-} from '../../../core/data/board.ts';
+import { boardContext } from '../../../core/maps/context.ts';
 import { Panel } from '../ui.tsx';
 import { HelpButton } from '../help/HelpButton.tsx';
 import { useSettings } from '../../store/settings.ts';
 import { INDUSTRY_ICON, MERCHANT_BONUS_ICON, RESOURCE_ICON } from '../board/icons.ts';
+import { locName, lineName } from '../board/names.ts';
 import { cardLabel, cardKindLabel } from '../cards/cardText.ts';
 import { useFlow } from './flowStore.ts';
 import {
@@ -43,19 +39,6 @@ const ACTION_GLYPH: Record<ActionType, string> = {
   SCOUT: '🔍',
   PASS: '⏭',
 };
-
-const LINE_BY_ID = Object.fromEntries(LINK_LINES.map((l) => [l.id, l]));
-const MERCHANT_BONUS_BY_LOC = new Map(MERCHANT_LOCATIONS.map((m) => [m.id, m.bonus] as const));
-
-function locName(t: TFunction, id: string): string {
-  return t(TOWN_BY_ID[id]?.name ?? MERCHANT_BY_ID[id]?.name ?? id);
-}
-
-function lineName(t: TFunction, id: string): string {
-  const l = LINE_BY_ID[id];
-  if (!l) return id;
-  return `${locName(t, l.a)} ↔ ${locName(t, l.b)}`;
-}
 
 /** Small selectable row button used throughout the flow. */
 function Choice(props: {
@@ -111,7 +94,7 @@ export function GuidedActionBar(props: {
   }, [game.activePlayer, game.actionsLeftThisTurn, game.round, game.era]);
 
   const step = currentStep(flow);
-  const prompt = promptInfo(t, flow);
+  const prompt = promptInfo(t, game, flow);
   const final = useMemo(() => finalAction(game, acts, flow), [game, acts, flow]);
 
   // ---- Step 0: choose an action -----------------------------------------
@@ -215,6 +198,7 @@ export function GuidedActionBar(props: {
           {!flow.locationId ? (
             <BoardPickList
               t={t}
+              game={game}
               ids={buildLocations(acts, flow.cardId)}
               onPick={flow.pickLocation}
             />
@@ -242,12 +226,13 @@ export function GuidedActionBar(props: {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {flow.lineIds.map((id) => (
             <Choice key={id} selected onClick={() => flow.pickLine(id)}>
-              ✓ {lineName(t, id)} <span style={{ color: '#1a1207' }}>· {t('flow.tapRemove')}</span>
+              ✓ {lineName(t, game, id)}{' '}
+              <span style={{ color: '#1a1207' }}>· {t('flow.tapRemove')}</span>
             </Choice>
           ))}
           {networkAddable(acts, flow.cardId, flow.lineIds).map((id) => (
             <Choice key={id} onClick={() => flow.pickLine(id)}>
-              + {lineName(t, id)}
+              + {lineName(t, game, id)}
             </Choice>
           ))}
           <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t('flow.clickBoardLine')}</div>
@@ -260,6 +245,7 @@ export function GuidedActionBar(props: {
           {!flow.locationId ? (
             <BoardPickList
               t={t}
+              game={game}
               ids={sellLocations(game, acts, flow.cardId)}
               onPick={flow.pickLocation}
             />
@@ -267,14 +253,14 @@ export function GuidedActionBar(props: {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {sellMerchants(game, acts, flow.cardId, flow.locationId).map((mid) => {
                 const m = game.merchants.find((mm) => mm.id === mid);
-                const bonus = m ? MERCHANT_BONUS_BY_LOC.get(m.locationId) : undefined;
+                const bonus = m ? boardContext(game).merchantById[m.locationId]?.bonus : undefined;
                 return (
                   <Choice
                     key={mid}
                     selected={flow.merchantId === mid}
                     onClick={() => flow.chooseMerchant(mid)}
                   >
-                    <strong>{m ? locName(t, m.locationId) : mid}</strong>
+                    <strong>{m ? locName(t, game, m.locationId) : mid}</strong>
                     {bonus && (
                       <span style={{ color: 'var(--text-muted)' }}>
                         {' '}
@@ -384,16 +370,17 @@ function SmallBtn(props: { onClick: () => void; children: React.ReactNode }): JS
 /** Board-target step: a hint plus a labelled fallback list of valid locations. */
 function BoardPickList(props: {
   t: TFunction;
+  game: GameState;
   ids: string[];
   onPick: (id: string) => void;
 }): JSX.Element {
-  const { t, ids, onPick } = props;
+  const { t, game, ids, onPick } = props;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
       <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t('flow.clickBoard')}</div>
       {ids.map((id) => (
         <Choice key={id} onClick={() => onPick(id)}>
-          📍 {locName(t, id)}
+          📍 {locName(t, game, id)}
         </Choice>
       ))}
     </div>

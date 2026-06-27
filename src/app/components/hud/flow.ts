@@ -2,7 +2,7 @@ import type { GameState, Card, PlacedTile, PlacedLink } from '../../../core/mode
 import type { Action, ActionType } from '../../../core/model/actions.ts';
 import type { GameEvent } from '../../../core/model/events.ts';
 import type { IndustryType } from '../../../core/model/types.ts';
-import { TOWN_BY_ID } from '../../../core/data/board.ts';
+import { boardContext } from '../../../core/maps/context.ts';
 import { getLevelDef } from '../../../core/data/industries.ts';
 import { validate, reduce } from '../../../core/engine/reduce.ts';
 import { playerProduction } from '../../../core/engine/production.ts';
@@ -120,7 +120,7 @@ export function buildVariants(
   locationId: string,
 ): BuildVariant[] {
   const p = game.players[game.activePlayer]!;
-  const loc = TOWN_BY_ID[locationId];
+  const loc = boardContext(game).locationById[locationId];
   const out: BuildVariant[] = [];
   const seen = new Set<string>();
   for (const a of acts) {
@@ -361,10 +361,12 @@ export interface PromptInfo {
 }
 
 /** A concise localized prompt for the current step (drives the Turn HUD). */
-export function promptInfo(t: (k: string) => string, sel: FlowSel): PromptInfo {
+export function promptInfo(t: (k: string) => string, game: GameState, sel: FlowSel): PromptInfo {
   const step = currentStep(sel);
   const action = sel.actionType ? t(`action.${sel.actionType.toLowerCase()}`) : '';
-  const loc = sel.locationId ? t(TOWN_BY_ID[sel.locationId]?.name ?? sel.locationId) : '';
+  const loc = sel.locationId
+    ? t(boardContext(game).locationById[sel.locationId]?.name ?? `loc.${sel.locationId}`)
+    : '';
   switch (step) {
     case 'action':
       return { key: 'flow.prompt.action' };

@@ -6,6 +6,7 @@ import type { IndustryType } from '../../../core/model/types.ts';
 import { boardContext } from '../../../core/maps/context.ts';
 import { playerNetwork } from '../../../core/selectors/connectivity.ts';
 import { BOARD_W, BOARD_H } from './layout.ts';
+import { locName } from './names.ts';
 import { INDUSTRY_ICON, MERCHANT_BONUS_ICON, BAND_COLOR } from './icons.ts';
 import { PLAYER_CSS_VAR } from '../ui.tsx';
 import type { Lod } from './useBoardCamera.ts';
@@ -61,8 +62,7 @@ export function BoardSvg(props: {
   const isAir = ctx.eraDef.routeType === 'air';
   const isCanalEra = ctx.eraDef.routeType === 'canal';
 
-  const nameOf = (id: string): string =>
-    t(ctx.locationById[id]?.name ?? ctx.merchantById[id]?.name ?? id);
+  const nameOf = (id: string): string => locName(t, game, id);
 
   const network = useMemo(
     () => playerNetwork(game, game.activePlayer),
@@ -182,7 +182,7 @@ export function BoardSvg(props: {
 
         const tooltip = showTooltips
           ? [
-              t(loc.name),
+              nameOf(loc.id),
               `${t('board.buildSlots')}: ${allowed.map((i) => t(`industry.${i}`)).join(', ')}`,
               tiles.length
                 ? `${t('board.tilesHere')}: ${tiles.map((tl) => tileTooltip(t, tl)).join('; ')}`
@@ -238,7 +238,7 @@ export function BoardSvg(props: {
               fontWeight={600}
               fill="var(--text)"
             >
-              {t(loc.name)}
+              {nameOf(loc.id)}
             </text>
 
             {showSlots &&
@@ -274,7 +274,7 @@ export function BoardSvg(props: {
 
         const tooltip = showTooltips
           ? [
-              t(m.name),
+              nameOf(m.id),
               accepts.length
                 ? `${t('board.accepts')}: ${accepts.map((a) => t(`industry.${a}`)).join(', ')}`
                 : '—',
@@ -315,7 +315,7 @@ export function BoardSvg(props: {
               fontWeight={600}
               fill="var(--text)"
             >
-              {t(m.name)}
+              {nameOf(m.id)}
             </text>
             <text x={0} y={-4} textAnchor="middle" fontSize={14}>
               {bonus.glyph}

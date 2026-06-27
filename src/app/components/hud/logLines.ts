@@ -3,14 +3,14 @@ import type { GameState } from '../../../core/model/state.ts';
 import type { GameEvent } from '../../../core/model/events.ts';
 import type { PlayerColor } from '../../../core/model/types.ts';
 import { boardContext } from '../../../core/maps/context.ts';
+import { locName as resolveLocName } from '../board/names.ts';
 
 function playerName(t: TFunction, game: GameState, color: PlayerColor): string {
   return game.players[color]?.name ?? t(`color.${color}`);
 }
 
 function locName(t: TFunction, game: GameState, id: string): string {
-  const ctx = boardContext(game);
-  return t(ctx.locationById[id]?.name ?? ctx.merchantById[id]?.name ?? id);
+  return resolveLocName(t, game, id);
 }
 
 /**

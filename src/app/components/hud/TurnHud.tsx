@@ -17,7 +17,7 @@ export function TurnHud(props: {
   const { t } = useTranslation();
   const flow = useFlow();
   const active = game.players[game.activePlayer]!;
-  const prompt = promptInfo(t, flow);
+  const prompt = promptInfo(t, game, flow);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
