@@ -24,6 +24,19 @@ export type GameEvent =
     }
   | { t: 'TILE_FLIPPED'; tileId: string; incomeGain: number; player: PlayerColor }
   | {
+      /**
+       * End-of-round production added to a player's stockpile by their owned
+       * production buildings (§7.16.2). Reports the amount added per resource
+       * (after any stockpile cap) and the new totals.
+       */
+      t: 'RESOURCE_PRODUCED';
+      player: PlayerColor;
+      coal: number;
+      iron: number;
+      juice: number;
+      totals: { coal: number; iron: number; juice: number };
+    }
+  | {
       t: 'GOODS_SOLD';
       player: PlayerColor;
       tileId: string;

@@ -4,26 +4,32 @@ import { INDUSTRY_TYPES, type IndustryType, type PlayerColor } from '../model/ty
 import { getLevelDef } from '../data/industries.ts';
 import { boardContext } from '../maps/context.ts';
 import { validate } from '../engine/reduce.ts';
-import { juiceTileOptions } from './resources.ts';
 import { reachableFrom } from './connectivity.ts';
 
 const SELLABLE: IndustryType[] = ['cotton', 'manufacturer', 'pottery'];
 
-/** Juice sources (length === count) available to sell `tile` at `merchant`, or null. */
+/**
+ * Juice sources (length === count) to sell `tile` at `merchant`, or null. Juice
+ * is drawn from the player's own stockpile first, then the merchant's barrel
+ * (which grants its bonus). Never from another player's juice works (§7.16).
+ */
 function autoJuiceForSell(
   state: GameState,
-  player: PlayerColor,
-  tileLoc: string,
+  _player: PlayerColor,
+  _tileLoc: string,
   merchantId: string,
   count: number,
+  stockJuiceLeft: number,
 ): ResourceSource[] | null {
   if (count === 0) return [];
   const slots: ResourceSource[] = [];
-  for (const b of juiceTileOptions(state, player, tileLoc)) {
-    for (let i = 0; i < b.resourcesLeft; i += 1) slots.push({ from: 'tile', tileId: b.id });
+  for (let i = 0; i < stockJuiceLeft && slots.length < count; i += 1) {
+    slots.push({ from: 'stock' });
   }
-  const merchant = state.merchants.find((m) => m.id === merchantId);
-  if (merchant?.hasJuice) slots.push({ from: 'merchantJuice', merchantId });
+  if (slots.length < count) {
+    const merchant = state.merchants.find((m) => m.id === merchantId);
+    if (merchant?.hasJuice) slots.push({ from: 'merchantJuice', merchantId });
+  }
   if (slots.length < count) return null;
   return slots.slice(0, count);
 }
@@ -116,6 +122,7 @@ export function legalActions(state: GameState): Action[] {
           tile.locationId,
           merchant.id,
           def.juiceToSell,
+          p.resources.juice,
         );
         if (!juice) continue;
         const sale: SellSpec = { tileId: tile.id, merchantId: merchant.id, juice };

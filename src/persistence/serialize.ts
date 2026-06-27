@@ -1,5 +1,6 @@
-import type { GameState } from '../core/model/state.ts';
+import type { GameState, PlayerState } from '../core/model/state.ts';
 import { STATE_VERSION } from '../core/index.ts';
+import { startingResources } from '../core/data/economy.ts';
 import type { SaveMeta } from './types.ts';
 
 /**
@@ -16,7 +17,11 @@ export class SaveVersionError extends Error {}
 
 /** Migrate an older save shape forward. */
 function migrate(raw: unknown): GameState {
-  const obj = raw as { version?: number; options?: Record<string, unknown> };
+  const obj = raw as {
+    version?: number;
+    options?: Record<string, unknown>;
+    players?: Record<string, Partial<PlayerState>>;
+  };
   if (typeof obj?.version !== 'number') {
     throw new SaveVersionError('Save has no version field');
   }
@@ -30,6 +35,20 @@ function migrate(raw: unknown): GameState {
     if (obj.options && typeof obj.options === 'object' && obj.options.mapId === undefined) {
       obj.options.mapId = 'birmingham';
     }
+  }
+  // v2 → v3: players gain a personal resource stockpile (§7.16). Old saves
+  // predate the economy model, so seed each player with the starting stockpile.
+  if (obj.version < 3) {
+    const mapId = (obj.options?.mapId as string) ?? 'birmingham';
+    const players = obj.players ?? {};
+    const playerCount = Object.keys(players).length;
+    for (const p of Object.values(players)) {
+      if (p && typeof p === 'object' && p.resources === undefined) {
+        p.resources = startingResources(mapId, playerCount);
+      }
+    }
+  }
+  if (obj.version < STATE_VERSION) {
     obj.version = STATE_VERSION;
   }
   return raw as GameState;

@@ -67,12 +67,11 @@ describe('market mechanics', () => {
 });
 
 describe('Build action', () => {
-  test('builds a Coal Mine (no resources) and places coal cubes on the tile', () => {
+  test('builds a Coal Mine: comes online (flipped + income), no consumable cubes', () => {
     const s = newGame();
     const actor = s.activePlayer;
     injectCard(s, actor, { id: 'L-dudley', kind: 'location', locationId: 'dudley', name: 'x' });
-    const dudleyCoalSlot = 's-dudley-coal';
-    // Find the real slot id allowing coal at dudley.
+    const incomeBefore = s.players[actor]!.incomeLevel;
     const action = {
       type: 'BUILD' as const,
       card: { cardId: 'L-dudley' },
@@ -82,14 +81,17 @@ describe('Build action', () => {
       coalSources: [],
       ironSources: [],
     };
-    void dudleyCoalSlot;
     assert.equal(validate(s, action), null);
     const { state } = reduce(s, action);
     const tile = state.tiles.find((t) => t.owner === actor && t.industry === 'coal');
     assert.ok(tile, 'coal mine placed');
     assert.equal(tile!.locationId, 'dudley');
-    assert.equal(tile!.resourcesLeft, 2, 'level-1 coal mine produces 2 coal');
+    // §7.16: production buildings carry no consumable cubes and come online
+    // immediately (flipped), advancing income.
+    assert.equal(tile!.resourcesLeft, 0, 'no consumable cubes on production tiles');
+    assert.equal(tile!.flipped, true, 'coal mine comes online (flipped)');
     assert.equal(state.players[actor]!.money, 12, '£17 − £5 build cost');
+    assert.ok(state.players[actor]!.incomeLevel > incomeBefore, 'income advanced on build');
   });
 
   test('overbuild your own tile with a higher level', () => {

@@ -9,7 +9,7 @@
  */
 
 /** Save/serialization format version. Bumped when GameState shape changes. */
-export const STATE_VERSION = 2;
+export const STATE_VERSION = 3;
 
 /** Human-readable engine identifier, surfaced in logs and save metadata. */
 export const ENGINE_NAME = 'myspolly-core';
@@ -25,6 +25,18 @@ export {
   type FullVpBreakdown,
 } from './selectors/standings.ts';
 export { computeRanking } from './engine/phases.ts';
+export {
+  playerProduction,
+  produceResources,
+  type ProductionBreakdown,
+  type BuildingProduction,
+} from './engine/production.ts';
+export {
+  planResource,
+  consumeResource,
+  consumeSellJuice,
+  type ResourcePlan,
+} from './engine/consume.ts';
 export * from './model/types.ts';
 export type { GameState, PlayerState, PlacedTile, PlacedLink, Card } from './model/state.ts';
 export type { Action } from './model/actions.ts';

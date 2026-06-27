@@ -221,6 +221,20 @@ describe('era-morph survives a mid-era save/restore', () => {
     delete (raw.options as Record<string, unknown>).mapId;
     const migrated = deserializeState(JSON.stringify(raw));
     assert.equal(migrated.options.mapId, 'birmingham');
-    assert.equal(migrated.version, 2);
+    assert.equal(migrated.version, 3);
+  });
+
+  test('pre-economy save (v2, no resources) migrates with a starting stockpile', () => {
+    const s = buildInitialState({ seats: seats(3), seed: 2 });
+    const raw = JSON.parse(serializeState(s)) as Record<string, unknown>;
+    raw.version = 2;
+    const players = raw.players as Record<string, Record<string, unknown>>;
+    for (const p of Object.values(players)) delete p.resources;
+    const migrated = deserializeState(JSON.stringify(raw));
+    assert.equal(migrated.version, 3);
+    for (const c of migrated.turnOrder) {
+      const res = migrated.players[c]!.resources;
+      assert.ok(res && typeof res.coal === 'number' && typeof res.iron === 'number');
+    }
   });
 });

@@ -7,6 +7,7 @@ import { eraDefOf } from '../maps/context.ts';
 import { shuffle } from '../rng.ts';
 import { resortTurnOrder } from './turnOrder.ts';
 import { collectIncome } from './income.ts';
+import { produceResources } from './production.ts';
 import { scoreEra, scoreIntroBonus } from './scoring.ts';
 import { refillHand } from './helpers.ts';
 
@@ -64,6 +65,11 @@ function endRound(state: GameState, events: GameEvent[]): void {
   // Collect income for everyone.
   for (const color of newOrder) {
     collectIncome(state, color, events);
+  }
+  // Per-round resource production (§7.16.2): each player's owned production
+  // buildings add coal/iron/juice to their personal stockpile.
+  for (const color of newOrder) {
+    produceResources(state, color, events);
   }
   events.push({ t: 'ROUND_ENDED', round: state.round, newOrder: [...newOrder] });
 

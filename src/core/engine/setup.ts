@@ -13,6 +13,7 @@ import {
 } from '../data/index.ts';
 import { getMap, DEFAULT_MAP_ID } from '../maps/registry.ts';
 import { buildMapDeck } from '../maps/builder.ts';
+import { startingResources } from '../data/economy.ts';
 import { makeSeed, shuffle } from '../rng.ts';
 import { STATE_VERSION } from '../index.ts';
 
@@ -107,6 +108,7 @@ export function buildInitialState(config: SetupConfig): GameState {
       matStacks,
       linksLeft: LINK_TILES_PER_PLAYER,
       spentThisTurn: 0,
+      resources: startingResources(mapId, players),
     };
   }
 

@@ -10,10 +10,15 @@ export interface CardRef {
   cardId: string;
 }
 
-/** Where a consumed resource comes from. */
+/**
+ * Where a consumed resource comes from (§7.16). In the MYSpolly economy a player
+ * draws from their OWN stockpile first, then buys a shortfall from the relevant
+ * market (coal/iron only, and only when connected). On a Sell, juice may instead
+ * come from a connected merchant's barrel (which also grants its bonus).
+ */
 export type ResourceSource =
-  | { from: 'tile'; tileId: string } // a coal mine / iron works / juice on the board
-  | { from: 'market' } // buy from the coal/iron market
+  | { from: 'stock' } // the acting player's own stockpile (coal / iron / juice)
+  | { from: 'market' } // buy a shortfall from the coal / iron market
   | { from: 'merchantJuice'; merchantId: string }; // merchant juice (Sell only)
 
 export interface BuildAction {

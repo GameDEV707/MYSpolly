@@ -2,16 +2,14 @@ import type { GameState, PlacedTile, Card } from '../../model/state.ts';
 import type { GameEvent } from '../../model/events.ts';
 import type { BuildAction } from '../../model/actions.ts';
 import type { IndustryType, PlayerColor } from '../../model/types.ts';
-import { getLevelDef, juiceBarrelsForEra } from '../../data/industries.ts';
+import { getLevelDef } from '../../data/industries.ts';
+import { isProductionIndustry } from '../../data/economy.ts';
 import { boardContext } from '../../maps/context.ts';
 import { buildableInEra } from '../../maps/eraRules.ts';
-import { getPlayer, spend } from '../helpers.ts';
+import { getPlayer, spend, advanceIncome } from '../helpers.ts';
 import { mintId } from '../setup.ts';
-import { consumeCoal, consumeIron, resolveCoal, resolveIron } from '../consume.ts';
+import { consumeResource, planResource } from '../consume.ts';
 import { playerNetwork, hasNoPresence } from '../../selectors/connectivity.ts';
-import { isConnectedToMerchant } from '../../selectors/resources.ts';
-import { sellToMarket } from '../market.ts';
-import { advanceIncome } from '../helpers.ts';
 
 function occupantAt(state: GameState, locationId: string, slotId: string): PlacedTile | undefined {
   return state.tiles.find((t) => t.locationId === locationId && t.slotId === slotId);
@@ -97,17 +95,19 @@ export function validateBuild(
     return 'overbuildTileId set but slot is empty';
   }
 
-  // Resource availability.
-  if (def.costIron > 0 && !resolveIron(state, def.costIron)) return 'Cannot obtain required iron';
-  if (def.costCoal > 0 && !resolveCoal(state, a.locationId, def.costCoal)) {
-    return 'Cannot obtain required coal (need a connection)';
-  }
+  // Resource availability (drawn from the player's stockpile, then a connected
+  // market shortfall). Coal needs the build location connected to a merchant
+  // for any market purchase; iron may always be bought; juice (not used to
+  // build) has no market.
+  const ironPlan = def.costIron > 0 ? planResource(state, player, 'iron', def.costIron) : null;
+  if (ironPlan && !ironPlan.ok) return 'Not enough iron (and none buyable)';
+  const coalPlan =
+    def.costCoal > 0 ? planResource(state, player, 'coal', def.costCoal, a.locationId) : null;
+  if (coalPlan && !coalPlan.ok) return 'Not enough coal (no market connection)';
 
   // Affordability (money cost + market purchases).
-  const ironCost = def.costIron > 0 ? (resolveIron(state, def.costIron)?.marketCost ?? 0) : 0;
-  const coalCost =
-    def.costCoal > 0 ? (resolveCoal(state, a.locationId, def.costCoal)?.marketCost ?? 0) : 0;
-  if (p.money < def.costMoney + ironCost + coalCost) return 'Not enough money';
+  const marketCost = (ironPlan?.marketCost ?? 0) + (coalPlan?.marketCost ?? 0);
+  if (p.money < def.costMoney + marketCost) return 'Not enough money';
 
   return null;
 }
@@ -158,27 +158,20 @@ export function applyBuild(
   // Pay money cost.
   spend(state, player, def.costMoney, events);
 
-  // Consume iron (any works, else market) and coal (connected, else market).
+  // Consume iron (stockpile, else market) and coal (stockpile, else connected
+  // market) entirely from the acting player's own resources (§7.16).
   if (def.costIron > 0) {
-    const sources =
-      a.ironSources.length > 0 ? a.ironSources : (resolveIron(state, def.costIron)?.sources ?? []);
-    consumeIron(state, player, sources.slice(0, def.costIron), events);
+    consumeResource(state, player, 'iron', def.costIron, undefined, events);
   }
   if (def.costCoal > 0) {
-    const sources =
-      a.coalSources.length > 0
-        ? a.coalSources
-        : (resolveCoal(state, a.locationId, def.costCoal)?.sources ?? []);
-    consumeCoal(state, player, a.locationId, sources.slice(0, def.costCoal), events);
+    consumeResource(state, player, 'coal', def.costCoal, a.locationId, events);
   }
 
-  // Determine cubes/juice produced on the new tile.
-  let resourcesLeft = 0;
-  if (a.industry === 'coal' || a.industry === 'iron') {
-    resourcesLeft = def.resourceCount;
-  } else if (a.industry === 'juice') {
-    resourcesLeft = juiceBarrelsForEra(state.era);
-  }
+  // In the MYSpolly economy, production buildings (Coal Mine / Iron Works /
+  // Juice Works) carry no consumable cubes: they come online immediately
+  // (flipped + income) and feed the owner's stockpile each round instead
+  // (§7.16.2). All other tiles are placed unflipped as before.
+  const isProducer = isProductionIndustry(a.industry);
 
   const tile: PlacedTile = {
     id: mintId(state, 't'),
@@ -187,8 +180,8 @@ export function applyBuild(
     level,
     locationId: a.locationId,
     slotId: a.slotId,
-    flipped: false,
-    resourcesLeft,
+    flipped: isProducer,
+    resourcesLeft: 0,
   };
   state.tiles.push(tile);
   events.push({
@@ -197,44 +190,15 @@ export function applyBuild(
     ...(occupant ? { overbuilt: occupant.id } : {}),
   });
 
-  // Move produced coal/iron to market on build.
-  if (a.industry === 'coal' && isConnectedToMerchant(state, a.locationId)) {
-    moveCubesToMarket(state, tile, 'coal', events);
-  } else if (a.industry === 'iron') {
-    moveCubesToMarket(state, tile, 'iron', events);
-  }
-}
-
-/** Move as many cubes as possible from a freshly built mine/works to its market. */
-function moveCubesToMarket(
-  state: GameState,
-  tile: PlacedTile,
-  resource: 'coal' | 'iron',
-  events: GameEvent[],
-): void {
-  const market = resource === 'coal' ? state.coalMarket : state.ironMarket;
-  const { revenue, sold } = sellToMarket(market, tile.resourcesLeft);
-  if (sold > 0) {
-    tile.resourcesLeft -= sold;
-    if (revenue > 0) {
-      const p = getPlayer(state, tile.owner);
-      p.money += revenue;
-      events.push({ t: 'MONEY_CHANGED', player: tile.owner, delta: revenue, total: p.money });
-    }
-    events.push({ t: 'CUBE_TO_MARKET', resource, from: tile.id, count: sold, income: revenue });
-  }
-  // If the last cube left the tile during this move, flip it and advance income.
-  if (tile.resourcesLeft === 0 && !tile.flipped) {
-    tile.flipped = true;
-    const def = getLevelDef(tile.industry, tile.level);
+  // A freshly built production building comes online: advance income now and
+  // score its VP at era end (it is flipped).
+  if (isProducer) {
     events.push({
       t: 'TILE_FLIPPED',
       tileId: tile.id,
       incomeGain: def.incomeSpaces,
-      player: tile.owner,
+      player,
     });
-    advanceIncome(state, tile.owner, def.incomeSpaces, events);
+    advanceIncome(state, player, def.incomeSpaces, events);
   }
 }
-
-export { occupantAt };

@@ -4,7 +4,7 @@ import type { DevelopAction } from '../../model/actions.ts';
 import type { PlayerColor } from '../../model/types.ts';
 import { getLevelDef } from '../../data/industries.ts';
 import { getPlayer } from '../helpers.ts';
-import { consumeIron, resolveIron } from '../consume.ts';
+import { consumeResource, planResource } from '../consume.ts';
 
 export function validateDevelop(
   state: GameState,
@@ -25,10 +25,12 @@ export function validateDevelop(
     if (!getLevelDef(ind, level).developable) return `${ind} tile cannot be developed (lightbulb)`;
   }
 
+  // Develop consumes 1 iron per removal, from the player's own stockpile (else
+  // the iron market).
   const ironNeeded = a.removals.length;
-  const resolved = resolveIron(state, ironNeeded);
-  if (!resolved) return 'Cannot obtain iron to develop';
-  if (p.money < resolved.marketCost) return 'Not enough money for market iron';
+  const plan = planResource(state, player, 'iron', ironNeeded);
+  if (!plan.ok) return 'Not enough iron to develop';
+  if (p.money < plan.marketCost) return 'Not enough money for market iron';
   return null;
 }
 
@@ -39,10 +41,7 @@ export function applyDevelop(
   events: GameEvent[],
 ): void {
   const p = getPlayer(state, player);
-  const ironNeeded = a.removals.length;
-  const sources =
-    a.ironSources.length > 0 ? a.ironSources : (resolveIron(state, ironNeeded)?.sources ?? []);
-  consumeIron(state, player, sources.slice(0, ironNeeded), events);
+  consumeResource(state, player, 'iron', a.removals.length, undefined, events);
 
   for (const ind of a.removals) {
     p.matStacks[ind].shift(); // lowest tile removed from the game

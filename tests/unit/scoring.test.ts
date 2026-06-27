@@ -151,26 +151,29 @@ function playSeeded(seed: number): { state: GameState; postCanal: Record<string,
   return { state: s, postCanal: postCanal ?? {} };
 }
 
-describe('reported VP-scoring scenario (regression, seed 12)', () => {
-  // Reproduces the reported bug shape: the in-game (post-Canal) leader ends LAST
-  // and totals roughly triple after Rail-era scoring — and proves the result is
-  // now self-consistent and correct.
+describe('VP-scoring trustworthiness (regression, seed 12)', () => {
+  // Pins a full deterministic AI game so the running (post-Canal) VP, the final
+  // accumulated VP, and the ranking all stay self-consistent and reproducible
+  // under the MYSpolly economy. Guards the §3.12a guarantee: the displayed VP is
+  // always the engine VP and the Results breakdown reconciles exactly.
   const { state, postCanal } = playSeeded(12);
 
-  test('running (post-Canal) standings match the reported pattern (leader = blue at 32)', () => {
-    assert.deepEqual(postCanal, { green: 24, red: 16, blue: 32 });
+  test('running (post-Canal) standings are deterministic and trustworthy', () => {
+    assert.deepEqual(postCanal, { red: 40, blue: 43, green: 49 });
     const runningLeader = Object.entries(postCanal).sort((a, b) => b[1] - a[1])[0]![0];
-    assert.equal(runningLeader, 'blue');
+    assert.equal(runningLeader, 'green');
   });
 
-  test('final standings are correct and the running leader ends LAST', () => {
+  test('final standings accumulate correctly and are deterministic', () => {
     assert.equal(state.phase, 'gameOver');
-    assert.equal(state.players.green!.vp, 93);
-    assert.equal(state.players.red!.vp, 90);
-    assert.equal(state.players.blue!.vp, 83);
+    assert.equal(state.players.green!.vp, 145);
+    assert.equal(state.players.red!.vp, 124);
+    assert.equal(state.players.blue!.vp, 73);
     assert.deepEqual(state.ranking, ['green', 'red', 'blue']);
-    // blue led the Canal era (32) but finishes last.
-    assert.equal(state.ranking!.indexOf('blue'), 2);
+    // Era scoring only accumulates VP — the final never drops below the running.
+    for (const c of state.turnOrder) {
+      assert.ok(state.players[c]!.vp >= (postCanal[c] ?? 0), `${c} VP only accumulates`);
+    }
   });
 
   test('ranking comes from engine VP with rulebook tie-breaks (matches computeRanking)', () => {

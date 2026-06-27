@@ -57,6 +57,17 @@ export interface MerchantState {
   hasJuice: boolean;
 }
 
+/**
+ * A player's personal resource stockpile (§7.16). Resources are consumed only
+ * from the acting player's own stockpile (then the market for a connected
+ * shortfall); production buildings refill it each round.
+ */
+export interface ResourceStock {
+  coal: number;
+  iron: number;
+  juice: number;
+}
+
 export interface PlayerState {
   color: PlayerColor;
   /** Human display name / bot name. */
@@ -73,6 +84,12 @@ export interface PlayerState {
   linksLeft: number;
   /** Money spent so far this turn (sits on the character tile). */
   spentThisTurn: number;
+  /**
+   * Personal resource stockpile (§7.16). Fed by this player's own production
+   * buildings each round; the only source actions may consume from (besides a
+   * connected-market shortfall purchase).
+   */
+  resources: ResourceStock;
 }
 
 export type GamePhase = 'setup' | 'playing' | 'roundEnd' | 'eraEnd' | 'gameOver';

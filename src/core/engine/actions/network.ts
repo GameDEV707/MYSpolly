@@ -1,13 +1,13 @@
 import type { GameState, PlacedLink } from '../../model/state.ts';
 import type { GameEvent } from '../../model/events.ts';
-import type { NetworkAction, ResourceSource } from '../../model/actions.ts';
+import type { NetworkAction } from '../../model/actions.ts';
 import type { PlayerColor } from '../../model/types.ts';
 import { boardContext } from '../../maps/context.ts';
+import { buyCost } from '../market.ts';
 import { getPlayer, spend } from '../helpers.ts';
 import { mintId } from '../setup.ts';
-import { consumeCoal, consumeJuice, resolveCoal } from '../consume.ts';
+import { consumeResource } from '../consume.ts';
 import { hasNoPresence, playerNetwork } from '../../selectors/connectivity.ts';
-import { juiceTileOptions } from '../../selectors/resources.ts';
 
 function lineEndpoints(state: GameState, lineId: string): [string, string] | null {
   const line = boardContext(state).lineById[lineId];
@@ -45,6 +45,59 @@ function adjacencyOk(state: GameState, player: PlayerColor, lineIds: string[]): 
   return remaining.length === 0;
 }
 
+function endpointsOf(state: GameState, lineIds: string[]): Set<string> {
+  const s = new Set<string>();
+  for (const id of lineIds) {
+    const ep = lineEndpoints(state, id);
+    if (ep) {
+      s.add(ep[0]);
+      s.add(ep[1]);
+    }
+  }
+  return s;
+}
+
+/**
+ * Will any endpoint of the action's links be connected to a merchant once the
+ * links are placed? (Used to decide whether a coal-market shortfall is legal.)
+ * Considers existing links PLUS the pending lines of this action.
+ */
+function merchantReachableAfter(state: GameState, lineIds: string[]): boolean {
+  const ctx = boardContext(state);
+  const adj = new Map<string, Set<string>>();
+  const add = (a: string, b: string): void => {
+    if (!adj.has(a)) adj.set(a, new Set());
+    adj.get(a)!.add(b);
+  };
+  for (const link of state.links) {
+    const line = ctx.lineById[link.lineId];
+    if (line) {
+      add(line.a, line.b);
+      add(line.b, line.a);
+    }
+  }
+  for (const id of lineIds) {
+    const line = ctx.lineById[id];
+    if (line) {
+      add(line.a, line.b);
+      add(line.b, line.a);
+    }
+  }
+  const seen = new Set<string>(endpointsOf(state, lineIds));
+  const queue = [...seen];
+  while (queue.length > 0) {
+    const cur = queue.shift()!;
+    if (ctx.merchantIds.has(cur)) return true;
+    for (const n of adj.get(cur) ?? []) {
+      if (!seen.has(n)) {
+        seen.add(n);
+        queue.push(n);
+      }
+    }
+  }
+  return false;
+}
+
 export function validateNetwork(
   state: GameState,
   player: PlayerColor,
@@ -80,77 +133,34 @@ export function validateNetwork(
 
   if (!adjacencyOk(state, player, lineIds)) return 'Link must connect to your network';
 
-  // Costs.
+  // Money cost.
   let money =
     a.links.length === 1 ? params.singleLinkCost : (params.doubleLinkCost ?? params.singleLinkCost);
 
-  // Per-link coal (rail / air); a multi-link build consumes juice.
-  if (params.coalPerLink > 0) {
-    for (const spec of a.links) {
-      const ep = lineEndpoints(state, spec.lineId);
-      if (!ep) return 'Unknown link line';
-      const fromA = resolveCoal(state, ep[0], params.coalPerLink);
-      const fromB = resolveCoal(state, ep[1], params.coalPerLink);
-      const best = pickCheaper(fromA, fromB);
-      if (!best) return 'Cannot obtain coal for that link';
-      money += best.marketCost;
+  // Per-link coal (rail / air): drawn from the player's stockpile, else bought
+  // from the coal market — which requires a connection to a merchant once the
+  // links are placed (§7.16.4). Coal is NEVER taken from other players' mines.
+  const coalNeeded = params.coalPerLink * a.links.length;
+  if (coalNeeded > 0) {
+    const fromStock = Math.min(p.resources.coal, coalNeeded);
+    const shortfall = coalNeeded - fromStock;
+    if (shortfall > 0) {
+      if (!merchantReachableAfter(state, lineIds)) {
+        return 'Not enough coal (no market connection for the new link)';
+      }
+      money += buyCost(state.coalMarket, shortfall);
     }
   }
+
+  // A multi-link build consumes juice — only from the player's own stockpile.
   if (a.links.length === 2 && params.juicePerDoubleLink > 0) {
-    const juiceOk = a.juiceSource
-      ? validateJuiceSource(state, player, lineIds, a.juiceSource)
-      : autoJuiceSource(state, player, lineIds) !== null;
-    if (!juiceOk) return 'Building two links requires 1 juice from a JuiceWorks';
+    if (p.resources.juice < params.juicePerDoubleLink) {
+      return 'Building two links requires juice in your stockpile';
+    }
   }
 
   if (p.money < money) return 'Not enough money';
   return null;
-}
-
-function pickCheaper(
-  x: { marketCost: number; sources: ResourceSource[] } | null,
-  y: { marketCost: number; sources: ResourceSource[] } | null,
-): { marketCost: number; sources: ResourceSource[] } | null {
-  if (!x) return y;
-  if (!y) return x;
-  return x.marketCost <= y.marketCost ? x : y;
-}
-
-function endpointsOf(state: GameState, lineIds: string[]): Set<string> {
-  const s = new Set<string>();
-  for (const id of lineIds) {
-    const ep = lineEndpoints(state, id);
-    if (ep) {
-      s.add(ep[0]);
-      s.add(ep[1]);
-    }
-  }
-  return s;
-}
-
-function autoJuiceSource(
-  state: GameState,
-  player: PlayerColor,
-  lineIds: string[],
-): ResourceSource | null {
-  for (const loc of endpointsOf(state, lineIds)) {
-    const opts = juiceTileOptions(state, player, loc);
-    if (opts.length > 0) return { from: 'tile', tileId: (opts[0] as { id: string }).id };
-  }
-  return null;
-}
-
-function validateJuiceSource(
-  state: GameState,
-  player: PlayerColor,
-  lineIds: string[],
-  src: ResourceSource,
-): boolean {
-  if (src.from !== 'tile') return false; // network juice must come from a JuiceWorks
-  for (const loc of endpointsOf(state, lineIds)) {
-    if (juiceTileOptions(state, player, loc).some((t) => t.id === src.tileId)) return true;
-  }
-  return false;
 }
 
 export function applyNetwork(
@@ -167,7 +177,7 @@ export function applyNetwork(
     a.links.length === 1 ? params.singleLinkCost : (params.doubleLinkCost ?? params.singleLinkCost);
   spend(state, player, baseMoney, events);
 
-  // Place links.
+  // Place links first, so coal-market connectivity reflects the new network.
   for (const spec of a.links) {
     const link: PlacedLink = {
       id: mintId(state, 'l'),
@@ -180,39 +190,39 @@ export function applyNetwork(
     events.push({ t: 'LINK_PLACED', link: { ...link } });
   }
 
-  // Consume coal per link and juice for a multi-link build (after placement).
-  if (params.coalPerLink > 0) {
-    for (const spec of a.links) {
-      const ep = lineEndpoints(state, spec.lineId);
-      if (!ep) continue;
-      const provided = spec.coalSource ? [spec.coalSource] : undefined;
-      const resolved = provided ?? pickCoalEndpoint(state, ep, params.coalPerLink)?.sources ?? [];
-      const loc = coalLocFor(state, ep, params.coalPerLink);
-      consumeCoal(state, player, loc, resolved.slice(0, params.coalPerLink), events);
-    }
+  // Consume coal for the links (stockpile, then connected market shortfall).
+  const coalNeeded = params.coalPerLink * a.links.length;
+  if (coalNeeded > 0) {
+    const loc = coalConsumeLoc(state, a.links.map((l) => l.lineId));
+    consumeResource(state, player, 'coal', coalNeeded, loc, events);
   }
+
+  // Consume juice for a multi-link build (from the player's own stockpile).
   if (a.links.length === 2 && params.juicePerDoubleLink > 0) {
-    const lineIds = a.links.map((l) => l.lineId);
-    const juice = a.juiceSource ?? autoJuiceSource(state, player, lineIds);
-    if (juice) {
-      const loc = [...endpointsOf(state, lineIds)][0] as string;
-      consumeJuice(state, player, loc, [juice], events);
-    }
+    consumeResource(state, player, 'juice', params.juicePerDoubleLink, undefined, events);
   }
 }
 
-function pickCoalEndpoint(
-  state: GameState,
-  ep: [string, string],
-  count: number,
-): { marketCost: number; sources: ResourceSource[] } | null {
-  return pickCheaper(resolveCoal(state, ep[0], count), resolveCoal(state, ep[1], count));
-}
-
-function coalLocFor(state: GameState, ep: [string, string], count: number): string {
-  const a = resolveCoal(state, ep[0], count);
-  const b = resolveCoal(state, ep[1], count);
-  if (a && b) return a.marketCost <= b.marketCost ? ep[0] : ep[1];
-  if (a) return ep[0];
-  return ep[1];
+/** An endpoint connected to a merchant (post-placement), for coal-market buys. */
+function coalConsumeLoc(state: GameState, lineIds: string[]): string {
+  const ctx = boardContext(state);
+  const endpoints = [...endpointsOf(state, lineIds)];
+  for (const loc of endpoints) {
+    const seen = new Set<string>([loc]);
+    const queue = [loc];
+    while (queue.length > 0) {
+      const cur = queue.shift()!;
+      if (ctx.merchantIds.has(cur)) return loc;
+      for (const link of state.links) {
+        const line = ctx.lineById[link.lineId];
+        if (!line) continue;
+        const next = line.a === cur ? line.b : line.b === cur ? line.a : null;
+        if (next && !seen.has(next)) {
+          seen.add(next);
+          queue.push(next);
+        }
+      }
+    }
+  }
+  return endpoints[0] ?? '';
 }

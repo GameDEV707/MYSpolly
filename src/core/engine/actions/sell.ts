@@ -5,7 +5,7 @@ import { INDUSTRY_TYPES, type IndustryType, type PlayerColor } from '../../model
 import { getLevelDef } from '../../data/industries.ts';
 import { boardContext } from '../../maps/context.ts';
 import { getPlayer, changeMoney, changeVp, advanceIncome, flipTile, findTile } from '../helpers.ts';
-import { consumeJuice } from '../consume.ts';
+import { consumeSellJuice } from '../consume.ts';
 import { reachableFrom } from '../../selectors/connectivity.ts';
 
 const SELLABLE: IndustryType[] = ['cotton', 'manufacturer', 'pottery'];
@@ -14,6 +14,12 @@ export function validateSell(state: GameState, player: PlayerColor, a: SellActio
   const p = getPlayer(state, player);
   if (!p.hand.find((c) => c.id === a.card.cardId)) return 'Card not in hand';
   if (a.sales.length === 0) return 'No sales specified';
+
+  // Juice for a Sell comes from the player's own stockpile or the merchant's
+  // barrel (never another player's juice works). Track stockpile use and
+  // merchant-barrel use across all sales in the action.
+  let stockJuiceNeeded = 0;
+  const merchantBarrelUsed = new Set<string>();
 
   for (const sale of a.sales) {
     const tile = state.tiles.find((t) => t.id === sale.tileId);
@@ -33,7 +39,24 @@ export function validateSell(state: GameState, player: PlayerColor, a: SellActio
     if (sale.juice.length !== def.juiceToSell) {
       return `That tile needs exactly ${def.juiceToSell} juice to sell`;
     }
+
+    for (const src of sale.juice) {
+      if (src.from === 'stock') {
+        stockJuiceNeeded += 1;
+      } else if (src.from === 'merchantJuice') {
+        if (src.merchantId !== sale.merchantId) {
+          return 'Merchant juice must come from the merchant you sell to';
+        }
+        if (!merchant.hasJuice) return 'That merchant has no juice barrel';
+        if (merchantBarrelUsed.has(merchant.id)) return 'Merchant juice barrel already used';
+        merchantBarrelUsed.add(merchant.id);
+      } else {
+        return 'Invalid juice source for Sell';
+      }
+    }
   }
+
+  if (stockJuiceNeeded > p.resources.juice) return 'Not enough juice in your stockpile';
   return null;
 }
 
@@ -57,7 +80,7 @@ export function applySell(
       merchantId: sale.merchantId,
       merchantLocationId: merchant?.locationId ?? sale.merchantId,
     });
-    const merchantJuiceUsed = consumeJuice(state, player, tile.locationId, sale.juice, events);
+    const merchantJuiceUsed = consumeSellJuice(state, player, sale.juice, events);
     flipTile(state, tile, events);
     for (const merchantId of merchantJuiceUsed) {
       applyMerchantBonus(state, player, merchantId, events);
