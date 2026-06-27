@@ -727,6 +727,65 @@ The board is wrapped in a **camera/viewport controller** that applies a 2D trans
 - **AI turns**: render the bot's chosen move as a readable, animated action with a short log line;
   do not expose internal enumerations to the player.
 
+### 7.14 "How to Play" — In‑Game Rules, Tutorial & Contextual Help
+
+> **Goal being addressed:** make the *How to Play* experience complete and crystal‑clear. A new
+> player should be able to learn the **entire** game inside the app — every rule, every action,
+> every concept — without needing the paper rulebook. All content is paraphrased from
+> `Brass-Birmingham-Rulebook.pdf` (not copied verbatim) and fully localized in **EN/RU/UZ**.
+
+The Help system has three complementary layers: a **Rules Library** (read), an **Interactive
+Tutorial** (learn by doing), and **Contextual Help** (in‑situ tooltips/explanations).
+
+#### 7.14.1 Rules Library (browsable reference)
+A dedicated, scrollable, searchable rules screen (reachable from Main Menu **and** the Pause
+menu), organized into clear chapters that mirror the actual game so nothing is missing:
+1. **Overview & Goal** — theme, the two eras (Canal 1770–1830, Rail 1830–1870), how you win (VP).
+2. **Components & the Board** — player mat, tiles, cards, cubes, markets, merchants, tracks.
+3. **Setup** — what changes for 2 / 3 / 4 players (removed cards/merchants, market fill, starting
+   money/income/hand).
+4. **Turn structure** — 2 actions per turn (1 each in the first Canal round), discard per action,
+   refill to 8, spending → turn order.
+5. **The 7 Actions** — one clearly explained page each: **Build, Network, Develop, Sell, Loan,
+   Scout, Pass** — with cost, requirements, what card is needed, and a worked example + diagram.
+6. **Core concepts** — Connected locations, Your Network, Consuming Coal/Iron/Beer, moving
+   cubes to the markets, Flipping tiles, Increasing income, Overbuilding, Farm Breweries.
+7. **End of round** — turn‑order re‑sort, income collection, negative income / shortfall rules.
+8. **End of era & scoring** — link scoring, flipped‑tile scoring, Canal‑era maintenance,
+   Canal→Rail transition.
+9. **Winning & tiebreaks**, plus the **Introductory variant**.
+10. **Icon glossary / legend** — every icon (coal, iron, beer, VP, £, income, merchant bonuses,
+    canal vs rail, lightbulb pottery) with a one‑line meaning.
+
+Requirements:
+- Rich, illustrated pages (diagrams/images), not walls of text; collapsible sections; search;
+  a table of contents with deep links; "next/previous" navigation.
+- Every page available in **EN/RU/UZ**; uses the same icon set as the board for consistency.
+- Accessible from the Pause menu mid‑game without losing game state.
+
+#### 7.14.2 Interactive Tutorial (learn by doing)
+A guided, step‑by‑step playable tutorial on a scripted game state that teaches the rules by
+having the player perform them:
+- Coached steps with highlighted UI, arrows, and short instructions ("Now Build a Cotton Mill in
+  Birmingham — select the card, then click the highlighted slot").
+- Covers, in order: a basic Build, Network, Sell (with beer + merchant), Develop, Loan/Scout,
+  taking income, end‑of‑round turn order, and the Canal→Rail transition + scoring.
+- Constrains input to the taught action at each step; validates the player did it correctly before
+  advancing; allows **Skip** and **Replay** of any lesson.
+- Offered automatically the first time the app is opened (skippable), and re‑launchable anytime
+  from the Main Menu / How to Play screen. Fully localized EN/RU/UZ.
+
+#### 7.14.3 Contextual Help (in‑situ explanations)
+- **Hover/long‑press tooltips** on every interactive element: actions, cards, tiles, slots,
+  markets, merchants, tracks, icons — explaining what they are and the rule behind them.
+- **"Why is this disabled?"** explanations on greyed‑out actions/targets (e.g. "You're not
+  connected to a merchant that buys Cotton").
+- A **"?" help button** on each panel opens the relevant Rules Library chapter.
+- An optional **rules‑hint toggle** (in Settings) shows extra inline reminders for new players;
+  experienced players can turn it off.
+- Consistent with §7.12 (map clarity) and §7.13 (action‑UI clarity) so the explanations match
+  what the player sees on the board.
+
 ---
 
 ## 8. Testing & Quality Strategy
@@ -923,6 +982,47 @@ The board is wrapped in a **camera/viewport controller** that applies a 2D trans
       *DoD: the board pans/zooms with the mouse, locations are self‑explanatory, and every move is
       chosen through a clear guided flow — no cryptic option lists. The game reads like Brass:
       Birmingham.*
+
+### Phase 3T — "How to Play": Complete In‑Game Rules, Tutorial & Help (§7.14)
+
+> Make the *How to Play* experience complete and clear so a new player can learn the **entire**
+> game inside the app — every rule, action, and concept — without the paper rulebook. All content
+> is paraphrased from the rulebook (not copied verbatim) and localized in **EN/RU/UZ**.
+
+**Rules Library (browsable reference) — §7.14.1**
+- [ ] **3T.1** Build a dedicated, scrollable, **searchable Rules screen** reachable from the Main
+      Menu **and** the Pause menu (without losing game state), with a table of contents + deep
+      links and next/previous navigation.
+- [ ] **3T.2** Author the chapter content covering the **whole** game: Overview & Goal; the two
+      eras; Components & Board; Setup (2/3/4‑player differences); Turn structure; the **7 Actions**
+      (one clear page each with cost/requirements/example); Core concepts (connections, network,
+      consuming coal/iron/beer, market cube movement, flipping, income, overbuilding, Farm
+      Breweries); End of round (income, negative income/shortfall); End of era & scoring;
+      Canal‑era maintenance; Winning & tiebreaks; Introductory variant.
+- [ ] **3T.3** Add an **icon glossary / legend** page explaining every icon (coal, iron, beer, VP,
+      £, income, merchant bonuses, canal vs rail, lightbulb pottery), reusing the board icon set.
+- [ ] **3T.4** Make pages **illustrated** (diagrams/images), with collapsible sections; verify
+      readability and no missing rules vs. the rulebook.
+- [ ] **3T.5** Provide full **EN/RU/UZ** translations for all Rules Library content.
+
+**Interactive Tutorial (learn by doing) — §7.14.2**
+- [ ] **3T.6** Implement a scripted, **coached tutorial** game state with step highlighting,
+      arrows, and short instructions; constrain input to the taught action and validate completion
+      before advancing; support **Skip** and **Replay** per lesson.
+- [ ] **3T.7** Author tutorial lessons in order: Build → Network → Sell (beer + merchant) →
+      Develop → Loan/Scout → taking income → end‑of‑round turn order → Canal→Rail transition + scoring.
+- [ ] **3T.8** Offer the tutorial **automatically on first launch** (skippable) and make it
+      re‑launchable anytime from Main Menu / How to Play. Localize EN/RU/UZ.
+
+**Contextual Help (in‑situ) — §7.14.3**
+- [ ] **3T.9** Add **hover/long‑press tooltips** to every interactive element (actions, cards,
+      tiles, slots, markets, merchants, tracks, icons) explaining what it is + the rule behind it.
+- [ ] **3T.10** Add **"why is this disabled?"** explanations on greyed‑out actions/targets.
+- [ ] **3T.11** Add a **"?" help button** on each panel that opens the relevant Rules chapter, and
+      a Settings **rules‑hint toggle** for inline reminders (on for new players, off for experts).
+      *DoD: a brand‑new player can open the app, learn the complete rules via the Rules Library and
+      the interactive tutorial, understand every on‑screen element via contextual help, and play a
+      full game correctly — all in English, Russian, or Uzbek.*
 
 ### Phase 4 — Animations, Audio, i18n
 - [x] **4.1** Event→timeline mapping + a sequential animation queue (speed setting, skippable).
