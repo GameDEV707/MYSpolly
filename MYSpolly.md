@@ -869,19 +869,19 @@ The board is wrapped in a **camera/viewport controller** that applies a 2D trans
 - [x] **3R.8** Verify a steady **60 fps** while panning/zooming; optional mini‑map.
 
 **Map clarity — §7.12**
-- [ ] **3R.9** Redesign **location nodes**: localized name, region colour band, clearly drawn build
+- [x] **3R.9** Redesign **location nodes**: localized name, region colour band, clearly drawn build
       slots with the allowed **industry icons** (incl. shared‑icon slots); empty vs occupied distinct.
-- [ ] **3R.10** Clear **built‑tile** rendering: owner colour, level, remaining cubes/beer, flipped state.
-- [ ] **3R.11** Clear **merchant** rendering: accepted industry icon(s), bonus type icon
+- [x] **3R.10** Clear **built‑tile** rendering: owner colour, level, remaining cubes/beer, flipped state.
+- [x] **3R.11** Clear **merchant** rendering: accepted industry icon(s), bonus type icon
       (Develop/Income/VP/Money) + tooltip, merchant‑beer barrel.
-- [ ] **3R.12** Distinguish **canal vs rail links** visually; highlight buildable lines; owner colours.
-- [ ] **3R.13** **Hover/focus tooltips** on locations (name, buildable industries, tiles,
+- [x] **3R.12** Distinguish **canal vs rail links** visually; highlight buildable lines; owner colours.
+- [x] **3R.13** **Hover/focus tooltips** on locations (name, buildable industries, tiles,
       connection/network status).
-- [ ] **3R.14** **Level‑of‑detail** rendering: names+colour at low zoom, slot icons+tile details at
+- [x] **3R.14** **Level‑of‑detail** rendering: names+colour at low zoom, slot icons+tile details at
       high zoom; labels stay legible.
-- [ ] **3R.15** **Affordance highlighting**: when an action is active, valid targets glow and invalid
+- [x] **3R.15** **Affordance highlighting**: when an action is active, valid targets glow and invalid
       ones dim.
-- [ ] **3R.16** Always‑available **legend/key** for all icons (coal/iron/beer/VP/£/income, merchant
+- [x] **3R.16** Always‑available **legend/key** for all icons (coal/iron/beer/VP/£/income, merchant
       bonuses, canal vs rail), localized EN/RU/UZ. Label Farm Breweries + special links.
 
 **Action & move UI clarity — §7.13**

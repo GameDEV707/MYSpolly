@@ -5,6 +5,7 @@ import { useSettings } from '../store/settings.ts';
 import { legalActions } from '../../core/selectors/legalActions.ts';
 import { BoardSvg } from '../components/board/BoardSvg.tsx';
 import { BoardCamera } from '../components/board/BoardCamera.tsx';
+import { Legend } from '../components/board/Legend.tsx';
 import { PlayerStrip } from '../components/player/PlayerStrip.tsx';
 import { Markets } from '../components/market/Markets.tsx';
 import { Hand } from '../components/cards/Hand.tsx';
@@ -122,16 +123,23 @@ export function GameScreen(props: { replay?: boolean }): JSX.Element {
             </Button>
           )}
         </Panel>
-        <div style={{ flex: 1, minHeight: 0 }}>
+        <div style={{ flex: 1, minHeight: 0, position: 'relative' }}>
           <BoardCamera>
-            {() => (
+            {(lod) => (
               <BoardSvg
                 game={game}
-                highlightLocations={isHumanTurn ? highlights.locs : new Set()}
-                highlightLines={isHumanTurn ? highlights.lines : new Set()}
+                lod={lod}
+                showTooltips={settings.showTooltips}
+                highlightLocations={
+                  isHumanTurn && settings.showLegalMoves ? highlights.locs : new Set()
+                }
+                highlightLines={
+                  isHumanTurn && settings.showLegalMoves ? highlights.lines : new Set()
+                }
               />
             )}
           </BoardCamera>
+          <Legend />
         </div>
       </div>
 
