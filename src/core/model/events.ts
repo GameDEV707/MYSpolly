@@ -49,7 +49,16 @@ export type GameEvent =
   | { t: 'ROUND_ENDED'; round: number; newOrder: PlayerColor[] }
   | { t: 'INCOME_COLLECTED'; player: PlayerColor; amount: number }
   | { t: 'SHORTFALL'; player: PlayerColor; tilesSold: number; vpLost: number }
-  | { t: 'ERA_SCORING'; era: Era; perPlayer: Record<string, number> }
+  | {
+      t: 'ERA_SCORING';
+      era: Era;
+      /** Total VP gained per player this scoring (links + tiles). */
+      perPlayer: Record<string, number>;
+      /** VP from links per player. */
+      links: Record<string, number>;
+      /** VP from flipped industry tiles per player. */
+      tiles: Record<string, number>;
+    }
   | { t: 'ERA_ENDED'; era: Era }
   | { t: 'ERA_MORPH'; from: Era; to: Era; routeFrom: string; routeTo: string }
   | { t: 'CANAL_MAINTENANCE' }

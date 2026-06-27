@@ -18,6 +18,12 @@ export const ENGINE_NAME = 'myspolly-core';
 export { buildInitialState, type SetupConfig, type PlayerSeat } from './engine/setup.ts';
 export { reduce, validate } from './engine/reduce.ts';
 export { legalActions, hasNonPassAction } from './selectors/legalActions.ts';
+export {
+  pointsToWin,
+  isLeading,
+  fullBreakdown,
+  type FullVpBreakdown,
+} from './selectors/standings.ts';
 export { computeRanking } from './engine/phases.ts';
 export * from './model/types.ts';
 export type { GameState, PlayerState, PlacedTile, PlacedLink, Card } from './model/state.ts';

@@ -125,4 +125,23 @@ export interface GameState {
 
   /** Final ranking once the game is over (best first). */
   ranking?: PlayerColor[];
+
+  /**
+   * Per-player VP breakdown, accumulated by end-of-era / end-of-game scoring so
+   * the Results screen can show how each final total was reached. `inPlay` VP
+   * (merchant bonuses, income shortfalls) is derived as
+   * `vp - links - tiles - intro`, so the four parts always reconcile exactly to
+   * the authoritative `p.vp`.
+   */
+  vpBreakdown?: Record<PlayerColor, VpBreakdown>;
+}
+
+/** Scored-VP components used by the Results breakdown (§3.12a). */
+export interface VpBreakdown {
+  /** VP from scoring links at end of each era. */
+  links: number;
+  /** VP from scoring flipped industry tiles at end of each era. */
+  tiles: number;
+  /** Intro-variant bonus VP (money + income level + level-≥2 re-score). */
+  intro: number;
 }

@@ -51,16 +51,27 @@ export function spend(
   events.push({ t: 'MONEY_CHANGED', player: color, delta: -amount, total: p.money });
 }
 
+/**
+ * Change a player's VP, clamping at 0 (VP can never go negative). The emitted
+ * `VP_CHANGED` event reports the **actual applied** delta — not the requested
+ * one — so any consumer that reconstructs VP by summing deltas (e.g. the action
+ * preview HUD, the Results breakdown) stays perfectly in sync with the engine's
+ * authoritative `p.vp`. Returns the applied delta.
+ */
 export function changeVp(
   state: GameState,
   color: PlayerColor,
   delta: number,
   events: GameEvent[],
-): void {
-  if (delta === 0) return;
+): number {
+  if (delta === 0) return 0;
   const p = getPlayer(state, color);
+  const before = p.vp;
   p.vp = Math.max(0, p.vp + delta);
-  events.push({ t: 'VP_CHANGED', player: color, delta, total: p.vp });
+  const applied = p.vp - before;
+  if (applied === 0) return 0;
+  events.push({ t: 'VP_CHANGED', player: color, delta: applied, total: p.vp });
+  return applied;
 }
 
 /** Advance the income marker by `spaces` (capped at the maximum income level). */
