@@ -871,17 +871,17 @@ The board is wrapped in a **camera/viewport controller** that applies a 2D trans
 **Board camera — ZOOM BUGFIX (regression: zoom in/out currently does not work) — §7.11**
 > Although the camera tasks above are checked off, **zoom in / zoom out is broken in the running
 > game** — neither the mouse wheel nor the on‑screen buttons actually change the zoom. Fix it.
-- [ ] **3R.Z1** **Fix mouse‑wheel zoom**: scrolling the mouse wheel up zooms **in** and down zooms
+- [x] **3R.Z1** **Fix mouse‑wheel zoom**: scrolling the mouse wheel up zooms **in** and down zooms
       **out**, anchored to the cursor position. Attach a `wheel` listener to the board viewport
       with `{ passive: false }` and call `preventDefault()` so the page/scroll container does not
       swallow the event; map `event.deltaY` to a smooth scale step and clamp to `minZoom…maxZoom`.
       Ensure the handler is bound to the correct element and the camera transform actually updates.
-- [ ] **3R.Z2** **Fix the on‑screen +/− buttons** (bottom‑right): clicking **+** zooms in and **−**
+- [x] **3R.Z2** **Fix the on‑screen +/− buttons** (bottom‑right): clicking **+** zooms in and **−**
       zooms out by a fixed step (anchored to the board centre), updating the same camera state.
       Verify the buttons are wired to the `useBoardCamera()` actions and re‑render/apply the transform.
-- [ ] **3R.Z3** Keep zoom clamped (`minZoom…maxZoom`), smooth/eased, and consistent between wheel
+- [x] **3R.Z3** Keep zoom clamped (`minZoom…maxZoom`), smooth/eased, and consistent between wheel
       and buttons; the **Reset/Fit‑to‑screen** control still returns to the default view.
-- [ ] **3R.Z4** Add a quick regression check (manual or component test) confirming wheel‑up,
+- [x] **3R.Z4** Add a quick regression check (manual or component test) confirming wheel‑up,
       wheel‑down, `+`, and `−` each change the camera scale in the expected direction.
       *DoD: in the running game, the map visibly zooms in and out via both the mouse wheel and the
       on‑screen +/− buttons.*

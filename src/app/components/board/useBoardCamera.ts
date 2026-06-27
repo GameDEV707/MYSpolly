@@ -146,7 +146,12 @@ export function useBoardCamera(): BoardCameraApi {
   }, [applyNow, settle]);
 
   const startAnim = useCallback(() => {
-    if (animating.current) return;
+    // Guard on whether a frame is actually queued (`raf.current`) rather than a
+    // separate `animating` flag. Under React.StrictMode the mount effect is run
+    // twice with a cleanup in between; if we keyed off a flag that the cleanup
+    // failed to reset, the loop would deadlock and zoom/fit would silently stop
+    // working. Keying off `raf.current` (which the cleanup nulls out) is robust.
+    if (raf.current != null) return;
     animating.current = true;
     raf.current = requestAnimationFrame(tick);
   }, [tick]);
@@ -363,7 +368,12 @@ export function useBoardCamera(): BoardCameraApi {
       vp.removeEventListener('pointercancel', endPointer);
       vp.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('resize', onResize);
-      if (raf.current) cancelAnimationFrame(raf.current);
+      if (raf.current != null) cancelAnimationFrame(raf.current);
+      // Reset the scheduler so a subsequent re-mount (e.g. React.StrictMode's
+      // double-invoke, or navigating away and back) can start the easing loop
+      // again. Leaving these set would deadlock `startAnim` and break zoom/fit.
+      raf.current = null;
+      animating.current = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
