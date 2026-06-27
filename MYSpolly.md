@@ -635,6 +635,31 @@ All values persist immediately (IndexedDB on web / app‑data file on desktop) a
   app still opens to the Main Menu first (never auto‑loads into the game).
 - **Delete/overwrite**: deleting a slot or starting a brand‑new game asks for confirmation so a
   saved game is never lost silently.
+- **Single source of truth & referential integrity (fixes the Continue/Delete bug)**: the
+  **Continue** button and the **Load Game** list must stay consistent. Whatever game **Continue**
+  resumes must be the one true "current resumable game"; there must be **no way to resume a game
+  that was deleted or finished**. See §7.10.6 for the exact required behavior.
+
+#### 7.10.6 Save / Continue / Delete consistency (BUGFIX requirement)
+> **Current bug:** after quitting, the game is stored as the **Continue** game. If the player then
+> *saves* it, it appears in **Load Game**; if they **delete** that saved game and press
+> **Continue**, the app still loads the deleted game. Continue and the saved‑slot list are out of
+> sync. This must be fixed with clear, well‑defined semantics:
+- There is exactly **one** "current game" pointer that powers **Continue**. It is an explicit
+  reference (slot id), not a stale duplicate copy.
+- **Continue is enabled only if** that pointer references a save that **still exists**. If the
+  referenced save has been deleted (or never existed), Continue is **disabled/greyed out**.
+- **Deleting** a save must, in the same operation: remove the save **and**, if it is the current
+  game, **clear the Continue pointer** (and refresh the Main Menu so Continue immediately becomes
+  disabled). Deleting must never leave a dangling pointer to removed data.
+- **Finishing or Abandoning** a game clears the current‑game pointer (Continue becomes disabled).
+- **Saving** an in‑progress game and continuing it must resume the **same** game state (no fork
+  where Continue and the Load slot diverge); autosave and an explicit manual save of the same game
+  resolve to the same underlying record where appropriate.
+- On launch, validate the pointer/integrity before showing Continue; if the target is missing or
+  invalid, disable Continue rather than crash or load wrong/old data.
+- Add tests covering: delete‑then‑Continue (must be disabled / must not load), finish‑then‑Continue,
+  save → delete → Continue, and resume‑matches‑saved‑state.
 
 #### 7.10.5 Pause / in‑game menu
 - Pressing **Esc** (or a Pause button) during a game opens a `PAUSE_MENU` overlay:
@@ -792,6 +817,96 @@ having the player perform them:
   experienced players can turn it off.
 - Consistent with §7.12 (map clarity) and §7.13 (action‑UI clarity) so the explanations match
   what the player sees on the board.
+
+### 7.15 Map System — Multiple Maps & Era‑Morphing Boards
+
+> **Change requested:** the game must offer **more than one board**. There should be **5 distinct
+> full maps** plus **5 smaller "fast‑play" maps** (10 total), each with its own locations, links,
+> and card deck. Boards must **morph between eras**: the Canal Era uses one kind of route, the Rail
+> Era another, and some large maps add a third **Air Era** with air routes. When an era changes,
+> the available route type, the locations/positions, and the islands and their names may change.
+
+This generalizes the board from a single fixed layout into a **data‑driven Map registry**. The
+pure engine already loads board data from `src/core/data/`; we extend it so each map is a
+self‑contained `MapDefinition`, and the active map is chosen at Game Setup.
+
+#### 7.15.1 Map registry & selection
+- A `maps/` data folder holds one module per map; a registry exposes all maps with metadata
+  (id, name, size, era list, recommended player counts, estimated play time, thumbnail).
+- **Game Setup** gains a **map picker** (preview image + description + size/duration tags), with
+  filters for *Full* vs *Fast‑play* and by number of eras.
+- The chosen `mapId` is stored in `GameState.options` and in saves/replays so a game always
+  reloads on the correct map. Setup, deck composition, and the board view all key off the map.
+
+#### 7.15.2 The 10 maps
+- **5 Full maps** (large, rich, ~standard length): distinct geographies, location sets, link
+  networks, merchant placement, and bespoke card decks. Each has its own theme/skin.
+- **5 Fast‑play maps** (small, fewer locations/links, shorter decks): tuned to **play quickly and
+  perform well**, ideal for short sessions and lower‑end machines. Must remain rules‑complete.
+- Every map declares its **player‑count rules** (which cards/merchants are removed at 2/3/4
+  players) just like the base game.
+- Performance budget: fast maps target snappy turns and smooth pan/zoom even on modest hardware;
+  large maps use level‑of‑detail rendering (§7.12) to stay at ~60 fps.
+
+#### 7.15.3 Era‑specific routes & era‑morphing layout
+- Each map defines an **ordered list of eras**. Standard maps: `['canal','rail']`. Selected large
+  maps: `['canal','rail','air']`.
+- **Route type per era** is data‑driven and visually distinct:
+  - **Canal Era → canal/water routes** (e.g. waterway styling).
+  - **Rail Era → rail routes** (railway styling).
+  - **Air Era → air routes** (flight‑path styling, e.g. dashed arcs between hubs).
+- **Routes match the era's shape**: link line geometry/style is defined per era, so the network
+  literally looks different each era.
+- **Layout morphs on era change**: locations may **reposition**, and **islands and their names may
+  change**, between eras. The board plays an **animated transition** (reposition/rename/route‑swap)
+  during the era change so the player sees the world evolve. End‑of‑era maintenance (removing the
+  previous era's links, etc.) integrates with this morph.
+- The engine's connectivity/network selectors operate on the **active era's** topology; saves and
+  replays restore the correct era topology.
+
+#### 7.15.4 Air Era (optional third era, on maps that declare it)
+- For maps with an Air Era, after the Rail Era the board transitions to air routes. The Air Era
+  reuses the same action/economy framework (build, network with air links, sell, income, scoring)
+  with **per‑era parameters defined by the map** (link cost, resource needed for air links, what
+  air links score). Default rules mirror the rail‑link pattern unless a map overrides them.
+- Maps without an Air Era are unaffected — the standard 2‑era game is the default.
+- All new Air‑Era rules are documented in the Rules Library and taught contextually (§7.14).
+
+#### 7.15.5 Islands, locations & naming per era
+- A map may define **islands** (named sub‑regions/landmasses). Island sets and their **names can
+  differ per era** (e.g. a location/island is renamed or relocated when the era advances).
+- All location and island names are **i18n keys** (EN/RU/UZ); each map ships its own name set.
+- The legend, tooltips, Rules Library, and logs use the **active map + era** names consistently.
+
+#### 7.15.6 Data model additions (representative)
+```ts
+type EraId = 'canal' | 'rail' | 'air';
+
+interface EraDef {
+  id: EraId;
+  routeType: 'canal' | 'rail' | 'air';
+  routeStyle: RouteStyle;            // visual styling for this era's links
+  params: EraRuleParams;             // link cost, resource per link, link scoring, etc.
+}
+
+interface MapDefinition {
+  id: string;
+  nameKey: string;                   // i18n
+  size: 'small' | 'medium' | 'large';
+  fastPlay: boolean;                 // true for the 5 fast maps
+  thumbnail: string;
+  eras: EraDef[];                    // ['canal','rail'] or ['canal','rail','air']
+  // Per-era topology (positions/names/islands may change between eras):
+  locations: Record<EraId, LocationDef[]>;
+  links: Record<EraId, LinkLineDef[]>;
+  merchants: Record<EraId, MerchantDef[]>;
+  islands?: Record<EraId, IslandDef[]>;
+  deck: DeckDefinition;              // map-specific card deck (per player count)
+  playerCountRules: PlayerCountRules;
+}
+```
+- `GameState` references the active map and the current `EraId`; the board renderer reads
+  `map.locations[era]` / `map.links[era]` so the view updates when the era changes.
 
 ---
 
@@ -1132,6 +1247,69 @@ Working names (finalize during implementation, keep consistent everywhere):
       requires a connected runtime (see Definition of Done notes).
 - [x] **6.8** Finalize `ASSETS_CREDITS.md`; rulebook PDF excluded from distribution.
       *DoD: M6 reached — installable desktop builds configured for all three OSes.*
+
+### Phase 8 — Multi‑Map System & Era‑Morphing Boards (§7.15)
+
+> Add multiple boards, era‑specific routes, era‑morphing layouts, an optional Air Era on large
+> maps, and per‑era islands/locations — turning the single fixed board into a data‑driven map
+> registry. All names localized EN/RU/UZ; saves/replays bind to the chosen map.
+
+**Map framework**
+- [ ] **8.1** Refactor board data into a `MapDefinition` model (§7.15.6) and a **map registry**
+      that lists all maps with metadata; the engine loads the active map by `mapId`.
+- [ ] **8.2** Store `mapId` in `GameState.options`, saves, and replays; setup/deck/board all key
+      off the active map. Add save‑migration for older single‑map saves.
+- [ ] **8.3** Add a **map picker** to Game Setup (preview, description, size/duration tags, filter
+      Full vs Fast‑play and by era count).
+- [ ] **8.4** Generalize setup, deck composition, connectivity/network selectors, and the board
+      renderer to read **per‑era** topology (`map.locations[era]`, `map.links[era]`).
+
+**Era‑specific routes & morphing**
+- [ ] **8.5** Make each map declare an **ordered era list** and a **route type + visual style per
+      era** (canal/water, rail, air) so the network looks different each era.
+- [ ] **8.6** Implement **era‑morph transition**: on era change, reposition locations, swap route
+      types, and change islands/names, with an **animated** transition; integrate with end‑of‑era
+      maintenance.
+- [ ] **8.7** Implement the **optional Air Era** (third era) for maps that declare it: air links
+      with map‑defined cost/resource/scoring (defaults mirror the rail‑link pattern); standard
+      2‑era maps unaffected. Document Air‑Era rules in the Rules Library + contextual help.
+- [ ] **8.8** Implement **islands & per‑era naming**: island sets and names that can differ per era;
+      all location/island names as i18n keys (EN/RU/UZ).
+
+**The 10 maps**
+- [ ] **8.9** Author **5 Full maps** (distinct geography, locations, link networks, merchants, and
+      bespoke card decks + skins), each with its own player‑count rules. At least one Full map
+      includes an **Air Era**.
+- [ ] **8.10** Author **5 Fast‑play maps** (small, fewer locations/links, shorter decks) tuned to
+      **play quickly and run smoothly on modest hardware**, while remaining rules‑complete.
+- [ ] **8.11** Provide map‑specific **art/skins, thumbnails, and route styling** per era
+      (original/royalty‑free; record in `ASSETS_CREDITS.md`).
+- [ ] **8.12** Tests: each map's data validates (counts/decks/merchants per player count); a
+      headless full game runs on every map (incl. Air‑Era maps); era‑morph restores correctly from
+      a mid‑era save.
+      *DoD: players can choose from 10 maps (5 full + 5 fast); each era shows its own route type and
+      layout; islands/locations/names change between eras; Air‑Era maps add air routes after the
+      Rail Era; saves/replays reload on the correct map and era; everything localized EN/RU/UZ.*
+
+### Phase 8B — BUGFIX: Save / Continue / Delete consistency (§7.10.6)
+
+> **Bug:** after quitting, the game is kept as the **Continue** game; if the player saves it,
+> deletes that saved game, then presses **Continue**, the app still loads the deleted game.
+> Continue and the saved‑slot list are out of sync.
+- [ ] **8B.1** Make **Continue** use a single **current‑game pointer** (slot id reference), not a
+      stale duplicate copy.
+- [ ] **8B.2** **Enable Continue only if** the referenced save still exists; otherwise disable/grey
+      it out (validate on launch and on returning to the Main Menu).
+- [ ] **8B.3** **Deleting** a save also **clears the Continue pointer** when it is the current game,
+      and refreshes the Main Menu so Continue immediately becomes disabled; never leave a dangling
+      pointer.
+- [ ] **8B.4** **Finishing or Abandoning** a game clears the current‑game pointer.
+- [ ] **8B.5** Ensure **saving + continuing** the same game resolves to the **same** state (no fork
+      between Continue and the Load slot).
+- [ ] **8B.6** Tests: delete‑then‑Continue (disabled / does not load), finish‑then‑Continue,
+      save → delete → Continue, and resume‑matches‑saved‑state.
+      *DoD: it is impossible to resume a deleted or finished game; Continue is disabled whenever
+      there is no valid current game, and always resumes exactly the intended game.*
 
 ### Phase 7 — Stretch (post‑1.0)
 - [ ] **7.1** Online multiplayer (authoritative server reusing the pure engine).
