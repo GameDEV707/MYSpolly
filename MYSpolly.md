@@ -1531,6 +1531,78 @@ Working names (finalize during implementation, keep consistent everywhere):
       watch the world morph from islands → land → air across eras — all consistent, localized
       EN/RU/UZ, and bug‑free.*
 
+### Phase 10 — BUGFIX & OVERHAUL: Distinct Maps, Real Place Names & Genuine Era‑Morphing (§7.15, §7.16.7)
+
+> **Reported problems (must be fixed):**
+> 1. **The maps are nearly identical.** The authored Full maps (`Severn Vale`, `Highland
+>    Reach`, `Iron Coast`, `Skyward Dominion`) all reuse the **same coordinate grid**, the
+>    **same 12‑town + 2‑farm + 5‑merchant skeleton**, and a **near‑identical link topology** —
+>    only the names differ. The 5 Fast‑play maps (`Quill Hollow`, `Tin Brook`, `Maple Cross`,
+>    `Slate Pike`, `Amber Fen`) are likewise clones of a single 6‑town template. Players
+>    experience every board as "the same map with different words".
+> 2. **Raw internal IDs leak onto the board as place labels.** Fast‑map towns/merchants use
+>    ids like `a1`, `a2`, `am1`, `q1`, `t1` (see `src/core/maps/authored.ts`). When a
+>    location's `map.<mapId>.loc.<id>` i18n key fails to resolve, the board falls back to the
+>    raw id (`nameOf(id) ?? id` in `BoardSvg.tsx`), so the player sees **"a1", "am1", "q1"**
+>    etc. where a real place name (e.g. *Amberfen*, *Fengate*) should appear. This is the
+>    "joy nomi a1/am1 bo'lib chiqyapti" bug.
+> 3. **The board does not really morph between eras.** Most maps set `railLinks = canalLinks`
+>    and define **no per‑era positions** (`eraPos`) — so when the era advances, the locations,
+>    mines, the roads/links that open up, the islands and the merchant "stations" stay put.
+>    Per §7.15.3 / §7.16.7 the world must visibly change each era.
+
+**A. Fix raw‑ID place labels (display correctness)**
+- [ ] **10.1** Guarantee **every** location, merchant, island and route on **every** map renders
+      a real, localized **display name** — never a raw internal id. Audit `BoardSvg.tsx`
+      (`nameOf`, the town/merchant `<text>` labels), the guided action flow, the game log, and
+      tooltips: the `?? id` fallback must never surface to the player.
+- [ ] **10.2** Verify the authored‑map i18n keys (`map.<mapId>.loc.*`, `.merch.*`, `.island.*`,
+      `.name`, `.desc`) are **actually registered** in EN/RU/UZ at runtime
+      (`registerMapResources()` ⇄ `buildMapI18n()`), including the classic **Birmingham** map,
+      and that registration happens **before** the board first renders (no module‑evaluation /
+      ordering gap that leaves keys unresolved).
+- [ ] **10.3** Add a test asserting that for **all** maps and **all** eras, resolving each
+      location/merchant/island name key returns a human name (not the key and not the id), in
+      all three languages. Add a dev‑time guard/warning if any name key is missing.
+
+**B. Make every map genuinely distinct**
+- [ ] **10.4** Give each Full map its **own geography**: distinct town **count/placement**
+      (break the shared `x:480/300/660 …` grid), a **different link network shape** (not the
+      same edge pattern re‑labelled), different **merchant placement**, and a **different
+      industry/slot distribution** so each board plays differently (e.g. iron‑scarce vs
+      coal‑rich vs juice/cotton‑heavy). Keep them rules‑complete and balanced.
+- [ ] **10.5** Give each Fast‑play map its **own** small but distinct layout (different town
+      count where sensible, different topology and merchant mix) — not five copies of one
+      template. Keep them quick and performant.
+- [ ] **10.6** Rename internal ids to be **meaningful & unique** (or keep ids but ensure they are
+      never shown — see 10.1); ensure no two maps share an accidentally‑identical structure.
+      Add a test/lint that flags maps whose location set + link topology are isomorphic to
+      another map's (catch future "clone" regressions).
+
+**C. Genuine per‑era morphing (locations, mines, links, islands, stations change)**
+- [ ] **10.7** For each map, define a **distinct network per era** (`linksByEra`): the canal‑era
+      routes must differ from the rail‑era routes (and air‑era where present) — different edges
+      open up, not `railLinks = canalLinks`. The "roads/links that open" must visibly change.
+- [ ] **10.8** Define **per‑era positions** (`eraPos`) and **per‑era names** (`eraNames`) so
+      locations **reposition and can be renamed** between eras (islands‑separated‑by‑water →
+      connected land → air hubs, per §7.16.7), while each location keeps a **stable logical
+      `id`** so persistent level‑2+ tiles still map correctly.
+- [ ] **10.9** Make **mines / production buildings, islands, and merchant "stations"** part of
+      the morph: their **placement and grouping change per era** (e.g. island membership and
+      island **names** differ canal vs rail vs air, not just a renamed label on the same set).
+- [ ] **10.10** Verify the **animated era‑morph transition** (BoardSvg node `transform`
+      transitions + `--era-morph-ms`) plays when the era advances and that the board clearly
+      shows the new layout/routes; integrate with end‑of‑era maintenance.
+- [ ] **10.11** Tests: every map validates per era (counts/decks/merchants, connectivity is a
+      valid playable network in each era); a headless full game runs on every map through all its
+      eras; a **mid‑era save/load** restores the correct era topology with level‑2+ tiles still
+      mapped to the right (repositioned) locations.
+      *DoD: no board ever shows a raw id like "a1"/"am1" — every place shows a proper localized
+      name; the 5 Full + 5 Fast maps are each visibly and mechanically distinct (no two are the
+      same board re‑labelled); and when the era changes, the locations, mines, the links/roads
+      that open, the islands and the merchant stations genuinely reposition/rewire/rename, with a
+      smooth animated transition, all localized EN/RU/UZ.*
+
 ### Phase 7 — Stretch (post‑1.0)
 - [ ] **7.1** Online multiplayer (authoritative server reusing the pure engine).
 - [ ] **7.2** Online/async play, lobbies, reconnection.
