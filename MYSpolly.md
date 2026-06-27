@@ -1050,7 +1050,7 @@ interface MapDefinition {
 - [x] **3.10** **BoardSvg**: locations, link lines, merchants from data (layout coordinates).
 - [x] **3.11** Industry/link tile rendering (level/owner/flipped) drawn on the board nodes.
 - [x] **3.12** **PlayerStrip** (player overview): money, income, VP, spent — per player.
-- [ ] **3.12a** **BUGFIX: Victory‑Point (VP) scoring correctness + per‑player "VP to win"
+- [x] **3.12a** **BUGFIX: Victory‑Point (VP) scoring correctness + per‑player "VP to win"
       indicator.**
       *Observed bug:* the running VP totals shown during a game do not match the final result, and
       the standings flip in a way that looks wrong. In a real game the running scores were
