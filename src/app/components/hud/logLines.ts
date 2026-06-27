@@ -1,0 +1,81 @@
+import type { TFunction } from 'i18next';
+import type { GameState } from '../../../core/model/state.ts';
+import type { GameEvent } from '../../../core/model/events.ts';
+import type { PlayerColor } from '../../../core/model/types.ts';
+import { TOWN_BY_ID, MERCHANT_BY_ID, LINK_LINES } from '../../../core/data/board.ts';
+
+const LINE_BY_ID = Object.fromEntries(LINK_LINES.map((l) => [l.id, l]));
+
+function playerName(t: TFunction, game: GameState, color: PlayerColor): string {
+  return game.players[color]?.name ?? t(`color.${color}`);
+}
+
+function locName(t: TFunction, id: string): string {
+  return t(TOWN_BY_ID[id]?.name ?? MERCHANT_BY_ID[id]?.name ?? id);
+}
+
+/**
+ * Turn a semantic engine event into a full, localized sentence for the game log
+ * (§7.13), e.g. "Blue built a Coal Mine in Dudley". Returns null for events that
+ * should not appear as their own log line.
+ */
+export function logLine(t: TFunction, game: GameState, e: GameEvent): string | null {
+  switch (e.t) {
+    case 'TILE_PLACED':
+      return t(e.overbuilt ? 'log.overbuilt' : 'log.built', {
+        name: playerName(t, game, e.tile.owner),
+        industry: t(`industry.${e.tile.industry}`),
+        level: e.tile.level,
+        location: locName(t, e.tile.locationId),
+      });
+    case 'LINK_PLACED': {
+      const line = LINE_BY_ID[e.link.lineId];
+      return t('log.link', {
+        name: playerName(t, game, e.link.owner),
+        type: t(`linkType.${e.link.type}`),
+        from: line ? locName(t, line.a) : '',
+        to: line ? locName(t, line.b) : '',
+      });
+    }
+    case 'CUBE_TO_MARKET':
+      return t('log.cubeToMarket', {
+        count: e.count,
+        resource: t(`legend.${e.resource}`),
+        income: e.income,
+      });
+    case 'TILE_FLIPPED':
+      return t('log.flipped', { name: playerName(t, game, e.player), income: e.incomeGain });
+    case 'MERCHANT_BONUS':
+      return t('log.merchantBonus', {
+        name: playerName(t, game, e.player),
+        bonus: t(`legend.${e.kind}`),
+      });
+    case 'DEVELOP':
+      return t('log.develop', {
+        name: playerName(t, game, e.player),
+        industry: t(`industry.${e.industry}`),
+      });
+    case 'LOAN_TAKEN':
+      return t('log.loan', { name: playerName(t, game, e.player) });
+    case 'SCOUT':
+      return t('log.scout', { name: playerName(t, game, e.player) });
+    case 'INCOME_COLLECTED':
+      return t('log.income', { name: playerName(t, game, e.player), amount: e.amount });
+    case 'SHORTFALL':
+      return t('log.shortfall', {
+        name: playerName(t, game, e.player),
+        tiles: e.tilesSold,
+        vp: e.vpLost,
+      });
+    case 'ROUND_ENDED':
+      return t('log.roundEnded', { round: e.round });
+    case 'ERA_ENDED':
+      return t('log.eraEnded', { era: t(`game.${e.era}`) });
+    case 'TURN_ENDED':
+      return t('log.turn', { name: playerName(t, game, e.next) });
+    case 'GAME_OVER':
+      return t('log.gameOver', { name: playerName(t, game, e.ranking[0]!) });
+    default:
+      return null;
+  }
+}

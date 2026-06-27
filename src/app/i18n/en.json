@@ -119,7 +119,14 @@
     "sellHint": "Sell goods to a merchant",
     "loanHint": "Take £30, lose 3 income levels",
     "scoutHint": "Discard 2 cards for wild cards",
-    "passHint": "Discard a card, do nothing"
+    "passHint": "Discard a card, do nothing",
+    "buildDesc": "Place an industry tile in a town you can reach.",
+    "networkDesc": "Build a canal or rail link to expand your network.",
+    "developDesc": "Remove low tiles from your mat using iron.",
+    "sellDesc": "Sell finished goods to a connected merchant.",
+    "loanDesc": "Take £30 now, but drop 3 income levels.",
+    "scoutDesc": "Discard 2 cards to gain a wild location and industry.",
+    "passDesc": "Discard a card and take no action."
   },
   "cost": {
     "money": "£{{n}}",
@@ -138,7 +145,10 @@
   },
   "card": {
     "wildLocation": "Wild Location",
-    "wildIndustry": "Wild Industry"
+    "wildIndustry": "Wild Industry",
+    "location": "Location",
+    "industry": "Industry",
+    "wild": "Wild"
   },
   "results": {
     "title": "Final Results",
@@ -240,5 +250,61 @@
     "buildSlot": "Empty build slot",
     "farmBrewery": "Farm Brewery (breweries only)",
     "specialLink": "Special link"
+  },
+  "flow": {
+    "back": "Back",
+    "usingCard": "Using card",
+    "slot": "slot",
+    "tapRemove": "tap to remove",
+    "clickBoard": "Tip: tap a highlighted town on the board.",
+    "clickBoardLine": "Tip: tap links on the board to select them.",
+    "developSecond": "Optionally add a second industry:",
+    "passNote": "This card will be discarded and your action skipped.",
+    "preview": "Cost & effect",
+    "flips": "tile(s) flip",
+    "noCost": "No cost.",
+    "noPreview": "Preview unavailable.",
+    "why": {
+      "build": "No card lets you build a tile right now.",
+      "network": "You can't reach or afford a new link.",
+      "develop": "Nothing on your mat can be developed.",
+      "sell": "No finished goods are connected to a matching merchant.",
+      "loan": "You can't take a loan right now.",
+      "scout": "You need 3 non-wild cards and available wild cards.",
+      "pass": "You can't pass right now."
+    },
+    "prompt": {
+      "action": "Choose an action.",
+      "card": "Choose a card to {{action}}.",
+      "buildLocation": "Pick where to build — tap a highlighted town.",
+      "buildVariant": "Choose what to build in {{location}}.",
+      "network": "Tap a highlighted link to build.",
+      "sellTile": "Pick the goods to sell — tap a highlighted town.",
+      "sellMerchant": "Choose a merchant for goods in {{location}}.",
+      "develop": "Choose 1 or 2 industries to develop.",
+      "scout": "Choose 2 cards to discard.",
+      "confirm": "Review and confirm your {{action}}."
+    }
+  },
+  "linkType": {
+    "canal": "canal",
+    "rail": "rail"
+  },
+  "log": {
+    "built": "{{name}} built a {{industry}} (L{{level}}) in {{location}}.",
+    "overbuilt": "{{name}} overbuilt a {{industry}} (L{{level}}) in {{location}}.",
+    "link": "{{name}} built a {{type}} link between {{from}} and {{to}}.",
+    "cubeToMarket": "{{count}} {{resource}} sold to the market (+£{{income}}).",
+    "flipped": "{{name}} flipped a tile (+{{income}} income).",
+    "merchantBonus": "{{name}} claimed a merchant {{bonus}} bonus.",
+    "develop": "{{name}} developed a {{industry}} tile.",
+    "loan": "{{name}} took a £30 loan.",
+    "scout": "{{name}} scouted for wild cards.",
+    "income": "{{name}} collected £{{amount}} income.",
+    "shortfall": "{{name}} sold {{tiles}} tile(s) and lost {{vp}} VP to cover income.",
+    "roundEnded": "Round {{round}} ended.",
+    "eraEnded": "{{era}} ended.",
+    "turn": "It is now {{name}}'s turn.",
+    "gameOver": "Game over — {{name}} wins!"
   }
 }

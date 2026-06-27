@@ -9,16 +9,20 @@ import { Legend } from '../components/board/Legend.tsx';
 import { PlayerStrip } from '../components/player/PlayerStrip.tsx';
 import { Markets } from '../components/market/Markets.tsx';
 import { Hand } from '../components/cards/Hand.tsx';
-import { ActionBar } from '../components/hud/ActionBar.tsx';
+import { GuidedActionBar } from '../components/hud/GuidedActionBar.tsx';
+import { TurnHud } from '../components/hud/TurnHud.tsx';
 import { Log } from '../components/hud/Log.tsx';
 import { Banner } from '../components/hud/Banner.tsx';
+import { useFlow } from '../components/hud/flowStore.ts';
+import { flowHighlights, isBoardTargetStep } from '../components/hud/flow.ts';
 import { useAnimateEvents } from '../animation/useAnimateEvents.ts';
 import { audio } from '../audio/sound.ts';
 import { Button, Panel } from '../components/ui.tsx';
 
 /**
- * Main game screen. Renders the board + HUD and routes human input through the
- * ActionBar guided flow. AI turns advance automatically (driven by the store).
+ * Main game screen. Renders the camera board + HUD and routes human input
+ * through the guided action flow. The board glows valid targets for the active
+ * action and accepts clicks to choose them. AI turns advance automatically.
  */
 export function GameScreen(props: { replay?: boolean }): JSX.Element {
   const { t } = useTranslation();
@@ -31,6 +35,7 @@ export function GameScreen(props: { replay?: boolean }): JSX.Element {
   const replayIndex = useApp((s) => s.replayIndex);
   const replayActions = useApp((s) => s.replayActions);
   const { settings } = useSettings();
+  const flow = useFlow();
 
   const activeState = game ? game.players[game.activePlayer] : undefined;
   const skipAnims = !!activeState?.isAI && settings.skipAiAnimations;
@@ -52,17 +57,19 @@ export function GameScreen(props: { replay?: boolean }): JSX.Element {
     return () => window.removeEventListener('keydown', onKey);
   }, [goto, skip]);
 
-  const highlights = useMemo(() => {
-    if (!game) return { locs: new Set<string>(), lines: new Set<string>() };
-    const acts = legalActions(game);
-    const locs = new Set<string>();
-    const lines = new Set<string>();
-    for (const a of acts) {
-      if (a.type === 'BUILD') locs.add(a.locationId);
-      if (a.type === 'NETWORK') a.links.forEach((l) => lines.add(l.lineId));
-    }
-    return { locs, lines };
-  }, [game]);
+  const isHumanTurn = !!game && !activeState?.isAI && !props.replay;
+  const flowActive = isHumanTurn && flow.actionType !== null;
+
+  // While an action is being targeted, glow valid board elements (and dim the
+  // rest). Otherwise the board shows no affordance highlights.
+  const acts = useMemo(() => (game ? legalActions(game) : []), [game]);
+  const highlights = useMemo(
+    () =>
+      game && flowActive
+        ? flowHighlights(game, acts, flow)
+        : { locs: new Set<string>(), lines: new Set<string>() },
+    [game, acts, flow, flowActive],
+  );
 
   if (!game) {
     return (
@@ -72,8 +79,9 @@ export function GameScreen(props: { replay?: boolean }): JSX.Element {
     );
   }
 
+  const dim = flowActive && (highlights.locs.size > 0 || highlights.lines.size > 0);
+  const boardTargeting = flowActive && isBoardTargetStep(flow);
   const active = game.players[game.activePlayer]!;
-  const isHumanTurn = !active.isAI && !props.replay;
 
   return (
     <div
@@ -90,18 +98,10 @@ export function GameScreen(props: { replay?: boolean }): JSX.Element {
       <div
         style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', minHeight: 0 }}
       >
-        <Panel style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div>
-            <strong>{t(`game.${game.era}`)}</strong> · {t('game.round', { round: game.round })} ·{' '}
-            {t('game.actionsLeft', { n: game.actionsLeftThisTurn })}
-          </div>
-          <div>
-            {aiThinking
-              ? t('game.aiThinking', { name: active.name })
-              : isHumanTurn
-                ? t('game.yourTurn')
-                : t('game.turn', { name: active.name })}
-          </div>
+        <Panel
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}
+        >
+          <TurnHud game={game} aiThinking={aiThinking} isHumanTurn={isHumanTurn} />
           {props.replay ? (
             <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
               <Button variant="ghost" onClick={() => replayStep(-1)}>
@@ -130,12 +130,11 @@ export function GameScreen(props: { replay?: boolean }): JSX.Element {
                 game={game}
                 lod={lod}
                 showTooltips={settings.showTooltips}
-                highlightLocations={
-                  isHumanTurn && settings.showLegalMoves ? highlights.locs : new Set()
-                }
-                highlightLines={
-                  isHumanTurn && settings.showLegalMoves ? highlights.lines : new Set()
-                }
+                highlightLocations={highlights.locs}
+                highlightLines={highlights.lines}
+                dimUnhighlighted={dim}
+                onLocationClick={boardTargeting ? flow.pickLocation : undefined}
+                onLineClick={boardTargeting ? flow.pickLine : undefined}
               />
             )}
           </BoardCamera>
@@ -155,14 +154,14 @@ export function GameScreen(props: { replay?: boolean }): JSX.Element {
       >
         <PlayerStrip game={game} />
         <Markets coal={game.coalMarket} iron={game.ironMarket} />
-        {isHumanTurn && <ActionBar game={game} onDispatch={dispatch} />}
+        {isHumanTurn && <GuidedActionBar game={game} onDispatch={dispatch} />}
         <div>
           <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 4 }}>
             {t('game.hand')} — {active.name}
           </div>
           <Hand cards={active.hand} hidden={active.isAI} />
         </div>
-        <Log events={events} />
+        <Log game={game} events={events} />
       </div>
     </div>
   );

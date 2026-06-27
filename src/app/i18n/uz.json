@@ -119,7 +119,14 @@
     "sellHint": "Tovarlarni savdogarga sotish",
     "loanHint": "£30 olish, 3 daromad darajasini yoʻqotish",
     "scoutHint": "Wild kartalar uchun 2 karta tashlash",
-    "passHint": "Karta tashlash, hech nima qilmaslik"
+    "passHint": "Karta tashlash, hech nima qilmaslik",
+    "buildDesc": "Yeta oladigan shaharga sanoat plitkasini qoʻying.",
+    "networkDesc": "Tarmoqni kengaytirish uchun kanal yoki temir yoʻl quring.",
+    "developDesc": "Temir sarflab, planshetdan past plitkalarni olib tashlang.",
+    "sellDesc": "Tayyor mahsulotni ulangan savdogarga soting.",
+    "loanDesc": "Hozir £30 oling, lekin 3 daromad darajasini yoʻqoting.",
+    "scoutDesc": "Wild joy va sanoat olish uchun 2 karta tashlang.",
+    "passDesc": "Kartani tashlang va harakatni oʻtkazib yuboring."
   },
   "cost": {
     "money": "£{{n}}",
@@ -138,7 +145,10 @@
   },
   "card": {
     "wildLocation": "Wild joy",
-    "wildIndustry": "Wild sanoat"
+    "wildIndustry": "Wild sanoat",
+    "location": "Joy",
+    "industry": "Sanoat",
+    "wild": "Wild"
   },
   "results": {
     "title": "Natijalar",
@@ -240,5 +250,61 @@
     "buildSlot": "Boʻsh uya",
     "farmBrewery": "Fermer pivo zavodi (faqat pivo zavodlari)",
     "specialLink": "Maxsus aloqa"
+  },
+  "flow": {
+    "back": "Orqaga",
+    "usingCard": "Karta ishlatilmoqda",
+    "slot": "uya",
+    "tapRemove": "olib tashlash uchun bosing",
+    "clickBoard": "Maslahat: maydondagi yoritilgan shaharni bosing.",
+    "clickBoardLine": "Maslahat: tanlash uchun maydondagi aloqalarni bosing.",
+    "developSecond": "Ixtiyoriy ravishda ikkinchi sanoatni qoʻshing:",
+    "passNote": "Bu karta tashlanadi va harakatingiz oʻtkazib yuboriladi.",
+    "preview": "Narx va taʼsir",
+    "flips": "plitka agʻdariladi",
+    "noCost": "Xarajatsiz.",
+    "noPreview": "Koʻrib chiqish mavjud emas.",
+    "why": {
+      "build": "Hozir plitka qurishga imkon beradigan karta yoʻq.",
+      "network": "Yangi aloqaga yeta olmaysiz yoki toʻlay olmaysiz.",
+      "develop": "Planshetingizda rivojlantiradigan narsa yoʻq.",
+      "sell": "Mos savdogarga ulangan tayyor mahsulot yoʻq.",
+      "loan": "Hozir qarz ola olmaysiz.",
+      "scout": "3 ta wild boʻlmagan karta va mavjud wild kartalar kerak.",
+      "pass": "Hozir pas qila olmaysiz."
+    },
+    "prompt": {
+      "action": "Harakatni tanlang.",
+      "card": "«{{action}}» uchun karta tanlang.",
+      "buildLocation": "Qayerda qurishni tanlang — yoritilgan shaharni bosing.",
+      "buildVariant": "{{location}} shahrida nima qurishni tanlang.",
+      "network": "Qurish uchun yoritilgan aloqani bosing.",
+      "sellTile": "Sotiladigan mahsulotni tanlang — yoritilgan shaharni bosing.",
+      "sellMerchant": "{{location}} shahridagi mahsulot uchun savdogarni tanlang.",
+      "develop": "Rivojlantirish uchun 1 yoki 2 sanoatni tanlang.",
+      "scout": "Tashlash uchun 2 karta tanlang.",
+      "confirm": "«{{action}}» harakatini koʻrib chiqing va tasdiqlang."
+    }
+  },
+  "linkType": {
+    "canal": "kanal",
+    "rail": "temir yoʻl"
+  },
+  "log": {
+    "built": "{{name}} {{location}} shahrida {{industry}} ({{level}}-daraja) qurdi.",
+    "overbuilt": "{{name}} {{location}} shahrida {{industry}} ({{level}}-daraja) ustiga qurdi.",
+    "link": "{{name}} {{from}} va {{to}} oʻrtasida {{type}} aloqasini qurdi.",
+    "cubeToMarket": "{{count}} {{resource}} bozorga sotildi (+£{{income}}).",
+    "flipped": "{{name}} plitkani agʻdardi (+{{income}} daromad).",
+    "merchantBonus": "{{name}} savdogar bonusini ({{bonus}}) oldi.",
+    "develop": "{{name}} {{industry}} plitkasini rivojlantirdi.",
+    "loan": "{{name}} £30 qarz oldi.",
+    "scout": "{{name}} wild kartalar uchun razvedka qildi.",
+    "income": "{{name}} £{{amount}} daromad oldi.",
+    "shortfall": "{{name}} {{tiles}} plitka sotdi va daromadni qoplash uchun {{vp}} GO yoʻqotdi.",
+    "roundEnded": "{{round}}-raund tugadi.",
+    "eraEnded": "{{era}} tugadi.",
+    "turn": "Endi {{name}} navbati.",
+    "gameOver": "Oʻyin tugadi — {{name}} gʻolib!"
   }
 }

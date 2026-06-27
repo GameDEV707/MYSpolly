@@ -885,22 +885,22 @@ The board is wrapped in a **camera/viewport controller** that applies a 2D trans
       bonuses, canal vs rail), localized EN/RU/UZ. Label Farm Breweries + special links.
 
 **Action & move UI clarity — §7.13**
-- [ ] **3R.17** **Remove all raw `legalActions` enumeration dumps** from the UI (no more repeated
+- [x] **3R.17** **Remove all raw `legalActions` enumeration dumps** from the UI (no more repeated
       "Discard a card, do nothing — N options").
-- [ ] **3R.18** **Action‑first guided flow** from the Action Bar: each of the 7 actions has an icon,
+- [x] **3R.18** **Action‑first guided flow** from the Action Bar: each of the 7 actions has an icon,
       localized name, and one‑line description; illegal actions disabled with a "why" tooltip.
-- [ ] **3R.19** Step‑by‑step resolution: pick **card** (readable card faces) → pick **target on the
+- [x] **3R.19** Step‑by‑step resolution: pick **card** (readable card faces) → pick **target on the
       board** (click highlighted element, not a text list) → resolve **resource sources** → confirm.
-- [ ] **3R.20** **Cost & effect preview** before confirming (money/coal/iron/beer spent;
+- [x] **3R.20** **Cost & effect preview** before confirming (money/coal/iron/beer spent;
       income/VP/flips gained); Cancel/Back at every step.
-- [ ] **3R.21** Fix **Pass**: a single clear "Pass (discard a card)" choice with a card picker —
+- [x] **3R.21** Fix **Pass**: a single clear "Pass (discard a card)" choice with a card picker —
       never N duplicated "do nothing" rows; choose which card(s) to discard.
-- [ ] **3R.22** Make **discards** an explicit choice of *which* card (faces shown), never "option 1…8".
-- [ ] **3R.23** **Turn HUD**: era, round, active player, actions remaining, and a clear current‑step
+- [x] **3R.22** Make **discards** an explicit choice of *which* card (faces shown), never "option 1…8".
+- [x] **3R.23** **Turn HUD**: era, round, active player, actions remaining, and a clear current‑step
       prompt (e.g. "Pick a card to build a Cotton Mill in Birmingham").
-- [ ] **3R.24** Rewrite **log messages** as full localized sentences (EN/RU/UZ), e.g.
+- [x] **3R.24** Rewrite **log messages** as full localized sentences (EN/RU/UZ), e.g.
       "Blue built a Coal Mine in Dudley".
-- [ ] **3R.25** Render **AI moves** as readable animated actions with a short log line; no internal
+- [x] **3R.25** Render **AI moves** as readable animated actions with a short log line; no internal
       enumerations shown to the player.
       *DoD: the board pans/zooms with the mouse, locations are self‑explanatory, and every move is
       chosen through a clear guided flow — no cryptic option lists. The game reads like Brass:
