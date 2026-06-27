@@ -260,7 +260,10 @@ export function buildMap(spec: MapSpec): MapDefinition {
     merchantLinkVp,
     islands,
     layout,
-    merchantTiles: spec.merchantTiles.map((t) => ({ accepts: [...t.accepts], minPlayers: t.minPlayers })),
+    merchantTiles: spec.merchantTiles.map((t) => ({
+      accepts: [...t.accepts],
+      minPlayers: t.minPlayers,
+    })),
     playerCountRules: spec.playerCountRules,
     deck: buildDeck(spec),
   };

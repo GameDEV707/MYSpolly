@@ -94,7 +94,10 @@ export const BIRMINGHAM_MAP: MapDefinition = {
   merchantLinkVp: perEra(() => ({ ...MERCHANT_LINK_VP })),
   islands: perEra(() => []),
   layout: perEra(() => LAYOUT),
-  merchantTiles: MERCHANT_TILE_DEFS.map((t) => ({ accepts: [...t.accepts], minPlayers: t.minPlayers })),
+  merchantTiles: MERCHANT_TILE_DEFS.map((t) => ({
+    accepts: [...t.accepts],
+    minPlayers: t.minPlayers,
+  })),
   playerCountRules: {
     excludedBands: EXCLUDED_BANDS,
     emptyMerchants: EMPTY_MERCHANTS_BY_PLAYERS,

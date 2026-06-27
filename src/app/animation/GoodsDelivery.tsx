@@ -58,7 +58,9 @@ export function GoodsDeliveryLayer(props: {
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
 
   useEffect(() => {
-    const sold = events.filter((e): e is Extract<GameEvent, { t: 'GOODS_SOLD' }> => e.t === 'GOODS_SOLD');
+    const sold = events.filter(
+      (e): e is Extract<GameEvent, { t: 'GOODS_SOLD' }> => e.t === 'GOODS_SOLD',
+    );
     if (sold.length === 0) return;
 
     const reduced = settings.reducedMotion;

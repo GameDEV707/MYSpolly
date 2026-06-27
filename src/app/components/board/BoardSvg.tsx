@@ -225,7 +225,14 @@ export function BoardSvg(props: {
                 {showTooltips && <title>{t('board.inNetwork')}</title>}
               </circle>
             )}
-            <text x={0} y={-h / 2 + 17} textAnchor="middle" fontSize={11} fontWeight={600} fill="var(--text)">
+            <text
+              x={0}
+              y={-h / 2 + 17}
+              textAnchor="middle"
+              fontSize={11}
+              fontWeight={600}
+              fill="var(--text)"
+            >
               {t(loc.name)}
             </text>
 
@@ -290,7 +297,14 @@ export function BoardSvg(props: {
               strokeWidth={highlighted ? 3 : isHover ? 2 : 1}
               filter={highlighted ? 'url(#glow)' : undefined}
             />
-            <text x={0} y={-28} textAnchor="middle" fontSize={11} fontWeight={600} fill="var(--text)">
+            <text
+              x={0}
+              y={-28}
+              textAnchor="middle"
+              fontSize={11}
+              fontWeight={600}
+              fill="var(--text)"
+            >
               {t(m.name)}
             </text>
             <text x={0} y={-4} textAnchor="middle" fontSize={14}>

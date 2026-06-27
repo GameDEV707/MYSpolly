@@ -12,9 +12,7 @@ export const DEFAULT_MAP_ID = 'birmingham';
 
 const ALL_MAPS: MapDefinition[] = [BIRMINGHAM_MAP, ...FULL_MAPS, ...FAST_MAPS];
 
-const MAP_BY_ID: Record<string, MapDefinition> = Object.fromEntries(
-  ALL_MAPS.map((m) => [m.id, m]),
-);
+const MAP_BY_ID: Record<string, MapDefinition> = Object.fromEntries(ALL_MAPS.map((m) => [m.id, m]));
 
 /** Resolve a map by id, falling back to the default map for unknown ids. */
 export function getMap(mapId: string | undefined): MapDefinition {

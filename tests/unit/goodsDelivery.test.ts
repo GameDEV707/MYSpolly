@@ -15,7 +15,9 @@ function seats(n: number): { color: PlayerColor; name: string; isAI: boolean }[]
 }
 
 /** Play random legal actions until a SELL happens, capturing its events. */
-function playUntilSell(seed: number): { state: GameState; events: ReturnType<typeof reduce>['events'] } | null {
+function playUntilSell(
+  seed: number,
+): { state: GameState; events: ReturnType<typeof reduce>['events'] } | null {
   let s = buildInitialState({ seats: seats(3), seed });
   let rng = seed * 2654435761;
   const rand = (): number => {

@@ -13,7 +13,9 @@ import { INDUSTRY_TYPES, PLAYER_COLORS } from '../../src/core/model/types.ts';
 import type { GameState } from '../../src/core/model/state.ts';
 import type { MapDefinition } from '../../src/core/maps/types.ts';
 
-function seats(n: number): { color: (typeof PLAYER_COLORS)[number]; name: string; isAI: boolean }[] {
+function seats(
+  n: number,
+): { color: (typeof PLAYER_COLORS)[number]; name: string; isAI: boolean }[] {
   return PLAYER_COLORS.slice(0, n).map((c) => ({ color: c, name: c, isAI: true }));
 }
 
