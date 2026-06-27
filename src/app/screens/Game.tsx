@@ -4,6 +4,7 @@ import { useApp } from '../store/appStore.ts';
 import { useSettings } from '../store/settings.ts';
 import { legalActions } from '../../core/selectors/legalActions.ts';
 import { BoardSvg } from '../components/board/BoardSvg.tsx';
+import { BoardCamera } from '../components/board/BoardCamera.tsx';
 import { PlayerStrip } from '../components/player/PlayerStrip.tsx';
 import { Markets } from '../components/market/Markets.tsx';
 import { Hand } from '../components/cards/Hand.tsx';
@@ -122,11 +123,15 @@ export function GameScreen(props: { replay?: boolean }): JSX.Element {
           )}
         </Panel>
         <div style={{ flex: 1, minHeight: 0 }}>
-          <BoardSvg
-            game={game}
-            highlightLocations={isHumanTurn ? highlights.locs : new Set()}
-            highlightLines={isHumanTurn ? highlights.lines : new Set()}
-          />
+          <BoardCamera>
+            {() => (
+              <BoardSvg
+                game={game}
+                highlightLocations={isHumanTurn ? highlights.locs : new Set()}
+                highlightLines={isHumanTurn ? highlights.lines : new Set()}
+              />
+            )}
+          </BoardCamera>
         </div>
       </div>
 

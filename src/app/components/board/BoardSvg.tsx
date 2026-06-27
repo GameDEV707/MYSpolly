@@ -37,8 +37,8 @@ export function BoardSvg(props: {
       style={{
         width: '100%',
         height: '100%',
-        background: 'var(--board-water)',
-        borderRadius: 'var(--radius)',
+        background: 'transparent',
+        display: 'block',
       }}
       role="img"
       aria-label="Game board"

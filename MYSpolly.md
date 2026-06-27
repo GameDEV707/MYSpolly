@@ -857,16 +857,16 @@ The board is wrapped in a **camera/viewport controller** that applies a 2D trans
 > §7.11, §7.12, §7.13. Goal: make the game look and feel like Brass: Birmingham.
 
 **Board camera (pan & zoom) — §7.11**
-- [ ] **3R.1** Add a `useBoardCamera()` controller holding `{ scale, translateX, translateY }`
+- [x] **3R.1** Add a `useBoardCamera()` controller holding `{ scale, translateX, translateY }`
       as UI state (ref/store, applied via CSS transform — no per‑frame React re‑render).
-- [ ] **3R.2** **Mouse‑wheel zoom toward the cursor**, clamped to `minZoom`…`maxZoom`, smooth/eased.
-- [ ] **3R.3** **Click‑drag panning** in all directions (left/right/up/down); the map is no longer
+- [x] **3R.2** **Mouse‑wheel zoom toward the cursor**, clamped to `minZoom`…`maxZoom`, smooth/eased.
+- [x] **3R.3** **Click‑drag panning** in all directions (left/right/up/down); the map is no longer
       locked to centre.
-- [ ] **3R.4** Touch/trackpad **pinch‑zoom + two‑finger pan** support.
-- [ ] **3R.5** **Pan bounds clamping** (board can't be lost off‑screen) + generous over‑pan at high zoom.
-- [ ] **3R.6** **On‑screen zoom in/out + Reset/Fit‑to‑screen** controls; keyboard arrows/`+`/`-`/`0`.
-- [ ] **3R.7** Auto **fit‑to‑screen** on load and on window resize; persist view per session.
-- [ ] **3R.8** Verify a steady **60 fps** while panning/zooming; optional mini‑map.
+- [x] **3R.4** Touch/trackpad **pinch‑zoom + two‑finger pan** support.
+- [x] **3R.5** **Pan bounds clamping** (board can't be lost off‑screen) + generous over‑pan at high zoom.
+- [x] **3R.6** **On‑screen zoom in/out + Reset/Fit‑to‑screen** controls; keyboard arrows/`+`/`-`/`0`.
+- [x] **3R.7** Auto **fit‑to‑screen** on load and on window resize; persist view per session.
+- [x] **3R.8** Verify a steady **60 fps** while panning/zooming; optional mini‑map.
 
 **Map clarity — §7.12**
 - [ ] **3R.9** Redesign **location nodes**: localized name, region colour band, clearly drawn build
