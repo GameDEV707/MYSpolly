@@ -641,6 +641,92 @@ All values persist immediately (IndexedDB on web / app‑data file on desktop) a
   **Resume**, **Settings**, **Save Game** (to a named slot), **How to Play**, **Save & Quit to
   Main Menu**, **Abandon Game** (confirm). The game state is untouched while paused.
 
+### 7.11 Board Camera — Pan & Zoom (Interactive Map View)
+
+> **Problem being fixed:** the board map is currently rendered statically, locked in the centre,
+> and cannot be moved or zoomed. The map must become a fully interactive, navigable camera view
+> like a real digital board game.
+
+The board is wrapped in a **camera/viewport controller** that applies a 2D transform
+`{ scale, translateX, translateY }` to the SVG board group. The map is **not** locked to centre.
+
+- **Mouse‑wheel zoom**: scrolling zooms **toward the cursor position** (the point under the
+  pointer stays fixed). Clamp scale to `minZoom`…`maxZoom` (e.g. 0.5×…3×). Smooth/eased zoom.
+- **Click‑drag pan**: pressing and dragging with the mouse (left button, or middle‑button)
+  moves the map in any direction (left/right/up/down). Inertia/easing optional.
+- **Touch / trackpad**: pinch‑to‑zoom and two‑finger pan support.
+- **Pan bounds**: clamp translation so the board can't be dragged completely off‑screen
+  (keep at least a margin of the board visible); allow generous over‑pan at high zoom.
+- **Keyboard**: arrow keys pan, `+`/`-` zoom, `0` resets view.
+- **On‑screen controls**: zoom‑in / zoom‑out / **reset view (fit board to screen)** buttons,
+  plus an optional mini‑map. A "fit to screen" default is computed on load and on window resize.
+- **Performance**: transforms are GPU‑friendly (CSS `transform` on the SVG container); no React
+  re‑render per frame — camera state lives in a ref/store and is applied imperatively or via a
+  lightweight motion value. Target a steady 60 fps while panning/zooming.
+- **Implementation note**: a small dedicated hook `useBoardCamera()` owns the transform and
+  pointer handlers; consider `react-zoom-pan-pinch` or a custom controller. Camera state is UI
+  state (never part of the pure `GameState`) but the current view may be persisted per session.
+
+### 7.12 Map Clarity — Readable, Self‑Explanatory Locations
+
+> **Problem being fixed:** locations on the map are hard to understand. They must clearly
+> communicate, at a glance, *what* each place is and *what can be built/done there*, matching the
+> visual logic of Brass: Birmingham.
+
+- **Location cards/nodes** show: the localized location **name**, a subtle colour band matching
+  its region/player‑count colour, and clearly drawn **build slots** with the **industry icons**
+  each slot allows (cotton, coal, iron, manufacturer, pottery, brewery), including shared‑icon
+  slots. Empty vs. occupied slots are visually distinct.
+- **Built tiles** render in the slot with owner colour, level number, remaining resource cubes
+  (coal/iron) or beer, and a clear **flipped/unflipped** appearance.
+- **Merchants** clearly show their accepted industry icon(s), their **bonus type** (Develop /
+  Income / VP / Money) with an icon + tooltip, and the merchant‑beer barrel.
+- **Links/lines**: canal vs. rail lines are visually distinct (style/colour); buildable lines for
+  the current action are highlighted; owned links show owner colour.
+- **Hover/focus tooltip** on any location: name, which industries can be built there, current
+  tiles, connection info, and whether it is in the active player's network.
+- **Legibility at zoom**: labels and icons scale sensibly; at low zoom show names + region colour,
+  at high zoom reveal slot icons and tile details (level‑of‑detail rendering).
+- **Network/affordance highlighting**: when an action is active, valid target locations/slots/
+  lines glow; invalid ones are dimmed, so the player always sees where a move is legal.
+- **Legend / key**: an always‑available legend explains icons (coal, iron, beer, VP, £, income,
+  merchant bonuses, canal vs rail), fully localized (EN/RU/UZ).
+- Farm Breweries and special links (Cannock / Kidderminster–Worcester) are labelled clearly.
+
+### 7.13 Action & Move UI Clarity (Human‑Readable Moves)
+
+> **Problem being fixed:** the move list currently dumps raw enumerated `legalActions`, showing
+> meaningless, repeated entries like *"Discard a card, do nothing — 8 options"*. This is confusing
+> and must be replaced with a guided, human‑readable action UX like the real game.
+
+- **No raw enumeration dumps.** Never present the player a flat list of identical/cryptic options.
+  The UI must translate engine moves into clear, contextual choices.
+- **Action‑first guided flow** (per §7.3): the player first picks an **action** from the Action
+  Bar (Build, Network, Develop, Sell, Loan, Scout, Pass) — each with an icon, localized name, and
+  a one‑line description of what it does. Illegal actions are disabled with a tooltip explaining
+  *why* (e.g. "No card lets you build here", "Not connected to a merchant").
+- After choosing an action, the player is guided step‑by‑step:
+  1. **Choose the card** to spend (shown as readable cards, not indices), with a hint of what each
+     card enables.
+  2. **Choose the target** (location/slot/line) by clicking the highlighted board element — not by
+     picking from a text list.
+  3. **Resolve resource choices** (which coal mine / iron works / brewery / market to draw from)
+     with a clear picker showing source and cost.
+  4. **Confirm** against a **cost & effect preview** (money, coal, iron, beer spent; income/VP/
+     flips gained). Allow Cancel/Back at every step.
+- **Pass action**: presented as a single clear choice — "Pass (discard a card)" with a card
+  picker — **not** as N duplicated "do nothing" rows. If passing both actions, ask once and let
+  the player choose which card(s) to discard.
+- **Discards** are always an explicit, understandable choice of *which* card, with the card faces
+  shown; never an opaque "option 1…8" list.
+- **Turn HUD**: clearly show era, round, whose turn it is, actions remaining, and a concise
+  prompt of the current step ("Pick a card to build a Cotton Mill in Birmingham").
+- **Localization**: every action name, description, prompt, tooltip, and log line is an i18n key
+  in EN/RU/UZ. Log messages read as full sentences (e.g. "Blue built a Coal Mine in Dudley"),
+  not terse fragments.
+- **AI turns**: render the bot's chosen move as a readable, animated action with a short log line;
+  do not expose internal enumerations to the player.
+
 ---
 
 ## 8. Testing & Quality Strategy
@@ -763,6 +849,62 @@ All values persist immediately (IndexedDB on web / app‑data file on desktop) a
 - [x] **3.20** **Results** screen with standings + Rematch / Main Menu / View Replay.
       *DoD: M3 reached — hot‑seat play in the browser, always starting from the Main Menu,
       with working New Game / Continue / Load / Settings.*
+
+### Phase 3R — Board Camera, Map Clarity & Action‑UI Clarity (UX Revision)
+
+> Fixes for current issues: the map is locked/static, locations are hard to read, and the move
+> list shows confusing raw options (e.g. "Discard a card, do nothing — 8 options"). Implements
+> §7.11, §7.12, §7.13. Goal: make the game look and feel like Brass: Birmingham.
+
+**Board camera (pan & zoom) — §7.11**
+- [ ] **3R.1** Add a `useBoardCamera()` controller holding `{ scale, translateX, translateY }`
+      as UI state (ref/store, applied via CSS transform — no per‑frame React re‑render).
+- [ ] **3R.2** **Mouse‑wheel zoom toward the cursor**, clamped to `minZoom`…`maxZoom`, smooth/eased.
+- [ ] **3R.3** **Click‑drag panning** in all directions (left/right/up/down); the map is no longer
+      locked to centre.
+- [ ] **3R.4** Touch/trackpad **pinch‑zoom + two‑finger pan** support.
+- [ ] **3R.5** **Pan bounds clamping** (board can't be lost off‑screen) + generous over‑pan at high zoom.
+- [ ] **3R.6** **On‑screen zoom in/out + Reset/Fit‑to‑screen** controls; keyboard arrows/`+`/`-`/`0`.
+- [ ] **3R.7** Auto **fit‑to‑screen** on load and on window resize; persist view per session.
+- [ ] **3R.8** Verify a steady **60 fps** while panning/zooming; optional mini‑map.
+
+**Map clarity — §7.12**
+- [ ] **3R.9** Redesign **location nodes**: localized name, region colour band, clearly drawn build
+      slots with the allowed **industry icons** (incl. shared‑icon slots); empty vs occupied distinct.
+- [ ] **3R.10** Clear **built‑tile** rendering: owner colour, level, remaining cubes/beer, flipped state.
+- [ ] **3R.11** Clear **merchant** rendering: accepted industry icon(s), bonus type icon
+      (Develop/Income/VP/Money) + tooltip, merchant‑beer barrel.
+- [ ] **3R.12** Distinguish **canal vs rail links** visually; highlight buildable lines; owner colours.
+- [ ] **3R.13** **Hover/focus tooltips** on locations (name, buildable industries, tiles,
+      connection/network status).
+- [ ] **3R.14** **Level‑of‑detail** rendering: names+colour at low zoom, slot icons+tile details at
+      high zoom; labels stay legible.
+- [ ] **3R.15** **Affordance highlighting**: when an action is active, valid targets glow and invalid
+      ones dim.
+- [ ] **3R.16** Always‑available **legend/key** for all icons (coal/iron/beer/VP/£/income, merchant
+      bonuses, canal vs rail), localized EN/RU/UZ. Label Farm Breweries + special links.
+
+**Action & move UI clarity — §7.13**
+- [ ] **3R.17** **Remove all raw `legalActions` enumeration dumps** from the UI (no more repeated
+      "Discard a card, do nothing — N options").
+- [ ] **3R.18** **Action‑first guided flow** from the Action Bar: each of the 7 actions has an icon,
+      localized name, and one‑line description; illegal actions disabled with a "why" tooltip.
+- [ ] **3R.19** Step‑by‑step resolution: pick **card** (readable card faces) → pick **target on the
+      board** (click highlighted element, not a text list) → resolve **resource sources** → confirm.
+- [ ] **3R.20** **Cost & effect preview** before confirming (money/coal/iron/beer spent;
+      income/VP/flips gained); Cancel/Back at every step.
+- [ ] **3R.21** Fix **Pass**: a single clear "Pass (discard a card)" choice with a card picker —
+      never N duplicated "do nothing" rows; choose which card(s) to discard.
+- [ ] **3R.22** Make **discards** an explicit choice of *which* card (faces shown), never "option 1…8".
+- [ ] **3R.23** **Turn HUD**: era, round, active player, actions remaining, and a clear current‑step
+      prompt (e.g. "Pick a card to build a Cotton Mill in Birmingham").
+- [ ] **3R.24** Rewrite **log messages** as full localized sentences (EN/RU/UZ), e.g.
+      "Blue built a Coal Mine in Dudley".
+- [ ] **3R.25** Render **AI moves** as readable animated actions with a short log line; no internal
+      enumerations shown to the player.
+      *DoD: the board pans/zooms with the mouse, locations are self‑explanatory, and every move is
+      chosen through a clear guided flow — no cryptic option lists. The game reads like Brass:
+      Birmingham.*
 
 ### Phase 4 — Animations, Audio, i18n
 - [x] **4.1** Event→timeline mapping + a sequential animation queue (speed setting, skippable).
