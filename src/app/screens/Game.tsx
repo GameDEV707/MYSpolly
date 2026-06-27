@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../store/appStore.ts';
 import { useSettings } from '../store/settings.ts';
@@ -13,11 +14,13 @@ import { GuidedActionBar } from '../components/hud/GuidedActionBar.tsx';
 import { TurnHud } from '../components/hud/TurnHud.tsx';
 import { Log } from '../components/hud/Log.tsx';
 import { Banner } from '../components/hud/Banner.tsx';
+import { TurnHandoff } from '../components/hud/TurnHandoff.tsx';
+import { useTurnHandoff } from '../components/hud/useTurnHandoff.ts';
 import { useFlow } from '../components/hud/flowStore.ts';
 import { flowHighlights, isBoardTargetStep } from '../components/hud/flow.ts';
 import { useAnimateEvents } from '../animation/useAnimateEvents.ts';
 import { audio } from '../audio/sound.ts';
-import { Button, Panel } from '../components/ui.tsx';
+import { Button, Panel, PLAYER_CSS_VAR } from '../components/ui.tsx';
 
 /**
  * Main game screen. Renders the camera board + HUD and routes human input
@@ -40,6 +43,7 @@ export function GameScreen(props: { replay?: boolean }): JSX.Element {
   const activeState = game ? game.players[game.activePlayer] : undefined;
   const skipAnims = !!activeState?.isAI && settings.skipAiAnimations;
   const { banner, skip } = useAnimateEvents(events, skipAnims);
+  const { handoff, dismiss: dismissHandoff } = useTurnHandoff(game, !props.replay);
 
   // Play era-appropriate ambience.
   useEffect(() => {
@@ -94,6 +98,7 @@ export function GameScreen(props: { replay?: boolean }): JSX.Element {
       }}
     >
       <Banner messageKey={banner} />
+      <TurnHandoff handoff={handoff} onReady={dismissHandoff} />
       {/* Left: header + board */}
       <div
         style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', minHeight: 0 }}
@@ -123,7 +128,18 @@ export function GameScreen(props: { replay?: boolean }): JSX.Element {
             </Button>
           )}
         </Panel>
-        <div style={{ flex: 1, minHeight: 0, position: 'relative' }}>
+        <div
+          className="board-frame-accent"
+          style={
+            {
+              flex: 1,
+              minHeight: 0,
+              position: 'relative',
+              borderRadius: 'var(--radius)',
+              '--active-accent': PLAYER_CSS_VAR[active.color],
+            } as CSSProperties
+          }
+        >
           <BoardCamera>
             {(lod) => (
               <BoardSvg

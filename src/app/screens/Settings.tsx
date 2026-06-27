@@ -192,6 +192,20 @@ export function SettingsScreen(): JSX.Element {
               onChange={(e) => update({ showTooltips: e.target.checked })}
             />
           </Row>
+          <Row label={t('settings.rulesHints')}>
+            <input
+              type="checkbox"
+              checked={settings.rulesHints}
+              onChange={(e) => update({ rulesHints: e.target.checked })}
+            />
+          </Row>
+          <Row label={t('settings.passDevicePrompt')}>
+            <input
+              type="checkbox"
+              checked={settings.passDevicePrompt}
+              onChange={(e) => update({ passDevicePrompt: e.target.checked })}
+            />
+          </Row>
           <Row label={t('settings.aiThinkSpeed')}>
             <select
               value={settings.aiThinkSpeed}

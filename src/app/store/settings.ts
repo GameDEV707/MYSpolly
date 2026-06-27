@@ -21,6 +21,9 @@ export interface Settings {
   confirmEndTurn: boolean;
   showLegalMoves: boolean;
   showTooltips: boolean;
+  rulesHints: boolean;
+  passDevicePrompt: boolean;
+  tutorialDone: boolean;
   aiThinkSpeed: AiSpeed;
 }
 
@@ -38,6 +41,9 @@ export const DEFAULT_SETTINGS: Settings = {
   confirmEndTurn: true,
   showLegalMoves: true,
   showTooltips: true,
+  rulesHints: true,
+  passDevicePrompt: true,
+  tutorialDone: false,
   aiThinkSpeed: 'normal',
 };
 

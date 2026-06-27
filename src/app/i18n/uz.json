@@ -57,6 +57,8 @@
     "confirmEndTurn": "Yurishni tugatishni tasdiqlash",
     "showLegalMoves": "Ruxsat etilgan yurishlarni belgilash",
     "showTooltips": "Qoida maslahatlarini koʻrsatish",
+    "rulesHints": "Ichki qoida maslahatlarini koʻrsatish (yangi oʻyinchilar uchun)",
+    "passDevicePrompt": "Hot-seat: qurilma uzatishni tasdiqlash",
     "aiThinkSpeed": "SI oʻylash tezligi",
     "data": "Maʼlumotlar",
     "manageSaves": "Saqlashlarni boshqarish",
@@ -210,6 +212,15 @@
     "eraEnd": "Davr hisobi",
     "railBegins": "Temir yoʻl davri boshlandi",
     "gameOver": "Oʻyin tugadi"
+  },
+  "handoff": {
+    "turnOf": "{{name}} yurishi",
+    "yourTurn": "Sizning yurishingiz",
+    "aiPlaying": "{{name}} oʻynamoqda…",
+    "getReady": "Tayyorlaning!",
+    "passDevice": "Qurilmani {{name}}ga uzating",
+    "passDeviceHint": "Qurilmani {{name}}ga bering va ekranni boshqa hech kim koʻrmasligiga ishonch hosil qiling, soʻng davom eting.",
+    "ready": "Men tayyorman"
   },
   "board": {
     "cameraHint": "Surish uchun torting · masshtab uchun gʻildirak · 0 — moslashtirish",

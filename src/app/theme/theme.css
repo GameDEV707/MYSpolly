@@ -144,3 +144,62 @@ body {
     opacity: 1;
   }
 }
+
+/* Turn-handoff overlay: a brief, prominent "Player X's turn" cue (§7.13 / 3R.26) */
+@keyframes handoffIn {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.9);
+  }
+  12% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  85% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.98);
+  }
+}
+
+@keyframes handoffAvatarPop {
+  0% {
+    transform: scale(0.4) rotate(-12deg);
+  }
+  60% {
+    transform: scale(1.15) rotate(6deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* Active player's panel pulses in their colour; previous player de-emphasizes. */
+@keyframes activePulse {
+  0% {
+    box-shadow: 0 0 0 0 var(--active-accent, var(--accent));
+  }
+  70% {
+    box-shadow: 0 0 0 6px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+.active-player-panel {
+  animation: activePulse calc(1600ms * max(var(--anim-scale), 0.0001)) ease-out 2;
+}
+
+/* Board frame accent in the active player's colour. */
+.board-frame-accent {
+  box-shadow:
+    inset 0 0 0 2px var(--active-accent, transparent),
+    0 0 18px -2px var(--active-accent, transparent);
+  transition:
+    box-shadow var(--anim-base) ease-out,
+    border-color var(--anim-base) ease-out;
+}

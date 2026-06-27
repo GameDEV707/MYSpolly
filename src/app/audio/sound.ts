@@ -18,6 +18,7 @@ export type Sfx =
   | 'flip'
   | 'button'
   | 'error'
+  | 'turnChange'
   | 'eraFanfare'
   | 'victory';
 
@@ -33,6 +34,7 @@ const SFX_SRC: Record<Sfx, string> = {
   flip: 'assets/audio/sfx/flip.mp3',
   button: 'assets/audio/sfx/button.mp3',
   error: 'assets/audio/sfx/error.mp3',
+  turnChange: 'assets/audio/sfx/turn-change.mp3',
   eraFanfare: 'assets/audio/sfx/era-fanfare.mp3',
   victory: 'assets/audio/sfx/victory.mp3',
 };

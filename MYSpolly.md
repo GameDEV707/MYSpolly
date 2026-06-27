@@ -986,7 +986,7 @@ having the player perform them:
       "Blue built a Coal Mine in Dudley".
 - [x] **3R.25** Render **AI moves** as readable animated actions with a short log line; no internal
       enumerations shown to the player.
-- [ ] **3R.26** **Turn handoff clarity (player change)**: make it unmistakable whose turn it is
+- [x] **3R.26** **Turn handoff clarity (player change)**: make it unmistakable whose turn it is
       whenever play passes to the next player. On each turn change, show a brief, prominent
       transition cue — a centred **"Player X's turn"** banner/overlay in that player's colour (with
       avatar/character) + a sound cue — then highlight the new active player's panel (pulse/colour

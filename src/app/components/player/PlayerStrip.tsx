@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import type { CSSProperties } from 'react';
 import type { GameState } from '../../../core/model/state.ts';
 import { Panel, PLAYER_CSS_VAR } from '../ui.tsx';
 
@@ -11,17 +12,26 @@ export function PlayerStrip(props: { game: GameState }): JSX.Element {
       {game.turnOrder.map((color) => {
         const p = game.players[color]!;
         const active = color === game.activePlayer;
+        const accent = PLAYER_CSS_VAR[color];
         return (
           <div
             key={color}
-            style={{
-              flex: 1,
-              minWidth: 120,
-              padding: 8,
-              borderRadius: 6,
-              border: `2px solid ${active ? PLAYER_CSS_VAR[color] : 'var(--border)'}`,
-              background: active ? 'var(--surface)' : 'transparent',
-            }}
+            className={active ? 'active-player-panel' : undefined}
+            aria-current={active ? 'true' : undefined}
+            style={
+              {
+                flex: 1,
+                minWidth: 120,
+                padding: 8,
+                borderRadius: 6,
+                border: `2px solid ${active ? accent : 'var(--border)'}`,
+                background: active ? 'var(--surface)' : 'transparent',
+                // De-emphasize players who are not on turn.
+                opacity: active ? 1 : 0.55,
+                transition: 'opacity var(--anim-base) ease, border-color var(--anim-base) ease',
+                '--active-accent': accent,
+              } as CSSProperties
+            }
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600 }}>
               <span

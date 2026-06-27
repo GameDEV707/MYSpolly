@@ -57,6 +57,8 @@
     "confirmEndTurn": "Confirm before ending turn",
     "showLegalMoves": "Show legal-move highlights",
     "showTooltips": "Show rule tooltips",
+    "rulesHints": "Show inline rules hints (for new players)",
+    "passDevicePrompt": "Hot-seat: confirm device hand-off",
     "aiThinkSpeed": "AI thinking speed",
     "data": "Data",
     "manageSaves": "Manage save slots",
@@ -210,6 +212,15 @@
     "eraEnd": "Era scoring",
     "railBegins": "The Rail Era begins",
     "gameOver": "Game Over"
+  },
+  "handoff": {
+    "turnOf": "{{name}}'s turn",
+    "yourTurn": "Your turn",
+    "aiPlaying": "{{name}} is playing…",
+    "getReady": "Get ready!",
+    "passDevice": "Pass the device to {{name}}",
+    "passDeviceHint": "Hand the device to {{name}} and make sure no one else can see the screen, then continue.",
+    "ready": "I'm ready"
   },
   "board": {
     "cameraHint": "Drag to pan · scroll to zoom · press 0 to fit",
