@@ -1552,48 +1552,48 @@ Working names (finalize during implementation, keep consistent everywhere):
 >    Per §7.15.3 / §7.16.7 the world must visibly change each era.
 
 **A. Fix raw‑ID place labels (display correctness)**
-- [ ] **10.1** Guarantee **every** location, merchant, island and route on **every** map renders
+- [x] **10.1** Guarantee **every** location, merchant, island and route on **every** map renders
       a real, localized **display name** — never a raw internal id. Audit `BoardSvg.tsx`
       (`nameOf`, the town/merchant `<text>` labels), the guided action flow, the game log, and
       tooltips: the `?? id` fallback must never surface to the player.
-- [ ] **10.2** Verify the authored‑map i18n keys (`map.<mapId>.loc.*`, `.merch.*`, `.island.*`,
+- [x] **10.2** Verify the authored‑map i18n keys (`map.<mapId>.loc.*`, `.merch.*`, `.island.*`,
       `.name`, `.desc`) are **actually registered** in EN/RU/UZ at runtime
       (`registerMapResources()` ⇄ `buildMapI18n()`), including the classic **Birmingham** map,
       and that registration happens **before** the board first renders (no module‑evaluation /
       ordering gap that leaves keys unresolved).
-- [ ] **10.3** Add a test asserting that for **all** maps and **all** eras, resolving each
+- [x] **10.3** Add a test asserting that for **all** maps and **all** eras, resolving each
       location/merchant/island name key returns a human name (not the key and not the id), in
       all three languages. Add a dev‑time guard/warning if any name key is missing.
 
 **B. Make every map genuinely distinct**
-- [ ] **10.4** Give each Full map its **own geography**: distinct town **count/placement**
+- [x] **10.4** Give each Full map its **own geography**: distinct town **count/placement**
       (break the shared `x:480/300/660 …` grid), a **different link network shape** (not the
       same edge pattern re‑labelled), different **merchant placement**, and a **different
       industry/slot distribution** so each board plays differently (e.g. iron‑scarce vs
       coal‑rich vs juice/cotton‑heavy). Keep them rules‑complete and balanced.
-- [ ] **10.5** Give each Fast‑play map its **own** small but distinct layout (different town
+- [x] **10.5** Give each Fast‑play map its **own** small but distinct layout (different town
       count where sensible, different topology and merchant mix) — not five copies of one
       template. Keep them quick and performant.
-- [ ] **10.6** Rename internal ids to be **meaningful & unique** (or keep ids but ensure they are
+- [x] **10.6** Rename internal ids to be **meaningful & unique** (or keep ids but ensure they are
       never shown — see 10.1); ensure no two maps share an accidentally‑identical structure.
       Add a test/lint that flags maps whose location set + link topology are isomorphic to
       another map's (catch future "clone" regressions).
 
 **C. Genuine per‑era morphing (locations, mines, links, islands, stations change)**
-- [ ] **10.7** For each map, define a **distinct network per era** (`linksByEra`): the canal‑era
+- [x] **10.7** For each map, define a **distinct network per era** (`linksByEra`): the canal‑era
       routes must differ from the rail‑era routes (and air‑era where present) — different edges
       open up, not `railLinks = canalLinks`. The "roads/links that open" must visibly change.
-- [ ] **10.8** Define **per‑era positions** (`eraPos`) and **per‑era names** (`eraNames`) so
+- [x] **10.8** Define **per‑era positions** (`eraPos`) and **per‑era names** (`eraNames`) so
       locations **reposition and can be renamed** between eras (islands‑separated‑by‑water →
       connected land → air hubs, per §7.16.7), while each location keeps a **stable logical
       `id`** so persistent level‑2+ tiles still map correctly.
-- [ ] **10.9** Make **mines / production buildings, islands, and merchant "stations"** part of
+- [x] **10.9** Make **mines / production buildings, islands, and merchant "stations"** part of
       the morph: their **placement and grouping change per era** (e.g. island membership and
       island **names** differ canal vs rail vs air, not just a renamed label on the same set).
-- [ ] **10.10** Verify the **animated era‑morph transition** (BoardSvg node `transform`
+- [x] **10.10** Verify the **animated era‑morph transition** (BoardSvg node `transform`
       transitions + `--era-morph-ms`) plays when the era advances and that the board clearly
       shows the new layout/routes; integrate with end‑of‑era maintenance.
-- [ ] **10.11** Tests: every map validates per era (counts/decks/merchants, connectivity is a
+- [x] **10.11** Tests: every map validates per era (counts/decks/merchants, connectivity is a
       valid playable network in each era); a headless full game runs on every map through all its
       eras; a **mid‑era save/load** restores the correct era topology with level‑2+ tiles still
       mapped to the right (repositioned) locations.
@@ -1835,3 +1835,47 @@ exhaustively checked — are fully verified offline. A number of printed-compone
 values (per-tile stats, exact board topology/slot icons, merchant VP amounts, card
 multiset) live in board/mat **images** and are encoded from published references,
 flagged `VERIFY` in-file, and are pure-data edits requiring no code change.
+
+
+
+---
+
+## 15. Progress Log — Phase 10 (Map Overhaul)
+
+- **Phase 10 complete.** Fixed the three reported defects and met every
+  acceptance criterion (10.1–10.11):
+  - **Display correctness (10.1–10.3).** Added a single map-aware name resolver
+    `src/app/components/board/names.ts` (`locName`/`lineName`) that reads the
+    active board context, never the Birmingham-only static data, with a dev-time
+    missing-key warning and a humanized fallback so a **raw internal id can never
+    reach the player**. Routed `BoardSvg` labels/tooltips, the guided action flow
+    (`flow.ts` `promptInfo`/`buildVariants`), `GuidedActionBar`, `TurnHud`, the
+    game log (`logLines.ts`) and card labels (`cardText.ts` now uses the card's
+    registered i18n key) through it. Authored-map keys (incl. per-era names and
+    per-era island names) are registered EN/RU/UZ via `buildMapI18n()` before the
+    board renders. New test `tests/unit/mapMorph.test.ts` asserts every
+    location/merchant/island/map name on **every map, every era, all three
+    languages** resolves to a human name (never the key, never the id).
+  - **Distinct maps (10.4–10.6).** Rewrote all 9 authored maps in
+    `src/core/maps/authored.ts` with their own geography, topology *shape*,
+    merchant placement and industry distribution: Severn Vale (cotton/juice-rich
+    river valley), Highland Reach (coal-rich / iron-scarce twin glens),
+    Iron Coast (iron-heavy 14-town coastal crescent, 6 ports), Skyward Dominion
+    (ring-and-hub, 3 eras); and 5 distinct Fast maps — Quill Hollow (ring),
+    Tin Brook (chain), Maple Cross (star), Slate Pike (twin-cluster), Amber Fen
+    (grid). A Weisfeiler–Lehman topology-fingerprint test guards against any two
+    maps being structural clones.
+  - **Genuine per-era morphing (10.7–10.10).** Each map now defines a genuinely
+    different link network per era (`canalLinks` ≠ `railLinks`, plus `airLinks`
+    on Skyward), per-era node positions (`eraPos`) and names (`eraName`), and
+    per-era islands whose membership and names change. The authoring helpers were
+    extended to thread `eraPos`/`eraName` through to the builder; the engine and
+    `BoardSvg` already read per-era topology from the board context, so the board
+    physically repositions/rewires/renames on era advance with the existing
+    `--era-morph-ms` transform transition, integrated with end-of-era maintenance.
+  - **Tests (10.11).** Every map validates per era (counts/decks/merchants and a
+    connected, every-town-reaches-a-merchant network in **each** era); headless
+    full games run on every map through all its eras; and a mid-era save/load
+    restores the correct era topology with a level-2 tile still mapped to the
+    right (repositioned) location. Full suite: **330 engine tests green**, engine
+    typecheck clean, Prettier clean.
