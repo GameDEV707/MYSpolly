@@ -2,7 +2,9 @@ import { useTranslation } from 'react-i18next';
 import type { CSSProperties } from 'react';
 import type { GameState } from '../../../core/model/state.ts';
 import { pointsToWin } from '../../../core/selectors/standings.ts';
+import { playerProduction } from '../../../core/engine/production.ts';
 import { Panel, PLAYER_CSS_VAR } from '../ui.tsx';
+import { RESOURCE_ICON } from '../board/icons.ts';
 import { HelpButton } from '../help/HelpButton.tsx';
 
 /** Compact overview of all players (turn order, money, income, VP, spent). */
@@ -24,6 +26,9 @@ export function PlayerStrip(props: { game: GameState }): JSX.Element {
         const leading = toWin === 0;
         const toWinLabel = leading ? t('game.leading') : t('game.toWinShort', { n: toWin });
         const toWinTip = leading ? t('game.leadingTip') : t('game.toWinTip', { n: toWin });
+        const res = p.resources;
+        const prod = playerProduction(game, color);
+        const prodTotal = prod.coal + prod.iron + prod.juice;
         return (
           <div
             key={color}
@@ -58,6 +63,42 @@ export function PlayerStrip(props: { game: GameState }): JSX.Element {
             </div>
             <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
               💷 £{p.money} · 📈 {p.incomeLevel} · ⭐ {p.vp}
+            </div>
+            <div
+              title={t('game.stockpileTip')}
+              aria-label={t('game.stockpileTip')}
+              style={{
+                fontSize: 12,
+                marginTop: 2,
+                display: 'flex',
+                gap: 8,
+                color: 'var(--text)',
+              }}
+            >
+              <span>
+                {RESOURCE_ICON.coal.glyph} {res.coal}
+              </span>
+              <span>
+                {RESOURCE_ICON.iron.glyph} {res.iron}
+              </span>
+              <span>
+                {RESOURCE_ICON.juice.glyph} {res.juice}
+              </span>
+            </div>
+            <div
+              title={t('game.producesTip')}
+              aria-label={t('game.producesTip')}
+              style={{ fontSize: 11, marginTop: 1, color: 'var(--player-green, #7bbf6f)' }}
+            >
+              {prodTotal > 0
+                ? `▲ ${t('game.producesNext')}: ${[
+                    prod.coal > 0 ? `${RESOURCE_ICON.coal.glyph}+${prod.coal}` : '',
+                    prod.iron > 0 ? `${RESOURCE_ICON.iron.glyph}+${prod.iron}` : '',
+                    prod.juice > 0 ? `${RESOURCE_ICON.juice.glyph}+${prod.juice}` : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}`
+                : t('game.noProduction')}
             </div>
             <div
               title={toWinTip}

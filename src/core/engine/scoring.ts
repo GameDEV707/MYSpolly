@@ -86,7 +86,13 @@ export function scoreEra(state: GameState, era: Era, events: GameEvent[]): Recor
     b.tiles += tiles[color] ?? 0;
   }
 
-  events.push({ t: 'ERA_SCORING', era, perPlayer: { ...total }, links: { ...links }, tiles: { ...tiles } });
+  events.push({
+    t: 'ERA_SCORING',
+    era,
+    perPlayer: { ...total },
+    links: { ...links },
+    tiles: { ...tiles },
+  });
   return total;
 }
 

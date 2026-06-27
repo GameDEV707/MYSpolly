@@ -168,7 +168,10 @@ describe('§9.7 — optional stockpile caps', () => {
     produceResources(s, me, events);
     assert.equal(s.players[me]!.resources.coal, cap, 'clamped at the cap');
     const ev = events.find((e) => e.t === 'RESOURCE_PRODUCED');
-    assert.ok(ev && ev.t === 'RESOURCE_PRODUCED' && ev.coal === 1, 'only the un-capped amount added');
+    assert.ok(
+      ev && ev.t === 'RESOURCE_PRODUCED' && ev.coal === 1,
+      'only the un-capped amount added',
+    );
   });
 });
 
@@ -281,7 +284,13 @@ describe('§9.2/9.9 — no freeloading via legal actions', () => {
     s.activeIndex = s.turnOrder.indexOf(me!);
     s.activePlayer = me!;
     // Opponent owns a (producing) coal mine — irrelevant under §7.16.
-    placeTile(s, { owner: them!, industry: 'coal', level: 4, locationId: 'dudley', slotId: 's-cz' });
+    placeTile(s, {
+      owner: them!,
+      industry: 'coal',
+      level: 4,
+      locationId: 'dudley',
+      slotId: 's-cz',
+    });
     // `me` has no coal and is not connected to a merchant.
     s.players[me!]!.resources.coal = 0;
     injectCard(s, me!, { id: 'L-bw', kind: 'location', locationId: 'coalbrookdale', name: 'x' });

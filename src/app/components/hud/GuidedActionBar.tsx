@@ -480,13 +480,39 @@ function ConfirmPanel(props: {
               ★ {preview.flips} {t('flow.flips')}
             </Pill>
           )}
+          {preview.production.coal > 0 && (
+            <Pill color="var(--player-green)">
+              {RESOURCE_ICON.coal.glyph} +{preview.production.coal}
+              {t('flow.perRound')} {t('flow.production')}
+            </Pill>
+          )}
+          {preview.production.iron > 0 && (
+            <Pill color="var(--player-green)">
+              {RESOURCE_ICON.iron.glyph} +{preview.production.iron}
+              {t('flow.perRound')} {t('flow.production')}
+            </Pill>
+          )}
+          {preview.production.juice > 0 && (
+            <Pill color="var(--player-green)">
+              {RESOURCE_ICON.juice.glyph} +{preview.production.juice}
+              {t('flow.perRound')} {t('flow.production')}
+            </Pill>
+          )}
+          {preview.fromMarket > 0 && (
+            <Pill color="var(--text-muted)">
+              🛒 {preview.fromMarket} {t('flow.fromMarket')}
+            </Pill>
+          )}
           {preview.money === 0 &&
             preview.coal === 0 &&
             preview.iron === 0 &&
             preview.juice === 0 &&
             preview.vp === 0 &&
             preview.income === 0 &&
-            preview.flips === 0 && (
+            preview.flips === 0 &&
+            preview.production.coal === 0 &&
+            preview.production.iron === 0 &&
+            preview.production.juice === 0 && (
               <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{t('flow.noCost')}</span>
             )}
         </div>

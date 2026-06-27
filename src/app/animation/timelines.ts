@@ -24,6 +24,8 @@ export function eventToFx(e: GameEvent): EventFx {
       return { sfx: 'cube', durationMs: 250 + e.count * 80 };
     case 'RESOURCE_CONSUMED':
       return { sfx: 'cube', durationMs: 120 };
+    case 'RESOURCE_PRODUCED':
+      return { sfx: 'cube', durationMs: 320 };
     case 'TILE_FLIPPED':
       return { sfx: 'flip', durationMs: 400 };
     case 'GOODS_SOLD':

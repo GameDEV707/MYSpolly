@@ -193,7 +193,10 @@ export function applyNetwork(
   // Consume coal for the links (stockpile, then connected market shortfall).
   const coalNeeded = params.coalPerLink * a.links.length;
   if (coalNeeded > 0) {
-    const loc = coalConsumeLoc(state, a.links.map((l) => l.lineId));
+    const loc = coalConsumeLoc(
+      state,
+      a.links.map((l) => l.lineId),
+    );
     consumeResource(state, player, 'coal', coalNeeded, loc, events);
   }
 

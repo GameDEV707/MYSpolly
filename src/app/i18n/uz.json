@@ -35,7 +35,9 @@
     "start": "Oʻyinni boshlash",
     "back": "Orqaga",
     "confirmNewGame": "Yangi oʻyin saqlangan oʻyinni roʻyxatda saqlaydi. Davom etilsinmi?",
-    "map": "Xarita"
+    "map": "Xarita",
+    "startingResources": "Boshlangʻich resurslar",
+    "startingResourcesTip": "Har bir oʻyinchi shu shaxsiy koʻmir, temir va sharbat zaxirasi bilan boshlaydi (§7.16)."
   },
   "settings": {
     "title": "Sozlamalar",
@@ -112,7 +114,12 @@
     "toWinShort": "Yetakchigacha {{n}}",
     "toWinTip": "Yetakchi boʻlish uchun yana {{n}} GʻB kerak",
     "leading": "Yetakchi",
-    "leadingTip": "Hozir yetakchilikda"
+    "leadingTip": "Hozir yetakchilikda",
+    "stockpile": "Zaxira",
+    "stockpileTip": "Shaxsiy koʻmir, temir va sharbatingiz. Amallar avval shulardan, soʻng ulangan bozordan foydalanadi.",
+    "producesNext": "Keyingi raund",
+    "producesTip": "Binolaringiz shu raund oxirida zaxirangizga qoʻshadigan resurslar.",
+    "noProduction": "Hali ishlab chiqarish yoʻq"
   },
   "action": {
     "build": "Qurish",
@@ -646,6 +653,10 @@
     "passNote": "Bu karta tashlanadi va harakatingiz oʻtkazib yuboriladi.",
     "preview": "Narx va taʼsir",
     "flips": "plitka agʻdariladi",
+    "perRound": "/raund",
+    "production": "ishlab chiqarish",
+    "fromMarket": "bozordan sotib olindi",
+    "benefit": "Foyda",
     "noCost": "Xarajatsiz.",
     "noPreview": "Koʻrib chiqish mavjud emas.",
     "why": {
@@ -655,7 +666,9 @@
       "sell": "Mos savdogarga ulangan tayyor mahsulot yoʻq.",
       "loan": "Hozir qarz ola olmaysiz.",
       "scout": "3 ta wild boʻlmagan karta va mavjud wild kartalar kerak.",
-      "pass": "Hozir pas qila olmaysiz."
+      "pass": "Hozir pas qila olmaysiz.",
+      "noJuice": "Zaxirada sharbat yetarli emas (sharbat bozori yoʻq).",
+      "noMarket": "Yetishmovchilikni sotib olish uchun bozorga ulanmagansiz."
     },
     "prompt": {
       "action": "Harakatni tanlang.",
@@ -693,6 +706,7 @@
     "loan": "{{name}} £30 qarz oldi.",
     "scout": "{{name}} wild kartalar uchun razvedka qildi.",
     "income": "{{name}} £{{amount}} daromad oldi.",
+    "produced": "{{name}} binolari {{summary}} ishlab chiqardi.",
     "shortfall": "{{name}} {{tiles}} plitka sotdi va daromadni qoplash uchun {{vp}} GO yoʻqotdi.",
     "roundEnded": "{{round}}-raund tugadi.",
     "eraEnded": "{{era}} tugadi.",

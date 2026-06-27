@@ -5,6 +5,7 @@ import type { IndustryType } from '../../../core/model/types.ts';
 import { TOWN_BY_ID } from '../../../core/data/board.ts';
 import { getLevelDef } from '../../../core/data/industries.ts';
 import { validate, reduce } from '../../../core/engine/reduce.ts';
+import { playerProduction } from '../../../core/engine/production.ts';
 import type { FlowSel } from './flowStore.ts';
 
 /**
@@ -267,23 +268,31 @@ export interface ActionPreview {
   coal: number;
   iron: number;
   juice: number;
+  /** Resource units in the cost that are bought from the market (vs. stockpile). */
+  fromMarket: number;
+  /** Extra per-round production this action adds to the player's stockpile. */
+  production: { coal: number; iron: number; juice: number };
   flips: number;
   placedTiles: PlacedTile[];
   placedLinks: PlacedLink[];
 }
 
 /**
- * Cost & effect preview (§7.13) computed by dry-running the pure reducer and
- * reading the events that belong to the action itself (everything up to and
- * including `ACTION_DONE`, before any end-of-turn bookkeeping).
+ * Cost & effect preview (§7.13 / §7.16.6) computed by dry-running the pure
+ * reducer and reading the events that belong to the action itself (everything up
+ * to and including `ACTION_DONE`, before any end-of-turn bookkeeping). Also
+ * reports the per-round production the action adds (e.g. building a Coal Mine),
+ * and how much of the resource cost is bought from the market vs. drawn from the
+ * player's own stockpile.
  */
 export function previewAction(game: GameState, action: Action): ActionPreview | null {
-  let events: GameEvent[];
+  let result: { events: GameEvent[]; state: GameState };
   try {
-    events = reduce(game, action).events;
+    result = reduce(game, action);
   } catch {
     return null;
   }
+  const events = result.events;
   const idx = events.findIndex((e) => e.t === 'ACTION_DONE');
   const slice = idx >= 0 ? events.slice(0, idx + 1) : events;
   const player = game.activePlayer;
@@ -294,6 +303,8 @@ export function previewAction(game: GameState, action: Action): ActionPreview | 
     coal: 0,
     iron: 0,
     juice: 0,
+    fromMarket: 0,
+    production: { coal: 0, iron: 0, juice: 0 },
     flips: 0,
     placedTiles: [],
     placedLinks: [],
@@ -306,10 +317,19 @@ export function previewAction(game: GameState, action: Action): ActionPreview | 
       if (e.resource === 'coal') p.coal += 1;
       else if (e.resource === 'iron') p.iron += 1;
       else if (e.resource === 'juice') p.juice += 1;
+      if (e.from === 'market') p.fromMarket += 1;
     } else if (e.t === 'TILE_FLIPPED' && e.player === player) p.flips += 1;
     else if (e.t === 'TILE_PLACED') p.placedTiles.push(e.tile);
     else if (e.t === 'LINK_PLACED') p.placedLinks.push(e.link);
   }
+  // Benefit: extra per-round production this action unlocks (e.g. a new mine).
+  const before = playerProduction(game, player);
+  const after = playerProduction(result.state, player);
+  p.production = {
+    coal: Math.max(0, after.coal - before.coal),
+    iron: Math.max(0, after.iron - before.iron),
+    juice: Math.max(0, after.juice - before.juice),
+  };
   return p;
 }
 

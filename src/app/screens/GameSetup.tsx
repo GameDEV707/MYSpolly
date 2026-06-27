@@ -6,6 +6,8 @@ import { Button, Panel, ScreenShell, PLAYER_CSS_VAR } from '../components/ui.tsx
 import type { PlayerColor } from '../../core/model/types.ts';
 import type { Difficulty } from '../../ai/bot.ts';
 import { listMapMeta, DEFAULT_MAP_ID, type MapMeta } from '../../core/maps/registry.ts';
+import { startingResources } from '../../core/data/economy.ts';
+import { RESOURCE_ICON } from '../components/board/icons.ts';
 
 const COLORS: PlayerColor[] = ['red', 'blue', 'green', 'yellow'];
 
@@ -188,6 +190,31 @@ export function GameSetup(): JSX.Element {
             />
             {t('setup.introVariant')}
           </label>
+        </Panel>
+
+        <Panel>
+          {(() => {
+            const sr = startingResources(mapId, count);
+            return (
+              <div title={t('setup.startingResourcesTip')}>
+                <label style={{ fontWeight: 600 }}>{t('setup.startingResources')}</label>
+                <div style={{ display: 'flex', gap: 14, marginTop: 6, fontSize: 15 }}>
+                  <span>
+                    {RESOURCE_ICON.coal.glyph} {sr.coal} {t('legend.coal')}
+                  </span>
+                  <span>
+                    {RESOURCE_ICON.iron.glyph} {sr.iron} {t('legend.iron')}
+                  </span>
+                  <span>
+                    {RESOURCE_ICON.juice.glyph} {sr.juice} {t('legend.juice')}
+                  </span>
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>
+                  {t('setup.startingResourcesTip')}
+                </div>
+              </div>
+            );
+          })()}
         </Panel>
 
         <Button onClick={start} style={{ alignSelf: 'flex-start' }}>

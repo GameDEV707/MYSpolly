@@ -64,7 +64,10 @@ export function Results(): JSX.Element {
                 // in-play column so the row always reads inPlay + links + tiles
                 // = total; a tooltip notes the included bonus.
                 const inPlayShown = b.inPlay + b.intro;
-                const inPlayTip = b.intro !== 0 ? t('results.inPlayBonusTip', { n: b.intro }) : t('results.inPlayTip');
+                const inPlayTip =
+                  b.intro !== 0
+                    ? t('results.inPlayBonusTip', { n: b.intro })
+                    : t('results.inPlayTip');
                 return (
                   <tr key={color}>
                     <td>{i + 1}</td>

@@ -35,7 +35,9 @@
     "start": "Start Game",
     "back": "Back",
     "confirmNewGame": "Starting a new game keeps your saved game in the Load list. Continue?",
-    "map": "Map"
+    "map": "Map",
+    "startingResources": "Starting resources",
+    "startingResourcesTip": "Every player begins with this personal stockpile of coal, iron and juice (§7.16)."
   },
   "settings": {
     "title": "Settings",
@@ -112,7 +114,12 @@
     "toWinShort": "{{n}} to lead",
     "toWinTip": "Needs {{n}} more VP to take the lead",
     "leading": "Leading",
-    "leadingTip": "Currently in the lead"
+    "leadingTip": "Currently in the lead",
+    "stockpile": "Stockpile",
+    "stockpileTip": "Your personal coal, iron and juice. Actions use these first, then a connected market.",
+    "producesNext": "Next round",
+    "producesTip": "Resources your buildings will add to your stockpile at the end of this round.",
+    "noProduction": "No production yet"
   },
   "action": {
     "build": "Build",
@@ -646,6 +653,10 @@
     "passNote": "This card will be discarded and your action skipped.",
     "preview": "Cost & effect",
     "flips": "tile(s) flip",
+    "perRound": "/round",
+    "production": "production",
+    "fromMarket": "bought from market",
+    "benefit": "Benefit",
     "noCost": "No cost.",
     "noPreview": "Preview unavailable.",
     "why": {
@@ -655,7 +666,9 @@
       "sell": "No finished goods are connected to a matching merchant.",
       "loan": "You can't take a loan right now.",
       "scout": "You need 3 non-wild cards and available wild cards.",
-      "pass": "You can't pass right now."
+      "pass": "You can't pass right now.",
+      "noJuice": "Not enough juice in your stockpile (juice has no market).",
+      "noMarket": "Not connected to a market to buy the shortfall."
     },
     "prompt": {
       "action": "Choose an action.",
@@ -693,6 +706,7 @@
     "loan": "{{name}} took a £30 loan.",
     "scout": "{{name}} scouted for wild cards.",
     "income": "{{name}} collected £{{amount}} income.",
+    "produced": "{{name}}'s buildings produced {{summary}}.",
     "shortfall": "{{name}} sold {{tiles}} tile(s) and lost {{vp}} VP to cover income.",
     "roundEnded": "Round {{round}} ended.",
     "eraEnded": "{{era}} ended.",

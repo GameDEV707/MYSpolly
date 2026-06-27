@@ -60,6 +60,17 @@ export function logLine(t: TFunction, game: GameState, e: GameEvent): string | n
       return t('log.scout', { name: playerName(t, game, e.player) });
     case 'INCOME_COLLECTED':
       return t('log.income', { name: playerName(t, game, e.player), amount: e.amount });
+    case 'RESOURCE_PRODUCED': {
+      const parts: string[] = [];
+      if (e.coal > 0) parts.push(`${e.coal} ${t('legend.coal')}`);
+      if (e.iron > 0) parts.push(`${e.iron} ${t('legend.iron')}`);
+      if (e.juice > 0) parts.push(`${e.juice} ${t('legend.juice')}`);
+      if (parts.length === 0) return null;
+      return t('log.produced', {
+        name: playerName(t, game, e.player),
+        summary: parts.join(', '),
+      });
+    }
     case 'SHORTFALL':
       return t('log.shortfall', {
         name: playerName(t, game, e.player),
