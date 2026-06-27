@@ -12,6 +12,7 @@
     "howToPlay": "How to Play",
     "credits": "Credits",
     "quit": "Quit",
+    "tutorial": "Interactive Tutorial",
     "noGameInProgress": "No game in progress",
     "continueSummary": "{{era}} · Round {{round}} · {{players}} players"
   },
@@ -168,7 +169,8 @@
     "back": "Back",
     "search": "Search rules…",
     "contents": "Contents",
-    "noResults": "No matching chapters."
+    "noResults": "No matching chapters.",
+    "startTutorial": "Interactive tutorial"
   },
   "rulesLib": {
     "overview": {
@@ -508,6 +510,76 @@
     "passDevice": "Pass the device to {{name}}",
     "passDeviceHint": "Hand the device to {{name}} and make sure no one else can see the screen, then continue.",
     "ready": "I'm ready"
+  },
+  "tutorial": {
+    "title": "Interactive Tutorial",
+    "lessonOf": "Lesson {{n}} / {{total}}",
+    "stepOf": "Step {{n}} of {{total}}",
+    "replayLesson": "Replay",
+    "skipLesson": "Skip lesson",
+    "exit": "Exit",
+    "next": "Next",
+    "finish": "Finish",
+    "clickHint": "Click the highlighted element to continue.",
+    "offerTitle": "New to Brass: Birmingham?",
+    "offerBody": "Take a short interactive tutorial to learn how to play — you can stop any time.",
+    "offerStart": "Start tutorial",
+    "offerSkip": "Maybe later",
+    "build": {
+      "title": "Build",
+      "intro": "Build places an industry tile in a town using a card.",
+      "s1": "Select your Birmingham location card.",
+      "s2": "Now click the highlighted Cotton Mill space to build it.",
+      "s3": "Done! You built a Cotton Mill, paying money and any coal/iron it needs. It stays unflipped until you sell its cotton."
+    },
+    "network": {
+      "title": "Network",
+      "intro": "Network builds canals (or, later, railways) to grow your network.",
+      "s1": "Click the highlighted link to lay a canal between Dudley and Birmingham.",
+      "s2": "Great! Your network now reaches both towns, so you can build and sell there."
+    },
+    "sell": {
+      "title": "Sell",
+      "intro": "Selling flips your goods tiles for income and VP, using beer.",
+      "s1": "First, take a barrel of beer — selling needs it.",
+      "s2": "Now sell your cotton to the connected Oxford merchant.",
+      "s3": "The mill flips: your income rises now and it scores VP at era end. You may also claim the merchant's beer bonus."
+    },
+    "develop": {
+      "title": "Develop",
+      "intro": "Develop removes low tiles so you can build better ones.",
+      "s1": "Spend one iron to develop.",
+      "s2": "Remove the low Pottery tile to reveal a higher-level one beneath.",
+      "s3": "Now stronger industries are available sooner. (Lightbulb potteries can't be developed.)"
+    },
+    "loanScout": {
+      "title": "Loan & Scout",
+      "intro": "Loan gives quick cash; Scout fixes a stuck hand.",
+      "s1": "Take a £30 loan — it costs you three income levels.",
+      "s2": "Scout helps when your cards are poor: discard two for wild cards.",
+      "s3": "Pick the first card to discard for Scout.",
+      "s4": "And a second card to discard.",
+      "s5": "You gained a wild location and a wild industry card that can stand in for anything."
+    },
+    "income": {
+      "title": "Income",
+      "intro": "Income pays you money at the end of every round.",
+      "s1": "Each round you collect money equal to your income level.",
+      "s2": "Click to collect your income for the round.",
+      "s3": "Flipping tiles raises income; a loan lowers it. Keep income healthy for steady cash."
+    },
+    "turnOrder": {
+      "title": "Turn Order",
+      "intro": "Spending less lets you act earlier next round.",
+      "s1": "On your turn you take two actions (one in the first Canal round), then refill to 8 cards.",
+      "s2": "At round end, turn order re-sorts by spending: whoever spent the least goes first next round."
+    },
+    "eras": {
+      "title": "Eras & Scoring",
+      "intro": "The game runs across two eras, each ending in scoring.",
+      "s1": "When the deck and hands empty, the Canal Era scores. Then canals and level-1 tiles are removed and the Rail Era begins.",
+      "s2": "Each era scores your links and flipped tiles. After the Rail Era, the most Victory Points wins. You're ready to play!"
+    }
   },
   "board": {
     "cameraHint": "Drag to pan · scroll to zoom · press 0 to fit",

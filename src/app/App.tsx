@@ -9,6 +9,7 @@ import { GameSetup } from './screens/GameSetup.tsx';
 import { LoadGame } from './screens/LoadGame.tsx';
 import { SettingsScreen } from './screens/Settings.tsx';
 import { Rules } from './screens/Rules.tsx';
+import { Tutorial } from './screens/Tutorial.tsx';
 import { Credits } from './screens/Credits.tsx';
 import { GameScreen } from './screens/Game.tsx';
 import { PauseMenu } from './screens/PauseMenu.tsx';
@@ -46,6 +47,8 @@ export function App(): JSX.Element {
       return <SettingsScreen />;
     case 'rules':
       return <Rules />;
+    case 'tutorial':
+      return <Tutorial />;
     case 'credits':
       return <Credits />;
     case 'game':

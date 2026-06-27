@@ -12,6 +12,7 @@
     "howToPlay": "Qanday oʻynaladi",
     "credits": "Mualliflar",
     "quit": "Chiqish",
+    "tutorial": "Interaktiv qoʻllanma",
     "noGameInProgress": "Faol oʻyin yoʻq",
     "continueSummary": "{{era}} · {{round}}-raund · {{players}} oʻyinchi"
   },
@@ -168,7 +169,8 @@
     "back": "Orqaga",
     "search": "Qoidalardan qidirish…",
     "contents": "Mundarija",
-    "noResults": "Mos boblar yoʻq."
+    "noResults": "Mos boblar yoʻq.",
+    "startTutorial": "Interaktiv qoʻllanma"
   },
   "rulesLib": {
     "overview": {
@@ -508,6 +510,76 @@
     "passDevice": "Qurilmani {{name}}ga uzating",
     "passDeviceHint": "Qurilmani {{name}}ga bering va ekranni boshqa hech kim koʻrmasligiga ishonch hosil qiling, soʻng davom eting.",
     "ready": "Men tayyorman"
+  },
+  "tutorial": {
+    "title": "Interaktiv qoʻllanma",
+    "lessonOf": "{{n}} / {{total}}-dars",
+    "stepOf": "{{total}} dan {{n}}-qadam",
+    "replayLesson": "Qayta koʻrish",
+    "skipLesson": "Darsni oʻtkazish",
+    "exit": "Chiqish",
+    "next": "Keyingi",
+    "finish": "Yakunlash",
+    "clickHint": "Davom etish uchun yoritilgan elementni bosing.",
+    "offerTitle": "Brass: Birmingham’da yangimisiz?",
+    "offerBody": "Qanday oʻynashni oʻrganish uchun qisqa interaktiv qoʻllanmani oʻting — istalgan vaqtda toʻxtatishingiz mumkin.",
+    "offerStart": "Qoʻllanmani boshlash",
+    "offerSkip": "Keyinroq",
+    "build": {
+      "title": "Qurish",
+      "intro": "Qurish karta yordamida shaharga sanoat plitkasini qoʻyadi.",
+      "s1": "«Birmingem» joy kartasini tanlang.",
+      "s2": "Endi uni qurish uchun yoritilgan paxta fabrikasi uyasini bosing.",
+      "s3": "Tayyor! Siz paxta fabrikasini qurdingiz, pul va kerakli koʻmir/temirni toʻladingiz. U paxtasini sotmaguningizcha agʻdarilmagan turadi."
+    },
+    "network": {
+      "title": "Tarmoq",
+      "intro": "Tarmoq kanal (keyinroq yoʻl) qurib, tarmogʻingizni kengaytiradi.",
+      "s1": "Dadli va Birmingem oʻrtasida kanal qurish uchun yoritilgan aloqani bosing.",
+      "s2": "Ajoyib! Endi tarmogʻingiz ikkala shaharga yetadi, u yerda qurish va sotish mumkin."
+    },
+    "sell": {
+      "title": "Sotish",
+      "intro": "Sotish pivo yordamida mahsulot plitkalarini daromad va GʻO uchun agʻdaradi.",
+      "s1": "Avval bitta pivo bochkasini oling — sotish uchun u kerak.",
+      "s2": "Endi paxtani bogʻlangan Oksford savdogariga soting.",
+      "s3": "Fabrika agʻdariladi: daromad darhol oshadi, davr oxirida GʻO beradi. Savdogarning pivo bonusini ham olishingiz mumkin."
+    },
+    "develop": {
+      "title": "Rivojlantirish",
+      "intro": "Rivojlantirish past plitkalarni olib, yaxshiroqlarini qurish imkonini beradi.",
+      "s1": "Rivojlantirish uchun bitta temir sarflang.",
+      "s2": "Past kulolchilik plitkasini olib tashlang, ostidan yuqori darajalisi chiqadi.",
+      "s3": "Endi kuchli sanoatlar ertaroq mavjud. (Lampochkali kulolchiliklarni rivojlantirib boʻlmaydi.)"
+    },
+    "loanScout": {
+      "title": "Qarz va razvedka",
+      "intro": "Qarz tez pul beradi; razvedka qotib qolgan qoʻlni tuzatadi.",
+      "s1": "£30 qarz oling — u sizga uch daromad darajasiga tushadi.",
+      "s2": "Kartalaringiz yomon boʻlsa razvedka yordam beradi: wild kartalar uchun ikkitasini tashlang.",
+      "s3": "Razvedka uchun tashlanadigan birinchi kartani tanlang.",
+      "s4": "Va tashlanadigan ikkinchi kartani.",
+      "s5": "Siz istalgan narsa oʻrnida ishlaydigan wild joy va wild sanoat kartasini oldingiz."
+    },
+    "income": {
+      "title": "Daromad",
+      "intro": "Daromad har raund oxirida sizga pul beradi.",
+      "s1": "Har raundda daromad darajangizga teng pul olasiz.",
+      "s2": "Raund daromadini olish uchun bosing.",
+      "s3": "Plitkalarni agʻdarish daromadni oshiradi; qarz pasaytiradi. Barqaror pul uchun daromadni sogʻlom saqlang."
+    },
+    "turnOrder": {
+      "title": "Yurish tartibi",
+      "intro": "Kam sarflash keyingi raundda ertaroq yurish imkonini beradi.",
+      "s1": "Oʻz yurishingizda ikki amal qilasiz (birinchi kanal raundida bittasi), soʻng 8 tagacha toʻldirasiz.",
+      "s2": "Raund oxirida tartib xarajatlar boʻyicha qayta saralanadi: kim eng kam sarflasa, birinchi yuradi."
+    },
+    "eras": {
+      "title": "Davrlar va hisob",
+      "intro": "Oʻyin ikki davrda boradi, har biri hisob bilan tugaydi.",
+      "s1": "Taxlam va qoʻllar boʻshaganda Kanal davri hisoblanadi. Soʻng kanallar va 1-daraja plitkalar olinadi, Temir yoʻl davri boshlanadi.",
+      "s2": "Har bir davr aloqalaringiz va agʻdarilgan plitkalaringizni hisoblaydi. Temir yoʻl davridan keyin eng koʻp GʻO gʻolib. Endi oʻynashga tayyorsiz!"
+    }
   },
   "board": {
     "cameraHint": "Surish uchun torting · masshtab uchun gʻildirak · 0 — moslashtirish",

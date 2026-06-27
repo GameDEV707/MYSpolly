@@ -16,6 +16,7 @@ export type AppScreen =
   | 'load'
   | 'settings'
   | 'rules'
+  | 'tutorial'
   | 'credits'
   | 'game'
   | 'pause'
@@ -49,6 +50,8 @@ interface AppStore {
   settingsReturn: AppScreen;
   /** When opening the Rules Library via a deep link, the chapter id to show. */
   rulesChapter: string | null;
+  /** Screen to return to when the interactive tutorial is exited. */
+  tutorialReturn: AppScreen;
   game: GameState | null;
   /** Recent events, for the log + animation queue. */
   events: GameEvent[];
@@ -61,6 +64,8 @@ interface AppStore {
   openSettings: (from: AppScreen) => void;
   /** Open the Rules Library, optionally at a chapter, returning to `from`. */
   openRules: (from: AppScreen, chapter?: string | null) => void;
+  /** Launch the interactive tutorial, returning to `from` on exit. */
+  startTutorial: (from: AppScreen) => void;
   newGame: (config: NewGameConfig) => void;
   continueGame: () => Promise<boolean>;
   loadGame: (state: GameState) => void;
@@ -92,6 +97,7 @@ export const useApp = create<AppStore>((set, get) => ({
   screen: 'splash',
   settingsReturn: 'mainMenu',
   rulesChapter: null,
+  tutorialReturn: 'mainMenu',
   game: null,
   events: [],
   actionLog: [],
@@ -110,6 +116,10 @@ export const useApp = create<AppStore>((set, get) => ({
 
   openRules(from, chapter = null) {
     set({ screen: 'rules', settingsReturn: from, rulesChapter: chapter });
+  },
+
+  startTutorial(from) {
+    set({ screen: 'tutorial', tutorialReturn: from });
   },
 
   newGame(config) {

@@ -18,6 +18,7 @@ export function Rules(): JSX.Element {
   const back = useApp((s) => s.settingsReturn);
   const deepChapter = useApp((s) => s.rulesChapter);
   const goto = useApp((s) => s.goto);
+  const startTutorial = useApp((s) => s.startTutorial);
   const inGame = useApp((s) => s.game !== null);
 
   const initial = useMemo(
@@ -97,6 +98,9 @@ export function Rules(): JSX.Element {
             fontSize: 14,
           }}
         />
+        <Button variant="ghost" onClick={() => startTutorial(back)}>
+          🎓 {t('rules.startTutorial')}
+        </Button>
         <Button
           variant="ghost"
           onClick={() => goto(back === 'pause' && inGame ? 'pause' : 'mainMenu')}

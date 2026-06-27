@@ -1022,12 +1022,12 @@ having the player perform them:
 - [x] **3T.5** Provide full **EN/RU/UZ** translations for all Rules Library content.
 
 **Interactive Tutorial (learn by doing) — §7.14.2**
-- [ ] **3T.6** Implement a scripted, **coached tutorial** game state with step highlighting,
+- [x] **3T.6** Implement a scripted, **coached tutorial** game state with step highlighting,
       arrows, and short instructions; constrain input to the taught action and validate completion
       before advancing; support **Skip** and **Replay** per lesson.
-- [ ] **3T.7** Author tutorial lessons in order: Build → Network → Sell (beer + merchant) →
+- [x] **3T.7** Author tutorial lessons in order: Build → Network → Sell (beer + merchant) →
       Develop → Loan/Scout → taking income → end‑of‑round turn order → Canal→Rail transition + scoring.
-- [ ] **3T.8** Offer the tutorial **automatically on first launch** (skippable) and make it
+- [x] **3T.8** Offer the tutorial **automatically on first launch** (skippable) and make it
       re‑launchable anytime from Main Menu / How to Play. Localize EN/RU/UZ.
 
 **Contextual Help (in‑situ) — §7.14.3**

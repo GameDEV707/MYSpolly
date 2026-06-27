@@ -4,7 +4,7 @@ import { useApp } from '../store/appStore.ts';
 import { useSettings } from '../store/settings.ts';
 import { hasAutosave, loadAutosave } from '../../persistence/save.ts';
 import { LANGUAGES } from '../i18n/index.ts';
-import { Button } from '../components/ui.tsx';
+import { Button, Panel } from '../components/ui.tsx';
 import type { SaveMeta } from '../../persistence/types.ts';
 import { makeSaveMeta } from '../../persistence/serialize.ts';
 
@@ -17,8 +17,9 @@ export function MainMenu(): JSX.Element {
   const goto = useApp((s) => s.goto);
   const openSettings = useApp((s) => s.openSettings);
   const openRules = useApp((s) => s.openRules);
+  const startTutorial = useApp((s) => s.startTutorial);
   const continueGame = useApp((s) => s.continueGame);
-  const { settings, update } = useSettings();
+  const { settings, update, loaded } = useSettings();
   const [autosaveMeta, setAutosaveMeta] = useState<SaveMeta | null>(null);
 
   useEffect(() => {
@@ -113,6 +114,9 @@ export function MainMenu(): JSX.Element {
         <Button variant="ghost" onClick={() => openRules('mainMenu')}>
           {t('menu.howToPlay')}
         </Button>
+        <Button variant="ghost" onClick={() => startTutorial('mainMenu')}>
+          {t('menu.tutorial')}
+        </Button>
         <Button variant="ghost" onClick={() => goto('credits')}>
           {t('menu.credits')}
         </Button>
@@ -121,6 +125,41 @@ export function MainMenu(): JSX.Element {
       <p style={{ position: 'absolute', bottom: 12, color: 'var(--text-muted)', fontSize: 12 }}>
         v0.1.0
       </p>
+
+      {/* First-launch tutorial offer (skippable, shown once). */}
+      {loaded && !settings.tutorialDone && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 120,
+          }}
+        >
+          <Panel
+            style={{
+              width: 360,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 'var(--space-3)',
+              textAlign: 'center',
+            }}
+          >
+            <div style={{ fontSize: 40 }}>🎓</div>
+            <h2 style={{ margin: 0, fontFamily: 'var(--font-display)' }}>
+              {t('tutorial.offerTitle')}
+            </h2>
+            <p style={{ color: 'var(--text-muted)', margin: 0 }}>{t('tutorial.offerBody')}</p>
+            <Button onClick={() => startTutorial('mainMenu')}>{t('tutorial.offerStart')}</Button>
+            <Button variant="ghost" onClick={() => update({ tutorialDone: true })}>
+              {t('tutorial.offerSkip')}
+            </Button>
+          </Panel>
+        </div>
+      )}
     </div>
   );
 }
