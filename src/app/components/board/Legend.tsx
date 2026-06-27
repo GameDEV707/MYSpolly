@@ -5,9 +5,9 @@ import { INDUSTRY_ICON, RESOURCE_ICON, MERCHANT_BONUS_ICON } from './icons.ts';
 
 /**
  * Always-available map key (§7.16). A toggle button opens a localized legend
- * explaining every glyph: industries, resources (coal/iron/beer/VP/£/income),
+ * explaining every glyph: industries, resources (coal/iron/juice/VP/£/income),
  * canal vs rail links, merchant bonuses, built tiles, build slots, and the
- * special Farm Brewery spaces.
+ * special Farm Juice spaces.
  */
 function Row(props: { glyph: string; color?: string; label: string }): JSX.Element {
   return (
@@ -119,7 +119,7 @@ export function Legend(): JSX.Element {
           </Section>
 
           <Section title={t('legend.resources')}>
-            {(['coal', 'iron', 'beer', 'vp', 'money', 'income'] as const).map((k) => (
+            {(['coal', 'iron', 'juice', 'vp', 'money', 'income'] as const).map((k) => (
               <Row
                 key={k}
                 glyph={RESOURCE_ICON[k].glyph}
@@ -150,7 +150,7 @@ export function Legend(): JSX.Element {
             <Row glyph="■" color="var(--player-blue)" label={t('legend.builtTile')} />
             <Row glyph="★" color="#ffe08a" label={t('legend.flipped')} />
             <Row glyph="▢" label={t('legend.buildSlot')} />
-            <Row glyph="🍺" color="#7a6a44" label={t('legend.farmBrewery')} />
+            <Row glyph="🧃" color="#7a6a44" label={t('legend.farmJuice')} />
           </Section>
         </div>
       )}

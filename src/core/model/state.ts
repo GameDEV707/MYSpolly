@@ -27,7 +27,7 @@ export interface PlacedTile {
   locationId: string;
   slotId: string;
   flipped: boolean;
-  /** Cubes / beer remaining on the tile (coal, iron, beer). */
+  /** Cubes / juice remaining on the tile (coal, iron, juice). */
   resourcesLeft: number;
 }
 
@@ -53,8 +53,8 @@ export interface MerchantState {
   spaceIndex: number;
   /** Industries this merchant will buy. Empty = blank merchant (no selling). */
   accepts: IndustryType[];
-  /** Whether a beer barrel currently sits beside this merchant. */
-  hasBeer: boolean;
+  /** Whether a juice barrel currently sits beside this merchant. */
+  hasJuice: boolean;
 }
 
 export interface PlayerState {

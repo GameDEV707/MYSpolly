@@ -11,9 +11,9 @@ import {
 } from '../../data/setup.ts';
 import { getPlayer, spend } from '../helpers.ts';
 import { mintId } from '../setup.ts';
-import { consumeCoal, consumeBeer, resolveCoal } from '../consume.ts';
+import { consumeCoal, consumeJuice, resolveCoal } from '../consume.ts';
 import { hasNoPresence, playerNetwork } from '../../selectors/connectivity.ts';
-import { breweryBeerOptions } from '../../selectors/resources.ts';
+import { juiceTileOptions } from '../../selectors/resources.ts';
 
 const LINE_BY_ID = Object.fromEntries(LINK_LINES.map((l) => [l.id, l]));
 
@@ -92,7 +92,7 @@ export function validateNetwork(
         ? RAIL_SINGLE_LINK_COST
         : RAIL_DOUBLE_LINK_COST;
 
-  // Rail: each link consumes coal; double-link consumes beer.
+  // Rail: each link consumes coal; double-link consumes juice.
   if (era === 'rail') {
     for (const spec of a.links) {
       const ep = lineEndpoints(spec.lineId);
@@ -104,10 +104,10 @@ export function validateNetwork(
       money += best.marketCost;
     }
     if (a.links.length === 2) {
-      const beerOk = a.beerSource
-        ? validateBeerSource(state, player, lineIds, a.beerSource)
-        : autoBeerSource(state, player, lineIds) !== null;
-      if (!beerOk) return 'Building 2 rail links requires 1 beer from a brewery';
+      const juiceOk = a.juiceSource
+        ? validateJuiceSource(state, player, lineIds, a.juiceSource)
+        : autoJuiceSource(state, player, lineIds) !== null;
+      if (!juiceOk) return 'Building 2 rail links requires 1 juice from a juice';
     }
   }
 
@@ -136,27 +136,27 @@ function endpointsOf(lineIds: string[]): Set<string> {
   return s;
 }
 
-function autoBeerSource(
+function autoJuiceSource(
   state: GameState,
   player: PlayerColor,
   lineIds: string[],
 ): ResourceSource | null {
   for (const loc of endpointsOf(lineIds)) {
-    const opts = breweryBeerOptions(state, player, loc);
+    const opts = juiceTileOptions(state, player, loc);
     if (opts.length > 0) return { from: 'tile', tileId: (opts[0] as { id: string }).id };
   }
   return null;
 }
 
-function validateBeerSource(
+function validateJuiceSource(
   state: GameState,
   player: PlayerColor,
   lineIds: string[],
   src: ResourceSource,
 ): boolean {
-  if (src.from !== 'tile') return false; // network beer must come from a brewery, not a merchant
+  if (src.from !== 'tile') return false; // network juice must come from a juice, not a merchant
   for (const loc of endpointsOf(lineIds)) {
-    if (breweryBeerOptions(state, player, loc).some((t) => t.id === src.tileId)) return true;
+    if (juiceTileOptions(state, player, loc).some((t) => t.id === src.tileId)) return true;
   }
   return false;
 }
@@ -192,7 +192,7 @@ export function applyNetwork(
     events.push({ t: 'LINK_PLACED', link: { ...link } });
   }
 
-  // Rail: consume coal per link and beer for a double build (after placement).
+  // Rail: consume coal per link and juice for a double build (after placement).
   if (era === 'rail') {
     for (const spec of a.links) {
       const ep = lineEndpoints(spec.lineId);
@@ -204,11 +204,11 @@ export function applyNetwork(
     }
     if (a.links.length === 2) {
       const lineIds = a.links.map((l) => l.lineId);
-      const beer = a.beerSource ?? autoBeerSource(state, player, lineIds);
-      if (beer) {
+      const juice = a.juiceSource ?? autoJuiceSource(state, player, lineIds);
+      if (juice) {
         // Use whichever endpoint makes the source valid for connectivity rules.
         const loc = [...endpointsOf(lineIds)][0] as string;
-        consumeBeer(state, player, loc, [beer], events);
+        consumeJuice(state, player, loc, [juice], events);
       }
     }
   }

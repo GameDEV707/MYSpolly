@@ -31,7 +31,7 @@ function tileTooltip(t: TFunction, tile: PlacedTile): string {
  * SVG board (§7.12). Renders the water, canal/rail link lines (built, buildable,
  * neutral), self-explanatory location nodes (region band, name, build slots with
  * industry icons, built tiles with owner/level/cubes/flip), and merchants
- * (accepted goods, bonus icon, beer barrel). Level-of-detail (`lod`) controls
+ * (accepted goods, bonus icon, juice barrel). Level-of-detail (`lod`) controls
  * density; valid targets glow and, while an action is targeting, invalid ones dim.
  */
 export function BoardSvg(props: {
@@ -243,7 +243,7 @@ export function BoardSvg(props: {
         const xy = LOCATION_XY[m.id];
         if (!xy) return null;
         const states = game.merchants.filter((mm) => mm.locationId === m.id);
-        const anyBeer = states.some((mm) => mm.hasBeer);
+        const anyJuice = states.some((mm) => mm.hasJuice);
         const accepts = [...new Set(states.flatMap((mm) => mm.accepts))];
         const bonus = MERCHANT_BONUS_ICON[m.bonus];
         const highlighted = highlightLocations?.has(m.id) ?? false;
@@ -257,7 +257,7 @@ export function BoardSvg(props: {
                 ? `${t('board.accepts')}: ${accepts.map((a) => t(`industry.${a}`)).join(', ')}`
                 : '—',
               `${t('board.bonus')}: ${t(bonus.labelKey)}`,
-              anyBeer ? t('board.merchantBeer') : '',
+              anyJuice ? t('board.merchantJuice') : '',
             ]
               .filter(Boolean)
               .join('\n')
@@ -300,12 +300,12 @@ export function BoardSvg(props: {
                 {accepts.length ? accepts.map((a) => INDUSTRY_ICON[a].glyph).join('') : '—'}
               </text>
             )}
-            {/* Merchant beer barrel. */}
-            {anyBeer && (
+            {/* Merchant juice barrel. */}
+            {anyJuice && (
               <g transform="translate(18,-16)">
-                <circle r={7} fill="var(--beer, #d8a93a)" stroke="#000" strokeWidth={1} />
+                <circle r={7} fill="var(--juice, #e8943a)" stroke="#000" strokeWidth={1} />
                 <text x={0} y={3} textAnchor="middle" fontSize={8}>
-                  🍺
+                  🧃
                 </text>
               </g>
             )}
@@ -316,7 +316,7 @@ export function BoardSvg(props: {
   );
 }
 
-/** A built industry tile inside a slot: owner colour, level, cubes/beer, flip. */
+/** A built industry tile inside a slot: owner colour, level, cubes/juice, flip. */
 function BuiltTile(props: {
   tile: PlacedTile;
   showDetail: boolean;
@@ -346,7 +346,7 @@ function BuiltTile(props: {
           L{tile.level}
         </text>
       )}
-      {/* Remaining cubes / beer badge. */}
+      {/* Remaining cubes / juice badge. */}
       {tile.resourcesLeft > 0 && (
         <g transform={`translate(${r - 2},${-r + 2})`}>
           <circle r={6} fill="#111" stroke="#fff" strokeWidth={0.75} />

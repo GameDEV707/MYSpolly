@@ -58,21 +58,21 @@ describe('industry tile data', () => {
     }
   });
 
-  test('only cotton/manufacturer/pottery require beer to sell', () => {
+  test('only cotton/manufacturer/pottery require juice to sell', () => {
     for (const l of ALL_INDUSTRY_LEVELS) {
-      if (l.beerToSell > 0) {
+      if (l.juiceToSell > 0) {
         assert.ok(
           ['cotton', 'manufacturer', 'pottery'].includes(l.industry),
-          `${l.industry} should not need sell-beer`,
+          `${l.industry} should not need sell-juice`,
         );
       }
     }
   });
 
-  test('only coal/iron mines and breweries produce resources', () => {
+  test('only coal/iron mines and juiceWorks produce resources', () => {
     for (const l of ALL_INDUSTRY_LEVELS) {
       if (l.resourceCount > 0) {
-        assert.ok(['coal', 'iron', 'brewery'].includes(l.industry));
+        assert.ok(['coal', 'iron', 'juice'].includes(l.industry));
       }
     }
   });
@@ -84,7 +84,7 @@ describe('industry tile data', () => {
 });
 
 describe('board data', () => {
-  test('20 towns + 2 farm breweries', () => {
+  test('20 towns + 2 farm juiceWorks', () => {
     assert.equal(TOWNS.length, 20);
     assert.equal(LOCATIONS.length, 22);
   });

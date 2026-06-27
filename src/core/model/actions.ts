@@ -12,9 +12,9 @@ export interface CardRef {
 
 /** Where a consumed resource comes from. */
 export type ResourceSource =
-  | { from: 'tile'; tileId: string } // a coal mine / iron works / brewery on the board
+  | { from: 'tile'; tileId: string } // a coal mine / iron works / juice on the board
   | { from: 'market' } // buy from the coal/iron market
-  | { from: 'merchantBeer'; merchantId: string }; // merchant beer (Sell only)
+  | { from: 'merchantJuice'; merchantId: string }; // merchant juice (Sell only)
 
 export interface BuildAction {
   type: 'BUILD';
@@ -38,8 +38,8 @@ export interface NetworkAction {
   type: 'NETWORK';
   card: CardRef;
   links: NetworkLinkSpec[];
-  /** Beer source consumed when building two rail links. */
-  beerSource?: ResourceSource;
+  /** Juice source consumed when building two rail links. */
+  juiceSource?: ResourceSource;
 }
 
 export interface DevelopAction {
@@ -53,7 +53,7 @@ export interface DevelopAction {
 export interface SellSpec {
   tileId: string;
   merchantId: string;
-  beer: ResourceSource[];
+  juice: ResourceSource[];
 }
 
 export interface SellAction {

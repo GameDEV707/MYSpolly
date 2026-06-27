@@ -127,7 +127,7 @@ export function buildInitialState(config: SetupConfig): GameState {
       locationId: sp.locationId,
       spaceIndex: sp.spaceIndex,
       accepts,
-      hasBeer: accepts.length > 0, // beer beside non-blank merchants
+      hasJuice: accepts.length > 0, // juice beside non-blank merchants
     };
   });
 

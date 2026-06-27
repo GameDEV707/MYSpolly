@@ -83,10 +83,10 @@ export function IconGlossary(): JSX.Element {
       meaningKey: 'rulesLib.glossary.m.ironCube',
     },
     {
-      glyph: RESOURCE_ICON.beer.glyph,
-      color: RESOURCE_ICON.beer.color,
-      nameKey: 'legend.beer',
-      meaningKey: 'rulesLib.glossary.m.beer',
+      glyph: RESOURCE_ICON.juice.glyph,
+      color: RESOURCE_ICON.juice.color,
+      nameKey: 'legend.juice',
+      meaningKey: 'rulesLib.glossary.m.juice',
     },
     {
       glyph: RESOURCE_ICON.vp.glyph,
@@ -129,10 +129,10 @@ export function IconGlossary(): JSX.Element {
     },
     { glyph: '▢', nameKey: 'legend.buildSlot', meaningKey: 'rulesLib.glossary.m.buildSlot' },
     {
-      glyph: '🍺',
+      glyph: '🧃',
       color: '#7a6a44',
-      nameKey: 'legend.farmBrewery',
-      meaningKey: 'rulesLib.glossary.m.farmBrewery',
+      nameKey: 'legend.farmJuice',
+      meaningKey: 'rulesLib.glossary.m.farmJuice',
     },
   ];
 

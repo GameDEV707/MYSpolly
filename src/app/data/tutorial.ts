@@ -9,7 +9,7 @@ import type { DiagramId } from './rules.ts';
  *
  * The stage is intentionally self-contained (it does not drive the real engine),
  * so the coached flow is reliable and the lesson order is exactly as specified:
- * Build → Network → Sell (beer + merchant) → Develop → Loan/Scout → income →
+ * Build → Network → Sell (juice + merchant) → Develop → Loan/Scout → income →
  * end-of-round turn order → Canal→Rail transition + scoring.
  */
 
@@ -18,7 +18,7 @@ export type ElementKind =
   | 'slot'
   | 'town'
   | 'merchant'
-  | 'beer'
+  | 'juice'
   | 'iron'
   | 'button'
   | 'tile';
@@ -95,11 +95,11 @@ export const TUTORIAL_LESSONS: TutorialLesson[] = [
     introKey: 'tutorial.sell.intro',
     elements: [
       el('tileCotton', 'tile', 'industry.cotton', '🧵'),
-      el('beer1', 'beer', 'legend.beer', '🍺'),
+      el('juice1', 'juice', 'legend.juice', '🧃'),
       el('merchOxford', 'merchant', 'loc.oxford', '🏪'),
     ],
     steps: [
-      click('beer1', 'tutorial.sell.s1'),
+      click('juice1', 'tutorial.sell.s1'),
       click('merchOxford', 'tutorial.sell.s2'),
       info('tutorial.sell.s3'),
     ],

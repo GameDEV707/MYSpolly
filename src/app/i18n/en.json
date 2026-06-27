@@ -135,7 +135,7 @@
     "money": "£{{n}}",
     "coal": "{{n}} coal",
     "iron": "{{n}} iron",
-    "beer": "{{n}} beer",
+    "juice": "{{n}} juice",
     "preview": "Cost"
   },
   "industry": {
@@ -144,7 +144,7 @@
     "iron": "Iron Works",
     "manufacturer": "Manufacturer",
     "pottery": "Pottery",
-    "brewery": "Brewery"
+    "juice": "Juice Works"
   },
   "card": {
     "wildLocation": "Wild Location",
@@ -195,10 +195,10 @@
       "summary": "Canal Era, then Rail Era.",
       "twoEras": {
         "h": "Two periods of play",
-        "p1": "The game is played across two distinct periods. The Canal Era uses canal links and single-link builds; the Rail Era replaces canals with railways, allows double-link builds (with beer) and opens higher-level industries.",
+        "p1": "The game is played across two distinct periods. The Canal Era uses canal links and single-link builds; the Rail Era replaces canals with railways, allows double-link builds (with juice) and opens higher-level industries.",
         "caption": "Canal Era (1770–1830) → Rail Era (1830–1870).",
         "l1": "Canal Era: canals only, one link per Network action, lower-level tiles dominate.",
-        "l2": "Rail Era: railways (which burn coal), optional double-rail builds using beer, and the final scoring that decides the winner."
+        "l2": "Rail Era: railways (which burn coal), optional double-rail builds using juice, and the final scoring that decides the winner."
       },
       "between": {
         "h": "What carries over",
@@ -219,10 +219,10 @@
       },
       "pieces": {
         "h": "Your pieces",
-        "l1": "Industry tiles on your mat: cotton mills, coal mines, iron works, manufacturers, potteries and breweries, stacked by level.",
+        "l1": "Industry tiles on your mat: cotton mills, coal mines, iron works, manufacturers, potteries and juice works, stacked by level.",
         "l2": "Link tiles: your supply of canals and railways.",
         "l3": "Cards: location cards and industry cards drive what you may build and where.",
-        "l4": "Cubes: coal (black) and iron (orange) from mines and works; beer barrels from breweries.",
+        "l4": "Cubes: coal (black) and iron (orange) from mines and works; juice barrels from juice works.",
         "l5": "Markers: your money, income and VP positions on the tracks."
       }
     },
@@ -232,7 +232,7 @@
       "common": {
         "h": "Common setup",
         "p1": "Each player picks a colour, takes their mat with all industry tiles, £17 in cash, a starting income, and a hand of 8 cards.",
-        "l1": "Place the merchant tiles and beer barrels for the player count.",
+        "l1": "Place the merchant tiles and juice barrels for the player count.",
         "l2": "Fill the coal and iron markets.",
         "l3": "Shuffle the era deck and deal 8 cards to each player."
       },
@@ -280,9 +280,9 @@
       "summary": "Build a canal or rail link.",
       "how": {
         "h": "How Network works",
-        "p1": "Play any card to build a link on an empty space connected to your network. A Canal-Era canal costs £3; a Rail-Era railway costs £5 and burns one coal, or build two railways for £15 plus one beer.",
+        "p1": "Play any card to build a link on an empty space connected to your network. A Canal-Era canal costs £3; a Rail-Era railway costs £5 and burns one coal, or build two railways for £15 plus one juice.",
         "l1": "Canal Era: one canal per action, cost £3, no coal.",
-        "l2": "Rail Era: one rail (£5 + 1 coal) or two rails (£15 + 1 coal each + 1 beer)."
+        "l2": "Rail Era: one rail (£5 + 1 coal) or two rails (£15 + 1 coal each + 1 juice)."
       },
       "example": {
         "h": "Example",
@@ -300,18 +300,18 @@
     },
     "actSell": {
       "title": "Action: Sell",
-      "summary": "Sell goods to a merchant (with beer).",
+      "summary": "Sell goods to a merchant (with juice).",
       "how": {
         "h": "How Sell works",
-        "p1": "Sell cotton, manufactured goods or pottery from your unflipped tiles to a connected merchant that buys that good, consuming the beer the tile requires. Selling flips the tile and raises your income.",
-        "caption": "Tile → beer → connected merchant.",
+        "p1": "Sell cotton, manufactured goods or pottery from your unflipped tiles to a connected merchant that buys that good, consuming the juice the tile requires. Selling flips the tile and raises your income.",
+        "caption": "Tile → juice → connected merchant.",
         "l1": "The tile must be connected through your network to a merchant that buys that good.",
-        "l2": "Consume the beer shown on the tile; use your own brewery beer or, sometimes, the merchant's barrel for a bonus.",
+        "l2": "Consume the juice shown on the tile; use your own juice works' juice or, sometimes, the merchant's barrel for a bonus.",
         "l3": "When sold, the tile flips face-up and its income marker advances immediately."
       },
       "example": {
         "h": "Example",
-        "p1": "Connect a Cotton Mill to Oxford, consume one beer and sell — the mill flips, your income rises, and you may claim the merchant's beer bonus."
+        "p1": "Connect a Cotton Mill to Oxford, consume one juice and sell — the mill flips, your income rises, and you may claim the merchant's juice bonus."
       }
     },
     "actLoan": {
@@ -349,11 +349,11 @@
         "caption": "Town A links to B; resources flow along connections."
       },
       "resources": {
-        "h": "Consuming coal, iron & beer",
+        "h": "Consuming coal, iron & juice",
         "p1": "Industries make resources that others consume:",
         "l1": "Coal must come from a connected source or the coal market; taking the last cube can flip the producing tile.",
         "l2": "Iron can be taken from any iron works on the board (no connection needed) or bought from the iron market.",
-        "l3": "Beer is consumed when selling; it comes from breweries (yours or adjacent) or a merchant's barrel."
+        "l3": "Juice is consumed when selling; it comes from juice works (yours or adjacent) or a merchant's barrel."
       },
       "markets": {
         "h": "The coal & iron markets",
@@ -370,8 +370,8 @@
         "p1": "You may build over an existing tile — yours or an opponent's — only with a higher-level tile of the same industry, and usually only once the lower tile is used. Coal and iron follow special overbuild rules tied to their markets."
       },
       "farm": {
-        "h": "Farm breweries",
-        "p1": "Breweries supply the beer needed to sell goods: one barrel in the Canal Era, two in the Rail Era. The off-map farm brewery spaces let you place breweries that serve nearby towns."
+        "h": "Farm juice works",
+        "p1": "Juice works supply the juice needed to sell goods: one barrel in the Canal Era, two in the Rail Era. The off-map farm juice works spaces let you place juice works that serve nearby towns."
       }
     },
     "endRound": {
@@ -435,10 +435,9 @@
         "iron": "Iron works — produces iron cubes for building and developing.",
         "manufacturer": "Manufacturer — produces manufactured goods to sell.",
         "pottery": "Pottery — high-VP industry; lightbulb potteries can't be developed.",
-        "brewery": "Brewery — produces the beer barrels needed to sell goods.",
+        "juice": "Juice works — makes the juice barrels you consume to sell goods to merchants.",
         "coalCube": "Coal cube — fuel for building and rail; sold to the coal market.",
         "ironCube": "Iron cube — used to build and to Develop; sold to the iron market.",
-        "beer": "Beer barrel — consumed when selling goods to a merchant.",
         "vp": "Victory Points — what you score to win.",
         "money": "Money (£) — spent to build and to network.",
         "income": "Income — money collected each round; rises when tiles flip.",
@@ -448,7 +447,7 @@
         "builtTile": "Built tile — an industry you placed; shows owner colour and level.",
         "flipped": "Flipped tile — used or sold; scores VP at era end.",
         "buildSlot": "Empty build space — where a tile can be placed.",
-        "farmBrewery": "Farm brewery space — an off-town space for breweries only.",
+        "farmJuice": "Farm juice works space — an off-town space for juice works only.",
         "bonus_develop": "Develop bonus — a free develop when selling at this merchant.",
         "bonus_income": "Income bonus — income gain when selling at this merchant.",
         "bonus_vp": "VP bonus — Victory Points when selling at this merchant.",
@@ -483,7 +482,7 @@
     "derby": "Derby",
     "belper": "Belper",
     "coalbrookdale": "Coalbrookdale",
-    "farmBrewery": "Farm Brewery",
+    "farmJuice": "Farm Juice Works",
     "shrewsbury": "Shrewsbury",
     "warrington": "Warrington",
     "gloucester": "Gloucester",
@@ -540,10 +539,10 @@
     },
     "sell": {
       "title": "Sell",
-      "intro": "Selling flips your goods tiles for income and VP, using beer.",
-      "s1": "First, take a barrel of beer — selling needs it.",
+      "intro": "Selling flips your goods tiles for income and VP, using juice.",
+      "s1": "First, take a barrel of juice — selling needs it.",
       "s2": "Now sell your cotton to the connected Oxford merchant.",
-      "s3": "The mill flips: your income rises now and it scores VP at era end. You may also claim the merchant's beer bonus."
+      "s3": "The mill flips: your income rises now and it scores VP at era end. You may also claim the merchant's juice bonus."
     },
     "develop": {
       "title": "Develop",
@@ -596,8 +595,8 @@
     "connections": "Connections",
     "buildSlots": "Build slots",
     "accepts": "Buys",
-    "bonus": "Beer bonus",
-    "merchantBeer": "Merchant beer available",
+    "bonus": "Juice bonus",
+    "merchantJuice": "Merchant juice available",
     "empty": "empty"
   },
   "legend": {
@@ -610,7 +609,7 @@
     "rail": "Rail link",
     "coal": "Coal",
     "iron": "Iron",
-    "beer": "Beer",
+    "juice": "Juice",
     "vp": "Victory points",
     "money": "Money",
     "income": "Income",
@@ -618,7 +617,7 @@
     "builtTile": "Built tile (owner colour, level)",
     "flipped": "Flipped tile (scored)",
     "buildSlot": "Empty build slot",
-    "farmBrewery": "Farm Brewery (breweries only)",
+    "farmJuice": "Farm Juice Works (juice works only)",
     "specialLink": "Special link"
   },
   "flow": {

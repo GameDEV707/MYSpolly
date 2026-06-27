@@ -79,7 +79,7 @@ const INDUSTRY_CARDS: DeckCard[] = [
   ...industryCards('cotton', [1, 1, 2, 3, 4]),
   ...industryCards('manufacturer', [1, 1, 2, 3, 4]),
   ...industryCards('pottery', [1, 2, 4]),
-  ...industryCards('brewery', [1, 1, 2, 4]),
+  ...industryCards('juice', [1, 1, 2, 4]),
 ];
 
 /** The full 4-player deck definition (Location + Industry cards). */

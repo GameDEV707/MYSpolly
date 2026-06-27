@@ -3,7 +3,7 @@ import type { GameEvent } from '../../model/events.ts';
 import type { BuildAction } from '../../model/actions.ts';
 import type { IndustryType, PlayerColor } from '../../model/types.ts';
 import { TOWN_BY_ID } from '../../data/board.ts';
-import { getLevelDef, BREWERY_BEER_BY_ERA } from '../../data/industries.ts';
+import { getLevelDef, JUICE_BARRELS_BY_ERA } from '../../data/industries.ts';
 import { getPlayer, spend } from '../helpers.ts';
 import { mintId } from '../setup.ts';
 import { consumeCoal, consumeIron, resolveCoal, resolveIron } from '../consume.ts';
@@ -18,7 +18,7 @@ function occupantAt(state: GameState, locationId: string, slotId: string): Place
 
 function cardPermitsLocation(card: Card, locationId: string, isFarm: boolean): boolean {
   if (card.kind === 'location') return card.locationId === locationId;
-  if (card.kind === 'wildLocation') return !isFarm; // wild location can't build the 2 farm breweries
+  if (card.kind === 'wildLocation') return !isFarm; // wild location can't build the 2 farm juiceWorks
   return true; // industry / wildIndustry cards are not location-restricted here
 }
 
@@ -40,17 +40,17 @@ export function validateBuild(
 
   const loc = TOWN_BY_ID[a.locationId];
   if (!loc) return 'Unknown or non-buildable location';
-  const isFarm = loc.isFarmBrewery === true;
+  const isFarm = loc.isFarmJuice === true;
 
   const slot = loc.slots.find((s) => s.id === a.slotId);
   if (!slot) return 'Unknown slot';
   if (!slot.allowed.includes(a.industry)) return 'Slot does not allow that industry';
 
-  // Farm breweries: only a Brewery / Wild Industry card may build (a brewery).
+  // Farm juiceWorks: only a Juice / Wild Industry card may build (a juice).
   if (isFarm) {
-    if (a.industry !== 'brewery') return 'Farm spaces only take breweries';
+    if (a.industry !== 'juice') return 'Farm spaces only take juiceWorks';
     if (card.kind === 'location' || card.kind === 'wildLocation') {
-      return 'Farm breweries need a Brewery or Wild Industry card';
+      return 'Farm juiceWorks need a Juice or Wild Industry card';
     }
   }
 
@@ -172,12 +172,12 @@ export function applyBuild(
     consumeCoal(state, player, a.locationId, sources.slice(0, def.costCoal), events);
   }
 
-  // Determine cubes/beer produced on the new tile.
+  // Determine cubes/juice produced on the new tile.
   let resourcesLeft = 0;
   if (a.industry === 'coal' || a.industry === 'iron') {
     resourcesLeft = def.resourceCount;
-  } else if (a.industry === 'brewery') {
-    resourcesLeft = BREWERY_BEER_BY_ERA[state.era];
+  } else if (a.industry === 'juice') {
+    resourcesLeft = JUICE_BARRELS_BY_ERA[state.era];
   }
 
   const tile: PlacedTile = {

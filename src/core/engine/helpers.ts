@@ -155,13 +155,13 @@ export function flipTile(state: GameState, tile: PlacedTile, events: GameEvent[]
 }
 
 /**
- * Consume one resource cube/barrel from a coal mine / iron works / brewery.
+ * Consume one resource cube/barrel from a coal mine / iron works / juice.
  * If this empties the tile, it flips and advances its owner's income.
  */
 export function consumeFromTile(
   state: GameState,
   tile: PlacedTile,
-  resource: 'coal' | 'iron' | 'beer',
+  resource: 'coal' | 'iron' | 'juice',
   consumer: PlayerColor,
   events: GameEvent[],
 ): void {

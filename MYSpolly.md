@@ -1027,23 +1027,23 @@ Working names (finalize during implementation, keep consistent everywhere):
 - Special locations: **Farm Breweries → "Farm Juice Works"** (UZ *Fermer sharbat zavodi*).
 - Merchant **beer space/bonus → "drink/juice"** equivalent.
 
-- [ ] **3D.1** Rename the industry in the **engine data/types** (e.g. `IndustryType` `'brewery'`
+- [x] **3D.1** Rename the industry in the **engine data/types** (e.g. `IndustryType` `'brewery'`
       → `'juice'`/`'beverage'`, and the resource `beer` → `juice`) **without changing any rule,
       cost, level, count, or behavior**. Update all engine logic, selectors, and tests that
       reference brewery/beer to the new identifiers.
-- [ ] **3D.2** Update **all board data**: the brewery slots, the 2 Farm Brewery locations, and the
+- [x] **3D.2** Update **all board data**: the brewery slots, the 2 Farm Brewery locations, and the
       merchant drink spaces now use the new beverage industry/resource (same positions & counts).
-- [ ] **3D.3** Update **all cards**: any Brewery industry card and related references become the
+- [x] **3D.3** Update **all cards**: any Brewery industry card and related references become the
       new beverage industry; wild‑industry behavior unchanged.
-- [ ] **3D.4** Update **all UI labels, tooltips, the legend/key, the Rules Library, and the
+- [x] **3D.4** Update **all UI labels, tooltips, the legend/key, the Rules Library, and the
       tutorial** to the new beverage naming and iconography.
-- [ ] **3D.5** Provide/replace **art & icons**: the brewery tile/icon and the beer‑barrel cube
+- [x] **3D.5** Provide/replace **art & icons**: the brewery tile/icon and the beer‑barrel cube
       become a juice/soft‑drink works and a drink barrel (original/royalty‑free; record in
       `ASSETS_CREDITS.md`). Update any "beer" sound/label.
-- [ ] **3D.6** Update **i18n** in **EN/RU/UZ** for every renamed string (industry name, resource
+- [x] **3D.6** Update **i18n** in **EN/RU/UZ** for every renamed string (industry name, resource
       name, Farm version, merchant bonus, rules text, log lines like "Blue built a Juice Works in
       Stafford").
-- [ ] **3D.7** Grep the whole codebase for residual `beer`/`brewery`/`pivo` strings and confirm
+- [x] **3D.7** Grep the whole codebase for residual `beer`/`brewery`/`pivo` strings and confirm
       none remain in user‑facing text; run the full test suite to confirm mechanics are unchanged.
       *DoD: there is no "Brewery"/"beer" (or "Pivo zavodi") anywhere in the game — board, tiles,
       cards, markets, rules, tutorial, logs, and all three languages now show the non‑alcoholic

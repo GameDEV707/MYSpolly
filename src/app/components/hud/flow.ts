@@ -12,7 +12,7 @@ import type { FlowSel } from './flowStore.ts';
  * step-by-step selection (`FlowSel`) into the human-readable, guided choices the
  * UI presents (§7.13). No raw enumerations leak to the player: each step exposes
  * only the meaningful next choice, and the final concrete Action is reused from
- * `legalActions` (so resource sources / beer stay valid) or, for Scout, built and
+ * `legalActions` (so resource sources / juice stay valid) or, for Scout, built and
  * validated directly.
  */
 
@@ -266,7 +266,7 @@ export interface ActionPreview {
   income: number;
   coal: number;
   iron: number;
-  beer: number;
+  juice: number;
   flips: number;
   placedTiles: PlacedTile[];
   placedLinks: PlacedLink[];
@@ -293,7 +293,7 @@ export function previewAction(game: GameState, action: Action): ActionPreview | 
     income: 0,
     coal: 0,
     iron: 0,
-    beer: 0,
+    juice: 0,
     flips: 0,
     placedTiles: [],
     placedLinks: [],
@@ -305,7 +305,7 @@ export function previewAction(game: GameState, action: Action): ActionPreview | 
     else if (e.t === 'RESOURCE_CONSUMED' && e.player === player) {
       if (e.resource === 'coal') p.coal += 1;
       else if (e.resource === 'iron') p.iron += 1;
-      else if (e.resource === 'beer') p.beer += 1;
+      else if (e.resource === 'juice') p.juice += 1;
     } else if (e.t === 'TILE_FLIPPED' && e.player === player) p.flips += 1;
     else if (e.t === 'TILE_PLACED') p.placedTiles.push(e.tile);
     else if (e.t === 'LINK_PLACED') p.placedLinks.push(e.link);

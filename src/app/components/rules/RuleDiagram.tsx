@@ -112,7 +112,7 @@ export function RuleDiagram({ id }: { id: DiagramId }): JSX.Element {
         <div style={wrap}>
           <Node label={INDUSTRY_ICON.cotton.glyph} sub="🧵" color={INDUSTRY_ICON.cotton.color} />
           <span style={{ letterSpacing: 2, color: 'var(--accent)' }}>━━</span>
-          <Chip color={RESOURCE_ICON.beer.color}>{RESOURCE_ICON.beer.glyph}</Chip>
+          <Chip color={RESOURCE_ICON.juice.color}>{RESOURCE_ICON.juice.glyph}</Chip>
           <Arrow />
           <Node label="🏪" sub="✓" color="var(--player-yellow)" />
         </div>

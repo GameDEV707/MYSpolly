@@ -460,9 +460,9 @@ function ConfirmPanel(props: {
               {RESOURCE_ICON.iron.glyph} {preview.iron} {t('legend.iron')}
             </Pill>
           )}
-          {preview.beer > 0 && (
+          {preview.juice > 0 && (
             <Pill>
-              {RESOURCE_ICON.beer.glyph} {preview.beer} {t('legend.beer')}
+              {RESOURCE_ICON.juice.glyph} {preview.juice} {t('legend.juice')}
             </Pill>
           )}
           {preview.vp > 0 && (
@@ -483,7 +483,7 @@ function ConfirmPanel(props: {
           {preview.money === 0 &&
             preview.coal === 0 &&
             preview.iron === 0 &&
-            preview.beer === 0 &&
+            preview.juice === 0 &&
             preview.vp === 0 &&
             preview.income === 0 &&
             preview.flips === 0 && (

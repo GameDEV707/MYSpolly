@@ -236,7 +236,7 @@ function StageElement(props: {
   onClick: () => void;
 }): JSX.Element {
   const { element, highlighted, done, label, onClick } = props;
-  const round = element.kind === 'beer' || element.kind === 'iron' || element.kind === 'merchant';
+  const round = element.kind === 'juice' || element.kind === 'iron' || element.kind === 'merchant';
   const style = {
     position: 'relative',
     display: 'flex',

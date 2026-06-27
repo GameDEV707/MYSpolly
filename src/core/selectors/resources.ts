@@ -28,28 +28,24 @@ export function isConnectedToMerchant(state: GameState, loc: string): boolean {
 }
 
 /**
- * Breweries whose beer `player` may consume from `loc`:
- *   - the player's own breweries (no connection required),
- *   - opponents' breweries that are connected to `loc`.
- * Only breweries with beer remaining are returned.
+ * JuiceWorks whose juice `player` may consume from `loc`:
+ *   - the player's own juiceWorks (no connection required),
+ *   - opponents' juiceWorks that are connected to `loc`.
+ * Only juiceWorks with juice remaining are returned.
  */
-export function breweryBeerOptions(
-  state: GameState,
-  player: PlayerColor,
-  loc: string,
-): PlacedTile[] {
+export function juiceTileOptions(state: GameState, player: PlayerColor, loc: string): PlacedTile[] {
   const reachable = reachableFrom(state, loc);
   return state.tiles.filter((t) => {
-    if (t.industry !== 'brewery' || t.resourcesLeft <= 0) return false;
+    if (t.industry !== 'juice' || t.resourcesLeft <= 0) return false;
     if (t.owner === player) return true;
     return reachable.has(t.locationId);
   });
 }
 
-/** Merchants (with a beer barrel) connected to `loc`, for Sell beer bonuses. */
-export function merchantBeerOptions(state: GameState, loc: string): GameState['merchants'] {
+/** Merchants (with a juice barrel) connected to `loc`, for Sell juice bonuses. */
+export function merchantJuiceOptions(state: GameState, loc: string): GameState['merchants'] {
   const reachable = reachableFrom(state, loc);
-  return state.merchants.filter((m) => m.hasBeer && reachable.has(m.locationId));
+  return state.merchants.filter((m) => m.hasJuice && reachable.has(m.locationId));
 }
 
 /**

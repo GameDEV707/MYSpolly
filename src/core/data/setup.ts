@@ -12,7 +12,7 @@ import { INDUSTRY_LEVELS } from './industries.ts';
  *    Nottingham empty; 4P uses all merchant spaces.
  *  - Coal Market: every space filled except one £1 space (13 cubes).
  *  - Iron Market: every space filled except both £1 spaces (8 cubes).
- *  - Shared cubes: 30 coal, 18 iron, 15 beer.
+ *  - Shared cubes: 30 coal, 18 iron, 15 juice.
  */
 
 export const STARTING_MONEY = 17;
@@ -27,7 +27,7 @@ export const INCOME_LEVEL_MIN = -10;
 
 export const TOTAL_COAL_CUBES = 30;
 export const TOTAL_IRON_CUBES = 18;
-export const TOTAL_BEER_BARRELS = 15;
+export const TOTAL_JUICE_BARRELS = 15;
 
 /** Number of rounds in each era by player count. */
 export const ROUNDS_PER_ERA: Record<number, number> = {
@@ -42,7 +42,7 @@ export const CANAL_LINK_COST = 3;
 /** Rail-Era network costs. */
 export const RAIL_SINGLE_LINK_COST = 5;
 export const RAIL_DOUBLE_LINK_COST = 15;
-export const RAIL_DOUBLE_LINK_BEER = 1; // beer consumed when building 2 rail links
+export const RAIL_DOUBLE_LINK_JUICE = 1; // juice consumed when building 2 rail links
 export const RAIL_LINK_COAL = 1; // coal consumed per rail link
 
 /** Loan effect. */

@@ -13,7 +13,7 @@ import type { LinkLineDef, LocationDef, MerchantLocationDef } from '../model/typ
  * taken directly from the rulebook and enforced by the validation test.
  */
 
-const ALL = ['cotton', 'coal', 'iron', 'manufacturer', 'pottery', 'brewery'] as const;
+const ALL = ['cotton', 'coal', 'iron', 'manufacturer', 'pottery', 'juice'] as const;
 
 // Convenience builders for slots.
 let slotSeq = 0;
@@ -29,7 +29,7 @@ function slot(allowed: readonly LocationDef['slots'][number]['allowed'][number][
 // Merchant locations (external trading posts). Bonuses confirmed from rulebook:
 //   Gloucester = Develop, Oxford = +2 Income, Nottingham/Shrewsbury = VP,
 //   Warrington = +£5. Total merchant-tile spaces = 9.
-// VERIFY: the VP amounts for Nottingham/Shrewsbury beer bonuses.
+// VERIFY: the VP amounts for Nottingham/Shrewsbury juice bonuses.
 // ---------------------------------------------------------------------------
 
 export const MERCHANT_LOCATIONS: MerchantLocationDef[] = [
@@ -77,31 +77,31 @@ export const TOWNS: LocationDef[] = [
     id: 'stone',
     name: 'loc.stone',
     colorBand: 'blue',
-    slots: [slot(['cotton', 'brewery']), slot(['manufacturer', 'coal'])],
+    slots: [slot(['cotton', 'juice']), slot(['manufacturer', 'coal'])],
   },
   {
     id: 'uttoxeter',
     name: 'loc.uttoxeter',
     colorBand: 'blue',
-    slots: [slot(['cotton', 'brewery']), slot(['manufacturer', 'brewery'])],
+    slots: [slot(['cotton', 'juice']), slot(['manufacturer', 'juice'])],
   },
   {
     id: 'stafford',
     name: 'loc.stafford',
     colorBand: 'blue',
-    slots: [slot(['cotton', 'brewery']), slot(['pottery'])],
+    slots: [slot(['cotton', 'juice']), slot(['pottery'])],
   },
   {
     id: 'burton',
     name: 'loc.burton',
     colorBand: 'blue',
-    slots: [slot(['manufacturer', 'brewery']), slot(['brewery'])],
+    slots: [slot(['manufacturer', 'juice']), slot(['juice'])],
   },
   {
     id: 'derby',
     name: 'loc.derby',
     colorBand: 'blue',
-    slots: [slot(['cotton', 'manufacturer']), slot(['brewery']), slot(['manufacturer', 'pottery'])],
+    slots: [slot(['cotton', 'manufacturer']), slot(['juice']), slot(['manufacturer', 'pottery'])],
   },
   {
     id: 'belper',
@@ -127,13 +127,13 @@ export const TOWNS: LocationDef[] = [
     id: 'walsall',
     name: 'loc.walsall',
     colorBand: 'teal',
-    slots: [slot(['manufacturer', 'brewery']), slot(['iron', 'manufacturer'])],
+    slots: [slot(['manufacturer', 'juice']), slot(['iron', 'manufacturer'])],
   },
   {
     id: 'coalbrookdale',
     name: 'loc.coalbrookdale',
     colorBand: 'teal',
-    slots: [slot(['iron', 'coal']), slot(['iron', 'brewery']), slot(['coal'])],
+    slots: [slot(['iron', 'coal']), slot(['iron', 'juice']), slot(['coal'])],
   },
 
   // --- Red band ---
@@ -190,36 +190,36 @@ export const TOWNS: LocationDef[] = [
     id: 'nuneaton',
     name: 'loc.nuneaton',
     colorBand: 'green',
-    slots: [slot(['cotton', 'brewery']), slot(['manufacturer', 'coal'])],
+    slots: [slot(['cotton', 'juice']), slot(['manufacturer', 'coal'])],
   },
   {
     id: 'redditch',
     name: 'loc.redditch',
     colorBand: 'green',
-    slots: [slot(['manufacturer', 'coal']), slot(['iron', 'brewery'])],
+    slots: [slot(['manufacturer', 'coal']), slot(['iron', 'juice'])],
   },
 ];
 
-// Two unnamed Farm Brewery spaces (buildable only with Brewery / Wild Industry).
-export const FARM_BREWERIES: LocationDef[] = [
+// Two unnamed Farm Juice spaces (buildable only with Juice / Wild Industry).
+export const FARM_JUICE_WORKS: LocationDef[] = [
   {
     id: 'farm1',
-    name: 'loc.farmBrewery',
+    name: 'loc.farmJuice',
     colorBand: 'farm',
-    isFarmBrewery: true,
-    slots: [slot(['brewery'])],
+    isFarmJuice: true,
+    slots: [slot(['juice'])],
   },
   {
     id: 'farm2',
-    name: 'loc.farmBrewery',
+    name: 'loc.farmJuice',
     colorBand: 'farm',
-    isFarmBrewery: true,
-    slots: [slot(['brewery'])],
+    isFarmJuice: true,
+    slots: [slot(['juice'])],
   },
 ];
 
-/** All build-capable locations (towns + farm breweries). */
-export const LOCATIONS: LocationDef[] = [...TOWNS, ...FARM_BREWERIES];
+/** All build-capable locations (towns + farm juiceWorks). */
+export const LOCATIONS: LocationDef[] = [...TOWNS, ...FARM_JUICE_WORKS];
 
 // ---------------------------------------------------------------------------
 // Link lines (the canal/rail network edges).
@@ -283,13 +283,13 @@ export const LINK_LINES: LinkLineDef[] = [
   link('redditch', 'oxford'),
   link('redditch', 'gloucester', ['rail']),
 
-  // Farm-brewery adjacencies (rulebook): farm1 ↔ Cannock area; farm2 ↔
+  // Farm-juice adjacencies (rulebook): farm1 ↔ Cannock area; farm2 ↔
   // Kidderminster/Worcester area. VERIFY exact adjacency.
   link('farm1', 'cannock'),
   link('farm2', 'worcester'),
 ];
 
-/** All location ids that can host links (towns + farm breweries + merchants). */
+/** All location ids that can host links (towns + farm juiceWorks + merchants). */
 export const ALL_LOCATION_IDS: string[] = [
   ...LOCATIONS.map((l) => l.id),
   ...MERCHANT_LOCATIONS.map((m) => m.id),
@@ -307,7 +307,7 @@ export const MERCHANT_BY_ID: Record<string, MerchantLocationDef> = Object.fromEn
  * The 9 merchant tiles (which goods each will buy) and the minimum player count
  * at which each is used, so the eligible tiles exactly fill the available
  * merchant spaces: 2P → 5 spaces, 3P → 7, 4P → 9.
- * A `[]` (blank) tile accepts nothing and receives no beer barrel.
+ * A `[]` (blank) tile accepts nothing and receives no juice barrel.
  *
  * VERIFY: the exact goods on each physical merchant tile are printed on the
  * tiles (image data). Encoded here so every good is sellable at each player

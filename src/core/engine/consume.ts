@@ -8,7 +8,7 @@ import {
   coalMineOptions,
   ironWorksOptions,
   isConnectedToMerchant,
-  breweryBeerOptions,
+  juiceTileOptions,
 } from '../selectors/resources.ts';
 
 export interface ResolveResult {
@@ -152,38 +152,38 @@ export function consumeIron(
 }
 
 /**
- * Validate + consume beer for a Sell from a given location.
- * Beer sources: own breweries (no connection), connected opponents' breweries,
- * or merchant beer beside a connected merchant. Returns the merchant ids whose
- * beer was used (so the caller can apply merchant bonuses).
+ * Validate + consume juice for a Sell from a given location.
+ * Juice sources: own juiceWorks (no connection), connected opponents' juiceWorks,
+ * or merchant juice beside a connected merchant. Returns the merchant ids whose
+ * juice was used (so the caller can apply merchant bonuses).
  */
-export function consumeBeer(
+export function consumeJuice(
   state: GameState,
   player: PlayerColor,
   loc: string,
   sources: ResourceSource[],
   events: GameEvent[],
 ): string[] {
-  const breweryIds = new Set(breweryBeerOptions(state, player, loc).map((t) => t.id));
-  const merchantBeerUsed: string[] = [];
+  const juiceIds = new Set(juiceTileOptions(state, player, loc).map((t) => t.id));
+  const merchantJuiceUsed: string[] = [];
   for (const src of sources) {
     if (src.from === 'tile') {
-      if (!breweryIds.has(src.tileId)) {
-        throw new Error(`Brewery ${src.tileId} is not an available beer source`);
+      if (!juiceIds.has(src.tileId)) {
+        throw new Error(`Juice ${src.tileId} is not an available juice source`);
       }
       const tile = findTile(state, src.tileId);
-      consumeFromTile(state, tile, 'beer', player, events);
-    } else if (src.from === 'merchantBeer') {
+      consumeFromTile(state, tile, 'juice', player, events);
+    } else if (src.from === 'merchantJuice') {
       const merchant = state.merchants.find((m) => m.id === src.merchantId);
-      if (!merchant || !merchant.hasBeer) {
-        throw new Error(`Merchant beer ${src.merchantId} unavailable`);
+      if (!merchant || !merchant.hasJuice) {
+        throw new Error(`Merchant juice ${src.merchantId} unavailable`);
       }
-      merchant.hasBeer = false;
-      merchantBeerUsed.push(merchant.id);
-      events.push({ t: 'RESOURCE_CONSUMED', resource: 'beer', from: merchant.id, player });
+      merchant.hasJuice = false;
+      merchantJuiceUsed.push(merchant.id);
+      events.push({ t: 'RESOURCE_CONSUMED', resource: 'juice', from: merchant.id, player });
     } else {
-      throw new Error('Invalid beer source');
+      throw new Error('Invalid juice source');
     }
   }
-  return merchantBeerUsed;
+  return merchantJuiceUsed;
 }

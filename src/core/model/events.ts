@@ -18,7 +18,7 @@ export type GameEvent =
     }
   | {
       t: 'RESOURCE_CONSUMED';
-      resource: 'coal' | 'iron' | 'beer';
+      resource: 'coal' | 'iron' | 'juice';
       from: string;
       player: PlayerColor;
     }

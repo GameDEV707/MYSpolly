@@ -135,7 +135,7 @@
     "money": "£{{n}}",
     "coal": "{{n}} koʻmir",
     "iron": "{{n}} temir",
-    "beer": "{{n}} pivo",
+    "juice": "{{n}} sharbat",
     "preview": "Narxi"
   },
   "industry": {
@@ -144,7 +144,7 @@
     "iron": "Metallurgiya zavodi",
     "manufacturer": "Manufaktura",
     "pottery": "Kulolchilik",
-    "brewery": "Pivo zavodi"
+    "juice": "Sharbat zavodi"
   },
   "card": {
     "wildLocation": "Wild joy",
@@ -195,10 +195,10 @@
       "summary": "Avval Kanal davri, soʻng Temir yoʻl davri.",
       "twoEras": {
         "h": "Oʻyinning ikki davri",
-        "p1": "Oʻyin ikki xil davrda boradi. Kanal davrida kanal aloqalari va yakka aloqa qurilishi ishlatiladi; Temir yoʻl davrida kanallar yoʻllar bilan almashtiriladi, ikkita aloqa qurish (pivo bilan) mumkin va yuqori darajali sanoatlar ochiladi.",
+        "p1": "Oʻyin ikki xil davrda boradi. Kanal davrida kanal aloqalari va yakka aloqa qurilishi ishlatiladi; Temir yoʻl davrida kanallar yoʻllar bilan almashtiriladi, ikkita aloqa qurish (sharbat bilan) mumkin va yuqori darajali sanoatlar ochiladi.",
         "caption": "Kanal davri (1770–1830) → Temir yoʻl davri (1830–1870).",
         "l1": "Kanal davri: faqat kanallar, har bir «Tarmoq» amalida bitta aloqa, past darajali plitkalar ustun.",
-        "l2": "Temir yoʻl davri: yoʻllar (koʻmir yoqadi), pivo bilan ixtiyoriy ikkita yoʻl qurilishi va gʻolibni aniqlovchi yakuniy hisob."
+        "l2": "Temir yoʻl davri: yoʻllar (koʻmir yoqadi), sharbat bilan ixtiyoriy ikkita yoʻl qurilishi va gʻolibni aniqlovchi yakuniy hisob."
       },
       "between": {
         "h": "Nima oʻtadi",
@@ -219,10 +219,10 @@
       },
       "pieces": {
         "h": "Sizning qismlaringiz",
-        "l1": "Planshetdagi sanoat plitkalari: paxta fabrikalari, koʻmir konlari, zavodlar, manufakturalar, kulolchilik va pivo zavodlari, darajalar boʻyicha taxlangan.",
+        "l1": "Planshetdagi sanoat plitkalari: paxta fabrikalari, koʻmir konlari, zavodlar, manufakturalar, kulolchilik va sharbat zavodlari, darajalar boʻyicha taxlangan.",
         "l2": "Aloqa plitkalari: kanal va yoʻllar zaxirangiz.",
         "l3": "Kartalar: joy va sanoat kartalari nimani qayerda qurishni belgilaydi.",
-        "l4": "Kublar: kon va zavodlardan koʻmir (qora) va temir (toʻq sariq); pivo zavodlaridan pivo bochkalari.",
+        "l4": "Kublar: kon va zavodlardan koʻmir (qora) va temir (toʻq sariq); sharbat zavodlaridan sharbat bochkalari.",
         "l5": "Markerlar: pul, daromad va GʻO holatlaringiz shkalalarda."
       }
     },
@@ -232,7 +232,7 @@
       "common": {
         "h": "Umumiy tayyorlash",
         "p1": "Har bir oʻyinchi rang tanlaydi, barcha sanoat plitkalari bilan planshet, £17 naqd pul, boshlangʻich daromad va 8 ta kartali qoʻl oladi.",
-        "l1": "Oʻyinchilar soniga mos savdogar plitkalari va pivo bochkalarini qoʻying.",
+        "l1": "Oʻyinchilar soniga mos savdogar plitkalari va sharbat bochkalarini qoʻying.",
         "l2": "Koʻmir va temir bozorlarini toʻldiring.",
         "l3": "Davr taxlamini aralashtirib, har biriga 8 tadan karta tarqating."
       },
@@ -264,7 +264,7 @@
       "summary": "Shaharga sanoat plitkasini qoʻyish.",
       "how": {
         "h": "Qurish qanday ishlaydi",
-        "p1": "Mos kartani oʻ ynab, planshetdan keyingi sanoat plitkasini ruxsat etilgan uyaga qoʻ ying, uning pul narxini hamda kerakli koʻmir va temirni toʻlang.",
+        "p1": "Mos kartani oʻynab, planshetdan keyingi sanoat plitkasini ruxsat etilgan uyaga qoʻying, uning pul narxini hamda kerakli koʻmir va temirni toʻlang.",
         "l1": "Karta: joy kartasi shu shaharda qurishga, sanoat kartasi esa shu sanoatni tarmogʻingizda qurishga ruxsat beradi (birinchi qurilish istalgan joyda).",
         "l2": "Resurslar: koʻp plitkalarga koʻmir va/yoki temir kerak — bogʻlangan manbalardan yoki bozordan.",
         "l3": "Siz har doim shu sanoatning eng past darajadagi plitkasini qurasiz."
@@ -280,9 +280,9 @@
       "summary": "Kanal yoki temir yoʻl qurish.",
       "how": {
         "h": "Tarmoq qanday ishlaydi",
-        "p1": "Tarmogʻingizga bogʻlangan boʻsh uyada aloqa qurish uchun istalgan kartani oʻynang. Kanal davrida kanal £3; Temir yoʻl davrida yoʻl £5 va bitta koʻmir yoqadi, yoki ikkita yoʻl £15 va bitta pivoga.",
+        "p1": "Tarmogʻingizga bogʻlangan boʻsh uyada aloqa qurish uchun istalgan kartani oʻynang. Kanal davrida kanal £3; Temir yoʻl davrida yoʻl £5 va bitta koʻmir yoqadi, yoki ikkita yoʻl £15 va bitta sharbatga.",
         "l1": "Kanal davri: bir amalda bitta kanal, narxi £3, koʻmirsiz.",
-        "l2": "Temir yoʻl davri: bitta yoʻl (£5 + 1 koʻmir) yoki ikkita yoʻl (£15 + har biriga 1 koʻmir + 1 pivo)."
+        "l2": "Temir yoʻl davri: bitta yoʻl (£5 + 1 koʻmir) yoki ikkita yoʻl (£15 + har biriga 1 koʻmir + 1 sharbat)."
       },
       "example": {
         "h": "Misol",
@@ -300,18 +300,18 @@
     },
     "actSell": {
       "title": "Amal: Sotish",
-      "summary": "Mahsulotni savdogarga sotish (pivo bilan).",
+      "summary": "Mahsulotni savdogarga sotish (sharbat bilan).",
       "how": {
         "h": "Sotish qanday ishlaydi",
-        "p1": "Agʻdarilmagan plitkalaringizdan paxta, manufaktura mahsuloti yoki kulolchilikni shu mahsulotni sotib oladigan bogʻlangan savdogarga soting, plitka talab qilgan pivoni sarflab. Sotish plitkani agʻdaradi va daromadni oshiradi.",
-        "caption": "Plitka → pivo → bogʻlangan savdogar.",
+        "p1": "Agʻdarilmagan plitkalaringizdan paxta, manufaktura mahsuloti yoki kulolchilikni shu mahsulotni sotib oladigan bogʻlangan savdogarga soting, plitka talab qilgan sharbatni sarflab. Sotish plitkani agʻdaradi va daromadni oshiradi.",
+        "caption": "Plitka → sharbat → bogʻlangan savdogar.",
         "l1": "Plitka tarmogʻingiz orqali shu mahsulotni oladigan savdogar bilan bogʻlangan boʻlishi kerak.",
-        "l2": "Plitkada koʻrsatilgan pivoni sarflang; oʻz pivo zavodingiz pivosini yoki baʼzan bonus uchun savdogar bochkasini ishlating.",
+        "l2": "Plitkada koʻrsatilgan sharbatni sarflang; oʻz sharbat zavodingiz sharbatini yoki baʼzan bonus uchun savdogar bochkasini ishlating.",
         "l3": "Sotilganda plitka agʻdariladi va daromad markeri darhol oldinga siljiydi."
       },
       "example": {
         "h": "Misol",
-        "p1": "Paxta fabrikasini Oksford bilan bogʻlang, bitta pivo sarflang va soting — fabrika agʻdariladi, daromad oshadi, savdogarning pivo bonusini olishingiz mumkin."
+        "p1": "Paxta fabrikasini Oksford bilan bogʻlang, bitta sharbat sarflang va soting — fabrika agʻdariladi, daromad oshadi, savdogarning sharbat bonusini olishingiz mumkin."
       }
     },
     "actLoan": {
@@ -349,11 +349,11 @@
         "caption": "A shahar B bilan bogʻlangan; resurslar aloqalar boʻylab oqadi."
       },
       "resources": {
-        "h": "Koʻmir, temir va pivo sarfi",
+        "h": "Koʻmir, temir va sharbat sarfi",
         "p1": "Sanoatlar boshqalar sarflaydigan resurslarni ishlab chiqaradi:",
         "l1": "Koʻmir bogʻlangan manbadan yoki koʻmir bozoridan olinadi; oxirgi kubni olish ishlab chiqaruvchi plitkani agʻdarishi mumkin.",
         "l2": "Temirni taxtadagi istalgan zavoddan (aloqa shart emas) olish yoki temir bozoridan sotib olish mumkin.",
-        "l3": "Pivo sotishda sarflanadi; u pivo zavodlaridan (oʻzingiz yoki qoʻshni) yoki savdogar bochkasidan keladi."
+        "l3": "Sharbat sotishda sarflanadi; u sharbat zavodlaridan (oʻzingiz yoki qoʻshni) yoki savdogar bochkasidan keladi."
       },
       "markets": {
         "h": "Koʻmir va temir bozorlari",
@@ -370,8 +370,8 @@
         "p1": "Mavjud plitka ustiga — oʻzingiznikimi yoki raqibnikimi — faqat oʻsha sanoatning yuqori darajali plitkasi bilan va odatda pastki plitka ishlatilgandan keyingina qurish mumkin. Koʻmir va temir oʻz bozorlariga bogʻliq maxsus qoidalarga boʻysunadi."
       },
       "farm": {
-        "h": "Fermer pivo zavodlari",
-        "p1": "Pivo zavodlari sotish uchun pivo beradi: Kanal davrida bitta bochka, Temir yoʻl davrida ikkita. Taxtadan tashqaridagi fermer pivo zavodi uyalari yaqin shaharlarga xizmat qiluvchi pivo zavodlarini qoʻyish imkonini beradi."
+        "h": "Fermer sharbat zavodlari",
+        "p1": "Sharbat zavodlari sotish uchun sharbat beradi: Kanal davrida bitta bochka, Temir yoʻl davrida ikkita. Taxtadan tashqaridagi fermer sharbat zavodi uyalari yaqin shaharlarga xizmat qiluvchi sharbat zavodlarini qoʻyish imkonini beradi."
       }
     },
     "endRound": {
@@ -435,10 +435,9 @@
         "iron": "Zavod — qurilish va rivojlantirish uchun temir kublarini ishlab chiqaradi.",
         "manufacturer": "Manufaktura — sotish uchun mahsulot ishlab chiqaradi.",
         "pottery": "Kulolchilik — yuqori GʻO sanoat; lampochkali kulolchiliklarni rivojlantirib boʻlmaydi.",
-        "brewery": "Pivo zavodi — mahsulot sotish uchun zarur pivo bochkalarini ishlab chiqaradi.",
+        "juice": "Sharbat zavodi — mahsulot sotish uchun zarur sharbat bochkalarini ishlab chiqaradi.",
         "coalCube": "Koʻmir kubi — qurilish va yoʻl uchun yoqilgʻi; koʻmir bozoriga sotiladi.",
         "ironCube": "Temir kubi — qurish va rivojlantirish uchun; temir bozoriga sotiladi.",
-        "beer": "Pivo bochkasi — mahsulotni savdogarga sotishda sarflanadi.",
         "vp": "Gʻalaba ochkolari — gʻalaba uchun toʻplaydigan narsangiz.",
         "money": "Pul (£) — qurish va tarmoqqa sarflanadi.",
         "income": "Daromad — har raund olinadigan pul; plitkalar agʻdarilganda oshadi.",
@@ -448,7 +447,7 @@
         "builtTile": "Qurilgan plitka — siz qoʻygan sanoat; egasi rangi va darajasini koʻrsatadi.",
         "flipped": "Agʻdarilgan plitka — ishlatilgan yoki sotilgan; davr oxirida GʻO beradi.",
         "buildSlot": "Boʻsh qurilish uyasi — plitka qoʻyish mumkin boʻlgan joy.",
-        "farmBrewery": "Fermer pivo zavodi uyasi — faqat pivo zavodlari uchun shahardan tashqari uya.",
+        "farmJuice": "Fermer sharbat zavodi uyasi — faqat sharbat zavodlari uchun shahardan tashqari uya.",
         "bonus_develop": "Rivojlantirish bonusi — shu savdogarda sotganda bepul rivojlantirish.",
         "bonus_income": "Daromad bonusi — shu savdogarda sotganda daromad oshishi.",
         "bonus_vp": "GʻO bonusi — shu savdogarda sotganda gʻalaba ochkolari.",
@@ -483,7 +482,7 @@
     "derby": "Derbi",
     "belper": "Belper",
     "coalbrookdale": "Koulbrukdeyl",
-    "farmBrewery": "Fermer pivo zavodi",
+    "farmJuice": "Fermer sharbat zavodi",
     "shrewsbury": "Shryusberi",
     "warrington": "Uorrington",
     "gloucester": "Gloster",
@@ -540,10 +539,10 @@
     },
     "sell": {
       "title": "Sotish",
-      "intro": "Sotish pivo yordamida mahsulot plitkalarini daromad va GʻO uchun agʻdaradi.",
-      "s1": "Avval bitta pivo bochkasini oling — sotish uchun u kerak.",
+      "intro": "Sotish sharbat yordamida mahsulot plitkalarini daromad va GʻO uchun agʻdaradi.",
+      "s1": "Avval bitta sharbat bochkasini oling — sotish uchun u kerak.",
       "s2": "Endi paxtani bogʻlangan Oksford savdogariga soting.",
-      "s3": "Fabrika agʻdariladi: daromad darhol oshadi, davr oxirida GʻO beradi. Savdogarning pivo bonusini ham olishingiz mumkin."
+      "s3": "Fabrika agʻdariladi: daromad darhol oshadi, davr oxirida GʻO beradi. Savdogarning sharbat bonusini ham olishingiz mumkin."
     },
     "develop": {
       "title": "Rivojlantirish",
@@ -596,8 +595,8 @@
     "connections": "Aloqalar",
     "buildSlots": "Qurilish uyalari",
     "accepts": "Sotib oladi",
-    "bonus": "Pivo bonusi",
-    "merchantBeer": "Savdogar pivosi mavjud",
+    "bonus": "Sharbat bonusi",
+    "merchantJuice": "Savdogar sharbati mavjud",
     "empty": "boʻsh"
   },
   "legend": {
@@ -610,7 +609,7 @@
     "rail": "Temir yoʻl aloqasi",
     "coal": "Koʻmir",
     "iron": "Temir",
-    "beer": "Pivo",
+    "juice": "Sharbat",
     "vp": "Gʻalaba ochkolari",
     "money": "Pul",
     "income": "Daromad",
@@ -618,7 +617,7 @@
     "builtTile": "Qurilgan plitka (egasi rangi, daraja)",
     "flipped": "Agʻdarilgan plitka (hisoblangan)",
     "buildSlot": "Boʻsh uya",
-    "farmBrewery": "Fermer pivo zavodi (faqat pivo zavodlari)",
+    "farmJuice": "Fermer sharbat zavodi (faqat sharbat zavodlari)",
     "specialLink": "Maxsus aloqa"
   },
   "flow": {

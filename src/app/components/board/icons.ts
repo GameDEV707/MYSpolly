@@ -21,13 +21,13 @@ export const INDUSTRY_ICON: Record<IndustryType, IconMeta> = {
   iron: { glyph: '⚙', color: '#c87f3a', labelKey: 'industry.iron' },
   manufacturer: { glyph: '🏭', color: '#8a6fbf', labelKey: 'industry.manufacturer' },
   pottery: { glyph: '🏺', color: '#b9622e', labelKey: 'industry.pottery' },
-  brewery: { glyph: '🍺', color: '#d8a93a', labelKey: 'industry.brewery' },
+  juice: { glyph: '🧃', color: '#e8943a', labelKey: 'industry.juice' },
 };
 
 export const RESOURCE_ICON = {
   coal: { glyph: '⬛', color: '#3a3a40', labelKey: 'legend.coal' },
   iron: { glyph: '🟧', color: '#c87f3a', labelKey: 'legend.iron' },
-  beer: { glyph: '🍺', color: '#d8a93a', labelKey: 'legend.beer' },
+  juice: { glyph: '🧃', color: '#e8943a', labelKey: 'legend.juice' },
   vp: { glyph: '★', color: '#e6c35c', labelKey: 'legend.vp' },
   money: { glyph: '£', color: '#7bbf6f', labelKey: 'legend.money' },
   income: { glyph: '↑', color: '#6fa8bf', labelKey: 'legend.income' },

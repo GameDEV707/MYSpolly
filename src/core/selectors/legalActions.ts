@@ -4,13 +4,13 @@ import { INDUSTRY_TYPES, type IndustryType, type PlayerColor } from '../model/ty
 import { LOCATIONS, LINK_LINES } from '../data/board.ts';
 import { getLevelDef } from '../data/industries.ts';
 import { validate } from '../engine/reduce.ts';
-import { breweryBeerOptions } from './resources.ts';
+import { juiceTileOptions } from './resources.ts';
 import { reachableFrom } from './connectivity.ts';
 
 const SELLABLE: IndustryType[] = ['cotton', 'manufacturer', 'pottery'];
 
-/** Beer sources (length === count) available to sell `tile` at `merchant`, or null. */
-function autoBeerForSell(
+/** Juice sources (length === count) available to sell `tile` at `merchant`, or null. */
+function autoJuiceForSell(
   state: GameState,
   player: PlayerColor,
   tileLoc: string,
@@ -19,11 +19,11 @@ function autoBeerForSell(
 ): ResourceSource[] | null {
   if (count === 0) return [];
   const slots: ResourceSource[] = [];
-  for (const b of breweryBeerOptions(state, player, tileLoc)) {
+  for (const b of juiceTileOptions(state, player, tileLoc)) {
     for (let i = 0; i < b.resourcesLeft; i += 1) slots.push({ from: 'tile', tileId: b.id });
   }
   const merchant = state.merchants.find((m) => m.id === merchantId);
-  if (merchant?.hasBeer) slots.push({ from: 'merchantBeer', merchantId });
+  if (merchant?.hasJuice) slots.push({ from: 'merchantJuice', merchantId });
   if (slots.length < count) return null;
   return slots.slice(0, count);
 }
@@ -31,7 +31,7 @@ function autoBeerForSell(
 /**
  * Enumerate legal actions for the active player. Resource sources for Build,
  * Network and Develop are auto-resolved (cheapest-first) by the engine, so they
- * are left empty here; Sell actions include explicit auto-resolved beer. Every
+ * are left empty here; Sell actions include explicit auto-resolved juice. Every
  * returned action passes `validate`. This is a practical (not exhaustive over
  * all resource permutations) enumeration that drives the UI affordances and AI.
  */
@@ -107,9 +107,15 @@ export function legalActions(state: GameState): Action[] {
       for (const merchant of state.merchants) {
         if (!merchant.accepts.includes(tile.industry)) continue;
         if (!reachable.has(merchant.locationId)) continue;
-        const beer = autoBeerForSell(state, player, tile.locationId, merchant.id, def.beerToSell);
-        if (!beer) continue;
-        const sale: SellSpec = { tileId: tile.id, merchantId: merchant.id, beer };
+        const juice = autoJuiceForSell(
+          state,
+          player,
+          tile.locationId,
+          merchant.id,
+          def.juiceToSell,
+        );
+        if (!juice) continue;
+        const sale: SellSpec = { tileId: tile.id, merchantId: merchant.id, juice };
         push({ type: 'SELL', card: ref, sales: [sale] });
       }
     }

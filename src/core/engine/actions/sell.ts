@@ -5,7 +5,7 @@ import { INDUSTRY_TYPES, type IndustryType, type PlayerColor } from '../../model
 import { getLevelDef } from '../../data/industries.ts';
 import { MERCHANT_BY_ID } from '../../data/board.ts';
 import { getPlayer, changeMoney, changeVp, advanceIncome, flipTile, findTile } from '../helpers.ts';
-import { consumeBeer } from '../consume.ts';
+import { consumeJuice } from '../consume.ts';
 import { reachableFrom } from '../../selectors/connectivity.ts';
 
 const SELLABLE: IndustryType[] = ['cotton', 'manufacturer', 'pottery'];
@@ -30,8 +30,8 @@ export function validateSell(state: GameState, player: PlayerColor, a: SellActio
     }
 
     const def = getLevelDef(tile.industry, tile.level);
-    if (sale.beer.length !== def.beerToSell) {
-      return `That tile needs exactly ${def.beerToSell} beer to sell`;
+    if (sale.juice.length !== def.juiceToSell) {
+      return `That tile needs exactly ${def.juiceToSell} juice to sell`;
     }
   }
   return null;
@@ -45,15 +45,15 @@ export function applySell(
 ): void {
   for (const sale of a.sales) {
     const tile = findTile(state, sale.tileId);
-    const merchantBeerUsed = consumeBeer(state, player, tile.locationId, sale.beer, events);
+    const merchantJuiceUsed = consumeJuice(state, player, tile.locationId, sale.juice, events);
     flipTile(state, tile, events);
-    for (const merchantId of merchantBeerUsed) {
+    for (const merchantId of merchantJuiceUsed) {
       applyMerchantBonus(state, player, merchantId, events);
     }
   }
 }
 
-/** Apply a merchant beer bonus (Develop / Income / VP / Money). */
+/** Apply a merchant juice bonus (Develop / Income / VP / Money). */
 function applyMerchantBonus(
   state: GameState,
   player: PlayerColor,

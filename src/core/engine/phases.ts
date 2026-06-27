@@ -121,9 +121,9 @@ function canalMaintenance(state: GameState, events: GameEvent[]): void {
     if (p) p.linksLeft = LINK_TILES_PER_PLAYER;
   }
 
-  // 2. Reset merchant beer beside non-blank merchants.
+  // 2. Reset merchant juice beside non-blank merchants.
   for (const m of state.merchants) {
-    if (m.accepts.length > 0) m.hasBeer = true;
+    if (m.accepts.length > 0) m.hasJuice = true;
   }
   void MERCHANT_LOCATIONS;
 

@@ -4,10 +4,10 @@ import type { IndustryLevelDef, IndustryType } from '../model/types.ts';
  * Per-industry, per-level statistics (the player-mat printouts).
  *
  * Per-industry TOTAL tile counts are taken directly from the rulebook and are
- * enforced by the data-validation test (Cotton 11, Manufacturer 11, Brewery 7,
+ * enforced by the data-validation test (Cotton 11, Manufacturer 11, Juice 7,
  * Pottery 5, Iron Works 4, Coal Mine 7 — 45 tiles per colour):
  *
- *   "11 Cotton Mills · 11 Manufacturers · 7 Breweries · 5 Potteries ·
+ *   "11 Cotton Mills · 11 Manufacturers · 7 JuiceWorks · 5 Potteries ·
  *    4 Iron Works · 7 Coal Mines"  — Brass: Birmingham rulebook.
  *
  * VERIFY: the individual per-level numeric stats (cost / coal / iron / VP /
@@ -29,7 +29,7 @@ interface RawLevel {
   costMoney: number;
   costCoal: number;
   costIron: number;
-  beerToSell: number;
+  juiceToSell: number;
   vp: number;
   incomeSpaces: number;
   linkVp: number;
@@ -47,7 +47,7 @@ function expand(industry: IndustryType, rows: RawLevel[]): IndustryLevelDef[] {
     costMoney: r.costMoney,
     costCoal: r.costCoal,
     costIron: r.costIron,
-    beerToSell: r.beerToSell,
+    juiceToSell: r.juiceToSell,
     vp: r.vp,
     incomeSpaces: r.incomeSpaces,
     linkVp: r.linkVp,
@@ -66,7 +66,7 @@ export const COAL_MINE_LEVELS = expand('coal', [
     costMoney: 5,
     costCoal: 0,
     costIron: 0,
-    beerToSell: 0,
+    juiceToSell: 0,
     vp: 1,
     incomeSpaces: 4,
     linkVp: 2,
@@ -78,7 +78,7 @@ export const COAL_MINE_LEVELS = expand('coal', [
     costMoney: 7,
     costCoal: 0,
     costIron: 0,
-    beerToSell: 0,
+    juiceToSell: 0,
     vp: 2,
     incomeSpaces: 7,
     linkVp: 1,
@@ -90,7 +90,7 @@ export const COAL_MINE_LEVELS = expand('coal', [
     costMoney: 8,
     costCoal: 0,
     costIron: 1,
-    beerToSell: 0,
+    juiceToSell: 0,
     vp: 3,
     incomeSpaces: 6,
     linkVp: 1,
@@ -102,7 +102,7 @@ export const COAL_MINE_LEVELS = expand('coal', [
     costMoney: 10,
     costCoal: 0,
     costIron: 1,
-    beerToSell: 0,
+    juiceToSell: 0,
     vp: 4,
     incomeSpaces: 5,
     linkVp: 1,
@@ -117,7 +117,7 @@ export const IRON_WORKS_LEVELS = expand('iron', [
     costMoney: 5,
     costCoal: 1,
     costIron: 0,
-    beerToSell: 0,
+    juiceToSell: 0,
     vp: 3,
     incomeSpaces: 3,
     linkVp: 1,
@@ -129,7 +129,7 @@ export const IRON_WORKS_LEVELS = expand('iron', [
     costMoney: 7,
     costCoal: 1,
     costIron: 0,
-    beerToSell: 0,
+    juiceToSell: 0,
     vp: 5,
     incomeSpaces: 3,
     linkVp: 1,
@@ -141,7 +141,7 @@ export const IRON_WORKS_LEVELS = expand('iron', [
     costMoney: 9,
     costCoal: 1,
     costIron: 0,
-    beerToSell: 0,
+    juiceToSell: 0,
     vp: 7,
     incomeSpaces: 2,
     linkVp: 1,
@@ -153,7 +153,7 @@ export const IRON_WORKS_LEVELS = expand('iron', [
     costMoney: 12,
     costCoal: 1,
     costIron: 0,
-    beerToSell: 0,
+    juiceToSell: 0,
     vp: 9,
     incomeSpaces: 1,
     linkVp: 1,
@@ -161,16 +161,16 @@ export const IRON_WORKS_LEVELS = expand('iron', [
   },
 ]);
 
-// Breweries produce beer on build: 1 barrel in the Canal Era, 2 in the Rail Era
+// JuiceWorks produce juice on build: 1 barrel in the Canal Era, 2 in the Rail Era
 // (handled in the engine). `resourceCount` here is the Canal-Era amount.
-export const BREWERY_LEVELS = expand('brewery', [
+export const JUICE_LEVELS = expand('juice', [
   {
     level: 1,
     count: 2,
     costMoney: 5,
     costCoal: 0,
     costIron: 1,
-    beerToSell: 0,
+    juiceToSell: 0,
     vp: 4,
     incomeSpaces: 4,
     linkVp: 2,
@@ -182,7 +182,7 @@ export const BREWERY_LEVELS = expand('brewery', [
     costMoney: 7,
     costCoal: 0,
     costIron: 1,
-    beerToSell: 0,
+    juiceToSell: 0,
     vp: 5,
     incomeSpaces: 5,
     linkVp: 2,
@@ -194,7 +194,7 @@ export const BREWERY_LEVELS = expand('brewery', [
     costMoney: 9,
     costCoal: 0,
     costIron: 1,
-    beerToSell: 0,
+    juiceToSell: 0,
     vp: 7,
     incomeSpaces: 5,
     linkVp: 2,
@@ -206,7 +206,7 @@ export const BREWERY_LEVELS = expand('brewery', [
     costMoney: 9,
     costCoal: 0,
     costIron: 1,
-    beerToSell: 0,
+    juiceToSell: 0,
     vp: 10,
     incomeSpaces: 5,
     linkVp: 2,
@@ -221,7 +221,7 @@ export const COTTON_MILL_LEVELS = expand('cotton', [
     costMoney: 12,
     costCoal: 0,
     costIron: 0,
-    beerToSell: 1,
+    juiceToSell: 1,
     vp: 5,
     incomeSpaces: 5,
     linkVp: 1,
@@ -233,7 +233,7 @@ export const COTTON_MILL_LEVELS = expand('cotton', [
     costMoney: 14,
     costCoal: 1,
     costIron: 0,
-    beerToSell: 1,
+    juiceToSell: 1,
     vp: 5,
     incomeSpaces: 4,
     linkVp: 2,
@@ -245,7 +245,7 @@ export const COTTON_MILL_LEVELS = expand('cotton', [
     costMoney: 16,
     costCoal: 1,
     costIron: 0,
-    beerToSell: 1,
+    juiceToSell: 1,
     vp: 9,
     incomeSpaces: 3,
     linkVp: 1,
@@ -257,7 +257,7 @@ export const COTTON_MILL_LEVELS = expand('cotton', [
     costMoney: 18,
     costCoal: 1,
     costIron: 0,
-    beerToSell: 2,
+    juiceToSell: 2,
     vp: 12,
     incomeSpaces: 2,
     linkVp: 1,
@@ -273,7 +273,7 @@ export const MANUFACTURER_LEVELS = expand('manufacturer', [
     costMoney: 8,
     costCoal: 1,
     costIron: 0,
-    beerToSell: 1,
+    juiceToSell: 1,
     vp: 3,
     incomeSpaces: 5,
     linkVp: 1,
@@ -285,7 +285,7 @@ export const MANUFACTURER_LEVELS = expand('manufacturer', [
     costMoney: 10,
     costCoal: 0,
     costIron: 1,
-    beerToSell: 1,
+    juiceToSell: 1,
     vp: 5,
     incomeSpaces: 1,
     linkVp: 1,
@@ -297,7 +297,7 @@ export const MANUFACTURER_LEVELS = expand('manufacturer', [
     costMoney: 12,
     costCoal: 2,
     costIron: 0,
-    beerToSell: 1,
+    juiceToSell: 1,
     vp: 4,
     incomeSpaces: 4,
     linkVp: 1,
@@ -309,7 +309,7 @@ export const MANUFACTURER_LEVELS = expand('manufacturer', [
     costMoney: 8,
     costCoal: 0,
     costIron: 1,
-    beerToSell: 1,
+    juiceToSell: 1,
     vp: 3,
     incomeSpaces: 6,
     linkVp: 1,
@@ -321,7 +321,7 @@ export const MANUFACTURER_LEVELS = expand('manufacturer', [
     costMoney: 16,
     costCoal: 1,
     costIron: 0,
-    beerToSell: 2,
+    juiceToSell: 2,
     vp: 8,
     incomeSpaces: 2,
     linkVp: 1,
@@ -333,7 +333,7 @@ export const MANUFACTURER_LEVELS = expand('manufacturer', [
     costMoney: 20,
     costCoal: 0,
     costIron: 1,
-    beerToSell: 1,
+    juiceToSell: 1,
     vp: 7,
     incomeSpaces: 6,
     linkVp: 1,
@@ -345,7 +345,7 @@ export const MANUFACTURER_LEVELS = expand('manufacturer', [
     costMoney: 16,
     costCoal: 1,
     costIron: 0,
-    beerToSell: 0,
+    juiceToSell: 0,
     vp: 9,
     incomeSpaces: 4,
     linkVp: 1,
@@ -357,7 +357,7 @@ export const MANUFACTURER_LEVELS = expand('manufacturer', [
     costMoney: 20,
     costCoal: 0,
     costIron: 2,
-    beerToSell: 1,
+    juiceToSell: 1,
     vp: 11,
     incomeSpaces: 1,
     linkVp: 1,
@@ -373,7 +373,7 @@ export const POTTERY_LEVELS = expand('pottery', [
     costMoney: 17,
     costCoal: 0,
     costIron: 1,
-    beerToSell: 1,
+    juiceToSell: 1,
     vp: 10,
     incomeSpaces: 5,
     linkVp: 1,
@@ -386,7 +386,7 @@ export const POTTERY_LEVELS = expand('pottery', [
     costMoney: 0,
     costCoal: 1,
     costIron: 0,
-    beerToSell: 1,
+    juiceToSell: 1,
     vp: 1,
     incomeSpaces: 1,
     linkVp: 1,
@@ -399,7 +399,7 @@ export const POTTERY_LEVELS = expand('pottery', [
     costMoney: 22,
     costCoal: 2,
     costIron: 0,
-    beerToSell: 2,
+    juiceToSell: 2,
     vp: 11,
     incomeSpaces: 5,
     linkVp: 1,
@@ -411,7 +411,7 @@ export const POTTERY_LEVELS = expand('pottery', [
     costMoney: 0,
     costCoal: 1,
     costIron: 0,
-    beerToSell: 1,
+    juiceToSell: 1,
     vp: 1,
     incomeSpaces: 1,
     linkVp: 1,
@@ -423,7 +423,7 @@ export const POTTERY_LEVELS = expand('pottery', [
     costMoney: 20,
     costCoal: 2,
     costIron: 0,
-    beerToSell: 2,
+    juiceToSell: 2,
     vp: 20,
     incomeSpaces: 5,
     linkVp: 2,
@@ -435,7 +435,7 @@ export const POTTERY_LEVELS = expand('pottery', [
 export const INDUSTRY_LEVELS: Record<IndustryType, IndustryLevelDef[]> = {
   coal: COAL_MINE_LEVELS,
   iron: IRON_WORKS_LEVELS,
-  brewery: BREWERY_LEVELS,
+  juice: JUICE_LEVELS,
   cotton: COTTON_MILL_LEVELS,
   manufacturer: MANUFACTURER_LEVELS,
   pottery: POTTERY_LEVELS,
@@ -448,14 +448,14 @@ export const ALL_INDUSTRY_LEVELS: IndustryLevelDef[] = Object.values(INDUSTRY_LE
 export const INDUSTRY_TILE_TOTALS: Record<IndustryType, number> = {
   cotton: 11,
   manufacturer: 11,
-  brewery: 7,
+  juice: 7,
   pottery: 5,
   iron: 4,
   coal: 7,
 };
 
-/** Beer produced by a brewery on build, by era. */
-export const BREWERY_BEER_BY_ERA = { canal: 1, rail: 2 } as const;
+/** Juice produced by a juice on build, by era. */
+export const JUICE_BARRELS_BY_ERA = { canal: 1, rail: 2 } as const;
 
 /** Look up a single industry level definition. */
 export function getLevelDef(industry: IndustryType, level: number): IndustryLevelDef {

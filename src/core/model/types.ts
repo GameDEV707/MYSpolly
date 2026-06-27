@@ -21,7 +21,7 @@ export const INDUSTRY_TYPES = [
   'iron',
   'manufacturer',
   'pottery',
-  'brewery',
+  'juice',
 ] as const;
 export type IndustryType = (typeof INDUSTRY_TYPES)[number];
 
@@ -32,7 +32,7 @@ export type CardKind = 'location' | 'industry' | 'wildLocation' | 'wildIndustry'
 /** The five colour bands of location banners on the board (drive card decks). */
 export type ColorBand = 'blue' | 'teal' | 'red' | 'yellow' | 'green' | 'farm' | 'merchant';
 
-/** Beer bonus a merchant grants when its beer is consumed during a Sell. */
+/** Juice bonus a merchant grants when its juice is consumed during a Sell. */
 export type MerchantBonusType = 'develop' | 'income' | 'vp' | 'money';
 
 // ---------------------------------------------------------------------------
@@ -51,16 +51,16 @@ export interface LocationDef {
   name: string;
   colorBand: ColorBand;
   slots: IndustrySlot[];
-  /** True for the five external merchant locations and the 2 farm-brewery spots. */
+  /** True for the five external merchant locations and the 2 farm-juice spots. */
   isMerchant?: boolean;
-  isFarmBrewery?: boolean;
+  isFarmJuice?: boolean;
 }
 
 /** A merchant trading post (Shrewsbury, Warrington, Gloucester, Oxford, Nottingham). */
 export interface MerchantLocationDef {
   id: string;
   name: string;
-  /** Beer bonus type granted when this merchant's beer is consumed on a Sell. */
+  /** Juice bonus type granted when this merchant's juice is consumed on a Sell. */
   bonus: MerchantBonusType;
   /** VP awarded if `bonus === 'vp'` (Nottingham / Shrewsbury). */
   bonusVp?: number;
@@ -96,8 +96,8 @@ export interface IndustryLevelDef {
   costCoal: number;
   /** Iron cubes consumed to build. */
   costIron: number;
-  /** Beer consumed to sell (cotton / manufacturer / pottery only). */
-  beerToSell: number;
+  /** Juice consumed to sell (cotton / manufacturer / pottery only). */
+  juiceToSell: number;
   /** VP scored when the tile is flipped and on the board at era end. */
   vp: number;
   /** Income spaces advanced when the tile flips. */
