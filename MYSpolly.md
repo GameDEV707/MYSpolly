@@ -1006,20 +1006,20 @@ having the player perform them:
 > is paraphrased from the rulebook (not copied verbatim) and localized in **EN/RU/UZ**.
 
 **Rules Library (browsable reference) — §7.14.1**
-- [ ] **3T.1** Build a dedicated, scrollable, **searchable Rules screen** reachable from the Main
+- [x] **3T.1** Build a dedicated, scrollable, **searchable Rules screen** reachable from the Main
       Menu **and** the Pause menu (without losing game state), with a table of contents + deep
       links and next/previous navigation.
-- [ ] **3T.2** Author the chapter content covering the **whole** game: Overview & Goal; the two
+- [x] **3T.2** Author the chapter content covering the **whole** game: Overview & Goal; the two
       eras; Components & Board; Setup (2/3/4‑player differences); Turn structure; the **7 Actions**
       (one clear page each with cost/requirements/example); Core concepts (connections, network,
       consuming coal/iron/beer, market cube movement, flipping, income, overbuilding, Farm
       Breweries); End of round (income, negative income/shortfall); End of era & scoring;
       Canal‑era maintenance; Winning & tiebreaks; Introductory variant.
-- [ ] **3T.3** Add an **icon glossary / legend** page explaining every icon (coal, iron, beer, VP,
+- [x] **3T.3** Add an **icon glossary / legend** page explaining every icon (coal, iron, beer, VP,
       £, income, merchant bonuses, canal vs rail, lightbulb pottery), reusing the board icon set.
-- [ ] **3T.4** Make pages **illustrated** (diagrams/images), with collapsible sections; verify
+- [x] **3T.4** Make pages **illustrated** (diagrams/images), with collapsible sections; verify
       readability and no missing rules vs. the rulebook.
-- [ ] **3T.5** Provide full **EN/RU/UZ** translations for all Rules Library content.
+- [x] **3T.5** Provide full **EN/RU/UZ** translations for all Rules Library content.
 
 **Interactive Tutorial (learn by doing) — §7.14.2**
 - [ ] **3T.6** Implement a scripted, **coached tutorial** game state with step highlighting,

@@ -47,6 +47,8 @@ interface AppStore {
   screen: AppScreen;
   /** Screen to return to after Settings (Main Menu or Pause). */
   settingsReturn: AppScreen;
+  /** When opening the Rules Library via a deep link, the chapter id to show. */
+  rulesChapter: string | null;
   game: GameState | null;
   /** Recent events, for the log + animation queue. */
   events: GameEvent[];
@@ -57,6 +59,8 @@ interface AppStore {
 
   goto: (screen: AppScreen) => void;
   openSettings: (from: AppScreen) => void;
+  /** Open the Rules Library, optionally at a chapter, returning to `from`. */
+  openRules: (from: AppScreen, chapter?: string | null) => void;
   newGame: (config: NewGameConfig) => void;
   continueGame: () => Promise<boolean>;
   loadGame: (state: GameState) => void;
@@ -87,6 +91,7 @@ function rebuildBots(
 export const useApp = create<AppStore>((set, get) => ({
   screen: 'splash',
   settingsReturn: 'mainMenu',
+  rulesChapter: null,
   game: null,
   events: [],
   actionLog: [],
@@ -101,6 +106,10 @@ export const useApp = create<AppStore>((set, get) => ({
 
   openSettings(from) {
     set({ screen: 'settings', settingsReturn: from });
+  },
+
+  openRules(from, chapter = null) {
+    set({ screen: 'rules', settingsReturn: from, rulesChapter: chapter });
   },
 
   newGame(config) {

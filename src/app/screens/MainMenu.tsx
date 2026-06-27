@@ -16,6 +16,7 @@ export function MainMenu(): JSX.Element {
   const { t } = useTranslation();
   const goto = useApp((s) => s.goto);
   const openSettings = useApp((s) => s.openSettings);
+  const openRules = useApp((s) => s.openRules);
   const continueGame = useApp((s) => s.continueGame);
   const { settings, update } = useSettings();
   const [autosaveMeta, setAutosaveMeta] = useState<SaveMeta | null>(null);
@@ -109,7 +110,7 @@ export function MainMenu(): JSX.Element {
         <Button variant="ghost" onClick={() => openSettings('mainMenu')}>
           {t('menu.settings')}
         </Button>
-        <Button variant="ghost" onClick={() => goto('rules')}>
+        <Button variant="ghost" onClick={() => openRules('mainMenu')}>
           {t('menu.howToPlay')}
         </Button>
         <Button variant="ghost" onClick={() => goto('credits')}>

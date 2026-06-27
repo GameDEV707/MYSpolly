@@ -9,6 +9,7 @@ export function PauseMenu(): JSX.Element {
   const { t } = useTranslation();
   const goto = useApp((s) => s.goto);
   const openSettings = useApp((s) => s.openSettings);
+  const openRules = useApp((s) => s.openRules);
   const abandon = useApp((s) => s.abandon);
   const game = useApp((s) => s.game);
   const [saved, setSaved] = useState(false);
@@ -45,7 +46,7 @@ export function PauseMenu(): JSX.Element {
         <Button variant="ghost" onClick={() => void onSave()}>
           {t('pause.save')} {saved ? '✓' : ''}
         </Button>
-        <Button variant="ghost" onClick={() => goto('rules')}>
+        <Button variant="ghost" onClick={() => openRules('pause')}>
           {t('pause.howToPlay')}
         </Button>
         <Button

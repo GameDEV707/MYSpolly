@@ -165,7 +165,294 @@
   },
   "rules": {
     "title": "How to Play",
-    "back": "Back"
+    "back": "Back",
+    "search": "Search rules…",
+    "contents": "Contents",
+    "noResults": "No matching chapters."
+  },
+  "rulesLib": {
+    "overview": {
+      "title": "Overview & Goal",
+      "summary": "What the game is and how you win.",
+      "theme": {
+        "h": "Theme",
+        "p1": "MYSpolly is a digital take on Brass: Birmingham. You are an entrepreneur in England's West Midlands during the Industrial Revolution (1770–1870), building industries, canals and railways and shipping goods to market.",
+        "p2": "Play spans two eras — the Canal Era and the Rail Era. Each era ends with scoring, and whoever has the most Victory Points (VP) after the Rail Era wins."
+      },
+      "goal": {
+        "h": "How you win",
+        "p1": "You earn Victory Points in two main ways:",
+        "l1": "Flipped industry tiles: once a tile is used or sold it flips face-up and is worth the VP printed on it at era end.",
+        "l2": "Built links: each canal or railway scores points equal to the VP icons on the towns and merchants it touches.",
+        "l3": "Scoring happens twice — at the end of the Canal Era and the end of the Rail Era — and VP accumulate.",
+        "note": "Money is not scored directly; it fuels building, while income keeps cash flowing between rounds."
+      }
+    },
+    "eras": {
+      "title": "The Two Eras",
+      "summary": "Canal Era, then Rail Era.",
+      "twoEras": {
+        "h": "Two periods of play",
+        "p1": "The game is played across two distinct periods. The Canal Era uses canal links and single-link builds; the Rail Era replaces canals with railways, allows double-link builds (with beer) and opens higher-level industries.",
+        "caption": "Canal Era (1770–1830) → Rail Era (1830–1870).",
+        "l1": "Canal Era: canals only, one link per Network action, lower-level tiles dominate.",
+        "l2": "Rail Era: railways (which burn coal), optional double-rail builds using beer, and the final scoring that decides the winner."
+      },
+      "between": {
+        "h": "What carries over",
+        "p1": "At the end of the Canal Era all canals are removed and any level-1 industry tiles are discarded. Flipped tiles, income, money and VP carry into the Rail Era.",
+        "note": "Decks are reshuffled and hands refilled for the Rail Era; turn order is re-sorted by spending as usual."
+      }
+    },
+    "components": {
+      "title": "Components & Board",
+      "summary": "The board, tiles, cards, cubes and markets.",
+      "board": {
+        "h": "The board",
+        "p1": "The map shows towns in the West Midlands, each with build spaces, plus external merchants around the edge.",
+        "l1": "Towns: one or more build spaces marked with the industries allowed there.",
+        "l2": "Merchants (Shrewsbury, Warrington, Gloucester, Oxford, Nottingham): where you sell cotton, manufactured goods and pottery.",
+        "l3": "Link spaces: connect towns; used for canals or railways.",
+        "l4": "Coal and iron markets: shared tracks where coal and iron are sold for money."
+      },
+      "pieces": {
+        "h": "Your pieces",
+        "l1": "Industry tiles on your mat: cotton mills, coal mines, iron works, manufacturers, potteries and breweries, stacked by level.",
+        "l2": "Link tiles: your supply of canals and railways.",
+        "l3": "Cards: location cards and industry cards drive what you may build and where.",
+        "l4": "Cubes: coal (black) and iron (orange) from mines and works; beer barrels from breweries.",
+        "l5": "Markers: your money, income and VP positions on the tracks."
+      }
+    },
+    "setup": {
+      "title": "Setup (2/3/4 players)",
+      "summary": "What changes for 2, 3 and 4 players.",
+      "common": {
+        "h": "Common setup",
+        "p1": "Each player picks a colour, takes their mat with all industry tiles, £17 in cash, a starting income, and a hand of 8 cards.",
+        "l1": "Place the merchant tiles and beer barrels for the player count.",
+        "l2": "Fill the coal and iron markets.",
+        "l3": "Shuffle the era deck and deal 8 cards to each player."
+      },
+      "counts": {
+        "h": "Player-count differences",
+        "p2": "2 players: a reduced card deck and fewer active merchants; some spaces stay unused.",
+        "p3": "3 players: a middle configuration of merchants and cards.",
+        "p4": "4 players: the full deck and all merchant spaces are in play.",
+        "note": "MYSpolly applies the correct deck, merchant and market setup automatically for the chosen player count."
+      }
+    },
+    "turns": {
+      "title": "Turn Structure",
+      "summary": "Two actions per turn, then refill.",
+      "structure": {
+        "h": "A turn step by step",
+        "p1": "On your turn you take two actions. Each action uses one card. After both actions, refill your hand back up to 8 cards.",
+        "caption": "Action, action, then refill your hand to 8.",
+        "firstRound": "Exception: in the very first round of the Canal Era each player takes only ONE action."
+      },
+      "order": {
+        "h": "Turn order",
+        "p1": "Turn order is re-sorted at the end of each round by how much money each player spent: whoever spent the least goes first next round.",
+        "p2": "This rewards spending less, letting frugal players act earlier."
+      }
+    },
+    "actBuild": {
+      "title": "Action: Build",
+      "summary": "Place an industry tile in a town.",
+      "how": {
+        "h": "How Build works",
+        "p1": "Play a matching card to place the next industry tile from your mat into a legal build space, paying its money cost plus any coal and iron it requires.",
+        "l1": "Card: a location card lets you build in that town; an industry card lets you build that industry within your network (your first build can go anywhere).",
+        "l2": "Resources: many tiles need coal and/or iron, taken from connected sources or bought from the market.",
+        "l3": "You always build the lowest-numbered tile of that industry remaining on your mat."
+      },
+      "example": {
+        "h": "Example",
+        "p1": "Spend a 'Birmingham' card to build a level-1 Cotton Mill in Birmingham for £5. It stays unflipped until you sell its cotton.",
+        "note": "Coal needs a connection to a source or the coal market; iron may be taken from anywhere as long as iron is available."
+      }
+    },
+    "actNetwork": {
+      "title": "Action: Network",
+      "summary": "Build a canal or rail link.",
+      "how": {
+        "h": "How Network works",
+        "p1": "Play any card to build a link on an empty space connected to your network. A Canal-Era canal costs £3; a Rail-Era railway costs £5 and burns one coal, or build two railways for £15 plus one beer.",
+        "l1": "Canal Era: one canal per action, cost £3, no coal.",
+        "l2": "Rail Era: one rail (£5 + 1 coal) or two rails (£15 + 1 coal each + 1 beer)."
+      },
+      "example": {
+        "h": "Example",
+        "p1": "In the Rail Era, pay £5 and burn one coal from a connected mine to lay a railway between Dudley and Birmingham, extending your network."
+      }
+    },
+    "actDevelop": {
+      "title": "Action: Develop",
+      "summary": "Remove low tiles using iron.",
+      "how": {
+        "h": "How Develop works",
+        "p1": "Spend iron to remove the lowest one or two industry tiles from your mat, revealing higher-level tiles so you can build better industries sooner. Each tile removed consumes one iron.",
+        "note": "Pottery tiles marked with a lightbulb cannot be developed."
+      }
+    },
+    "actSell": {
+      "title": "Action: Sell",
+      "summary": "Sell goods to a merchant (with beer).",
+      "how": {
+        "h": "How Sell works",
+        "p1": "Sell cotton, manufactured goods or pottery from your unflipped tiles to a connected merchant that buys that good, consuming the beer the tile requires. Selling flips the tile and raises your income.",
+        "caption": "Tile → beer → connected merchant.",
+        "l1": "The tile must be connected through your network to a merchant that buys that good.",
+        "l2": "Consume the beer shown on the tile; use your own brewery beer or, sometimes, the merchant's barrel for a bonus.",
+        "l3": "When sold, the tile flips face-up and its income marker advances immediately."
+      },
+      "example": {
+        "h": "Example",
+        "p1": "Connect a Cotton Mill to Oxford, consume one beer and sell — the mill flips, your income rises, and you may claim the merchant's beer bonus."
+      }
+    },
+    "actLoan": {
+      "title": "Action: Loan",
+      "summary": "Take £30, lose income.",
+      "how": {
+        "h": "How Loan works",
+        "p1": "Take £30 immediately but drop your income three levels. You cannot take a loan that would push your income below the minimum.",
+        "note": "Loans work best early, before income is high, to fund a strong opening."
+      }
+    },
+    "actScout": {
+      "title": "Action: Scout",
+      "summary": "Discard for wild cards.",
+      "how": {
+        "h": "How Scout works",
+        "p1": "Discard three cards (the action card plus two more) to take one wild location card and one wild industry card, which can stand in for any location or industry.",
+        "note": "You cannot Scout if you already hold a wild card. It costs tempo, so use it to fix a stuck hand."
+      }
+    },
+    "actPass": {
+      "title": "Action: Pass",
+      "summary": "Discard and skip.",
+      "how": {
+        "h": "How Pass works",
+        "p1": "If you cannot or do not wish to act, discard one card and take no action. Passing still uses one of your two actions."
+      }
+    },
+    "concepts": {
+      "title": "Core Concepts",
+      "summary": "The ideas that tie the game together.",
+      "connections": {
+        "h": "Connected locations & your network",
+        "p1": "Your network is every town connected to your tiles by your links. You may build and sell only within your network (your first build each era can go anywhere). Connections also let you reach coal, iron and merchants.",
+        "caption": "Town A links to B; resources flow along connections."
+      },
+      "resources": {
+        "h": "Consuming coal, iron & beer",
+        "p1": "Industries make resources that others consume:",
+        "l1": "Coal must come from a connected source or the coal market; taking the last cube can flip the producing tile.",
+        "l2": "Iron can be taken from any iron works on the board (no connection needed) or bought from the iron market.",
+        "l3": "Beer is consumed when selling; it comes from breweries (yours or adjacent) or a merchant's barrel."
+      },
+      "markets": {
+        "h": "The coal & iron markets",
+        "p1": "When a mine or works fills the market, cubes move onto the track and you gain money for the price spaces filled. Buying from the market costs more as it empties; selling earns less as it fills.",
+        "caption": "Cubes move to market; price shifts as it fills or empties."
+      },
+      "flipping": {
+        "h": "Flipping tiles",
+        "p1": "A tile flips face-up when its resource is used up (coal/iron mines) or its goods are sold (cotton, manufacturer, pottery). Flipping raises your income at once and makes the tile worth VP at era end.",
+        "caption": "Used-up tile flips: income now, VP at era end."
+      },
+      "overbuild": {
+        "h": "Overbuilding",
+        "p1": "You may build over an existing tile — yours or an opponent's — only with a higher-level tile of the same industry, and usually only once the lower tile is used. Coal and iron follow special overbuild rules tied to their markets."
+      },
+      "farm": {
+        "h": "Farm breweries",
+        "p1": "Breweries supply the beer needed to sell goods: one barrel in the Canal Era, two in the Rail Era. The off-map farm brewery spaces let you place breweries that serve nearby towns."
+      }
+    },
+    "endRound": {
+      "title": "End of Round",
+      "summary": "Income, then shortfall if you can't pay.",
+      "income": {
+        "h": "Collecting income",
+        "p1": "At the end of every round each player collects money equal to their income level. Higher income means more cash each round.",
+        "caption": "Each round: gain money equal to your income level."
+      },
+      "shortfall": {
+        "h": "Negative income & shortfall",
+        "p1": "If your income level is negative you must pay that amount. If you cannot, you sell unflipped tiles back for half value and, if still short, lose VP to cover the rest.",
+        "note": "Keep a small cash buffer so a negative-income round never costs you VP."
+      }
+    },
+    "scoring": {
+      "title": "End of Era & Scoring",
+      "summary": "Era-end scoring and the canal-to-rail switch.",
+      "eraEnd": {
+        "h": "End-of-era scoring",
+        "p1": "When the draw deck and all hands are empty, the era ends and scoring occurs:",
+        "l1": "Links: each canal or rail scores the total VP icons on the towns and merchants it connects.",
+        "l2": "Flipped tiles: each face-up industry tile scores the VP printed on it."
+      },
+      "maintenance": {
+        "h": "Canal-era maintenance",
+        "p1": "After Canal-Era scoring, remove every canal and discard all level-1 industry tiles (built or unbuilt), clearing the board for the Rail Era.",
+        "note": "Plan your Canal Era knowing level-1 tiles won't survive into the Rail Era."
+      },
+      "transition": {
+        "h": "Canal → Rail transition",
+        "p1": "Shuffle a fresh Rail-Era deck, deal new hands, keep your money, income, VP and flipped tiles, and begin the Rail Era with railways available."
+      }
+    },
+    "winning": {
+      "title": "Winning & Tiebreaks",
+      "summary": "Most VP wins; plus the beginner variant.",
+      "win": {
+        "h": "Winning & tiebreaks",
+        "p1": "After Rail-Era scoring, the player with the most Victory Points wins.",
+        "l1": "Tiebreak 1: among tied players, the one with the most income wins.",
+        "l2": "Tiebreak 2: if still tied, the one with the most money remaining wins."
+      },
+      "intro": {
+        "h": "Introductory variant",
+        "p1": "For a gentler first game, play the Canal Era only and score once. This teaches building, networking and selling without the rail rules.",
+        "note": "Enable the Introductory variant in New Game setup for a shorter, Canal-only game."
+      }
+    },
+    "glossary": {
+      "title": "Icon Glossary",
+      "summary": "Every icon, explained.",
+      "icons": {
+        "h": "Icon glossary",
+        "p1": "These are the icons used on the board and in this app; they match the in-game Legend."
+      },
+      "m": {
+        "cotton": "Cotton mill — produces cotton to sell to merchants.",
+        "coal": "Coal mine — produces coal cubes for building and railways.",
+        "iron": "Iron works — produces iron cubes for building and developing.",
+        "manufacturer": "Manufacturer — produces manufactured goods to sell.",
+        "pottery": "Pottery — high-VP industry; lightbulb potteries can't be developed.",
+        "brewery": "Brewery — produces the beer barrels needed to sell goods.",
+        "coalCube": "Coal cube — fuel for building and rail; sold to the coal market.",
+        "ironCube": "Iron cube — used to build and to Develop; sold to the iron market.",
+        "beer": "Beer barrel — consumed when selling goods to a merchant.",
+        "vp": "Victory Points — what you score to win.",
+        "money": "Money (£) — spent to build and to network.",
+        "income": "Income — money collected each round; rises when tiles flip.",
+        "canal": "Canal link — a Canal-Era connection between towns.",
+        "rail": "Rail link — a Rail-Era connection; building it burns coal.",
+        "special": "Special link — a marked connection such as Cannock or Kidderminster–Worcester.",
+        "builtTile": "Built tile — an industry you placed; shows owner colour and level.",
+        "flipped": "Flipped tile — used or sold; scores VP at era end.",
+        "buildSlot": "Empty build space — where a tile can be placed.",
+        "farmBrewery": "Farm brewery space — an off-town space for breweries only.",
+        "bonus_develop": "Develop bonus — a free develop when selling at this merchant.",
+        "bonus_income": "Income bonus — income gain when selling at this merchant.",
+        "bonus_vp": "VP bonus — Victory Points when selling at this merchant.",
+        "bonus_money": "Money bonus — cash when selling at this merchant."
+      }
+    }
   },
   "credits": {
     "title": "Credits",
