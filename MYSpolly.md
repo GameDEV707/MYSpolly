@@ -519,8 +519,31 @@ type GameEvent =
   - `TILE_FLIPPED` → 3D flip revealing the VP/income face; income marker slides.
   - `VP_CHANGED` / `INCOME_CHANGED` → marker animates along the track.
   - `ERA_ENDED` → scoring sweep across links/tiles; Canal→Rail transition sequence.
+  - `GOODS_SOLD` → an **era‑appropriate transport vehicle** travels from the sold industry tile,
+    **along the actual network route** (links) to the destination merchant, delivers the goods,
+    then **returns to its origin** (see §7.4.1).
 - Framer Motion for component transitions; GSAP timelines for multi‑actor sequences.
 - Respect `prefers-reduced-motion` and a "fast animations" setting.
+
+#### 7.4.1 Goods‑delivery (Sell) transport animation
+> **Requested:** when a player sells, a vehicle should visibly carry the goods from the producing
+> factory, **across the network**, to the merchant it is being sold to, hand over the cargo, and
+> come back — beautifully animated and matched to the era.
+- On a **Sell**, compute the **path of links** from the selling industry's location to the target
+  merchant (reuse the engine's connectivity/route finding) and animate a vehicle following that
+  polyline along the board (not a straight line) at a smooth, eased speed.
+- **Era‑specific vehicle & route style** (driven by the active era's `routeType`, §7.15):
+  - **Canal Era → a cargo boat/barge** travelling along canal/water routes.
+  - **Rail Era → a freight train** travelling along rail routes.
+  - **Air Era → a cargo plane** flying along the air routes/flight arcs.
+- Sequence: vehicle spawns at the factory → carries a visible goods/cargo token → arrives at the
+  merchant → **delivers** (cargo drops onto the merchant, the tile flips, income/coins animate as
+  part of the existing Sell events) → vehicle **returns to its origin** and despawns.
+- Honors animation **speed/skip** and `prefers-reduced-motion` (degrade to a quick cargo‑move or
+  fade); plays a matching SFX per vehicle (boat horn / train / plane). If selling multiple tiles
+  in one action, animate deliveries in sequence (or lightly staggered) without blocking input
+  longer than necessary. On maps/eras without a direct route, fall back gracefully (e.g. a
+  market‑direct cargo hop).
 
 ### 7.5 Audio system (Howler)
 - SFX: tile place, link place, cube clink, coin, card draw/discard, flip, button, error,
@@ -1290,6 +1313,29 @@ Working names (finalize during implementation, keep consistent everywhere):
       *DoD: players can choose from 10 maps (5 full + 5 fast); each era shows its own route type and
       layout; islands/locations/names change between eras; Air‑Era maps add air routes after the
       Rail Era; saves/replays reload on the correct map and era; everything localized EN/RU/UZ.*
+
+### Phase 8G — Era Goods‑Delivery (Sell) Transport Animation (§7.4.1)
+
+> When a player sells, a vehicle visibly carries the goods from the producing factory, across the
+> network, to the merchant being sold to, delivers the cargo, then returns to its origin —
+> beautifully animated and matched to the era (boat → train → cargo plane).
+- [ ] **8G.1** Add a `GOODS_SOLD` (or extend the Sell) game event carrying the origin location,
+      destination merchant, and the sold industry, so the UI can animate the delivery.
+- [ ] **8G.2** Compute the **route path of links** from the selling factory to the target merchant
+      (reuse the engine connectivity/route finding) and animate a vehicle following that polyline
+      across the board with smooth easing — not a straight line.
+- [ ] **8G.3** **Era‑specific vehicle + route styling** (from the active era's `routeType`):
+      **Canal → cargo boat/barge**, **Rail → freight train**, **Air → cargo plane** (flight arc).
+- [ ] **8G.4** Full sequence: spawn at factory → carry a visible cargo token → arrive at merchant →
+      **deliver** (cargo drop + the existing tile‑flip / income / coin animations) → **return to
+      origin** and despawn.
+- [ ] **8G.5** Per‑vehicle **SFX** (boat horn / train / plane) hooked to the audio mixer.
+- [ ] **8G.6** Respect animation **speed/skip** and `prefers-reduced-motion` (graceful quick‑move
+      fallback); sequence/stagger **multiple deliveries** in one Sell action without blocking input
+      longer than necessary; graceful fallback when no direct route exists.
+      *DoD: every Sell shows an era‑appropriate vehicle carrying goods along the network to the
+      merchant and back, with matching sound — boats in the Canal Era, trains in the Rail Era, and
+      cargo planes in the Air Era.*
 
 ### Phase 8B — BUGFIX: Save / Continue / Delete consistency (§7.10.6)
 
