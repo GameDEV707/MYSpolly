@@ -939,6 +939,82 @@ interface MapDefinition {
 - `GameState` references the active map and the current `EraId`; the board renderer reads
   `map.locations[era]` / `map.links[era]` so the view updates when the era changes.
 
+### 7.16 MYSpolly Economy Model — Resources, Per‑Round Production, Market Buying & Starting Stock
+
+> **Important:** this is an **intentional MYSpolly variant** that changes the official Brass:
+> Birmingham resource economy. The agent must implement it as the canonical MYSpolly rule set,
+> keep it internally consistent, and document it in the Rules Library + contextual help. The three
+> resources are **coal**, **iron**, and **juice** (the renamed beverage, formerly beer).
+
+#### 7.16.1 Per‑player resource stockpiles (no free resources from other players)
+- Each player has a **personal resource stockpile**: `{ coal, iron, juice }`, shown live in their
+  HUD/`PlayerStrip` next to money/income/VP.
+- **You may NOT take resources for free from other players' mines/works.** A build/action consumes
+  resources **only from your own stockpile**; if you don't have enough, you must **buy the
+  shortfall from the market** (if connected) — see §7.16.4.
+- This replaces the official rule where coal/iron could be drawn freely from any connected source.
+
+#### 7.16.2 Production buildings & per‑round production
+- **Production buildings** you own generate resources **into your stockpile at the end of every
+  round** (during the income step), based on the building type and its **level** (quality):
+  - **Coal Mine → coal**, **Iron Works → iron**, **Juice Works → juice**.
+- Per‑round production scales with level (higher/more valuable buildings produce more). Proposed
+  **starting/tunable** table (the agent finalizes & balances these numbers):
+
+  | Building | L1 | L2 | L3 | L4 |
+  |---|---|---|---|---|
+  | Coal Mine (coal/round)  | 1 | 2 | 3 | 4 |
+  | Iron Works (iron/round) | 1 | 2 | 3 | — |
+  | Juice Works (juice/round) | 1 | 1 | 2 | 2 |
+
+- A player's **total per‑round yield** = sum over all their production buildings of that building's
+  level‑based output, added to their stockpile each round. Optionally cap stockpiles per resource
+  (tunable) to avoid runaway hoarding.
+- The HUD shows, per building (and as a player total), **how much it will produce next round**.
+
+#### 7.16.3 Develop / upgrade increases per‑round production
+- When you **Develop/upgrade** a production building to a higher level, from the **next round
+  onward it produces the higher (upgraded) amount** per the table above. Upgrading is the main way
+  to grow your resource income over the game.
+
+#### 7.16.4 Buying from the market when short
+- If an action needs more of a resource than you have in your stockpile **and you are connected to
+  the relevant market**, the UI offers to **buy the shortfall**:
+  - Show the **current market price**, **how many units** you need to buy, and the **total cost**.
+  - The player confirms to pay money and complete the action; market prices move as in the base
+    market rules (cheapest space first; empty market → fixed price).
+- If you are **not connected** to the market and lack the resource, the action is **not allowed**
+  (disabled with a clear reason, per §7.13).
+
+#### 7.16.5 Starting resources
+- At game start every player receives a **starting stockpile** of resources (tunable, e.g.
+  `coal: 2, iron: 1, juice: 1`) so the early game isn't blocked. Defined per map/player‑count and
+  shown in setup.
+
+#### 7.16.6 Build cost & benefit preview (extends §7.13)
+- Before confirming **any** build/action, the preview panel (as today) shows **what it costs**
+  (money + coal/iron/juice consumed, with any market purchases priced out) **and adds the
+  potential benefit**: e.g. income gained, VP it can score, per‑round resource production it will
+  add, and what it unlocks. Resources are drawn from the player's stockpile first, then market.
+
+#### 7.16.7 Era‑morphing geography (islands → land → air) — ties into §7.15.3
+- A map's world visibly transforms each era, and **build locations (mines, works, towns)
+  reposition and are renamed** accordingly:
+  - **Canal Era** → the world is a set of **islands separated by water**; canal/water routes link
+    them; locations sit on the islands.
+  - **Rail Era** → the world becomes **connected land** (islands merge into a landmass); locations
+    **reposition on land** and their **names change**; rail routes replace water routes.
+  - **Air Era** → locations become **air hubs/airports**; positions, names, and the route network
+    **change again**; air routes connect them.
+- To avoid bugs, each location keeps a **stable logical `id` across eras** (so persistent level‑2+
+  tiles map correctly), while its **on‑screen position, display name, and connecting routes are
+  per‑era data**. End‑of‑era maintenance (remove level‑1 tiles, etc.) runs, then the board morphs
+  with an animated transition to the next era's layout.
+
+> All numbers in §7.16 are **tunable balance values** — the agent should pick sensible starting
+> values, expose them in map/era data, and adjust for fun/fairness; they are not from the official
+> rulebook.
+
 ---
 
 ## 8. Testing & Quality Strategy
@@ -1395,6 +1471,65 @@ Working names (finalize during implementation, keep consistent everywhere):
       save → delete → Continue, and resume‑matches‑saved‑state.
       *DoD: it is impossible to resume a deleted or finished game; Continue is disabled whenever
       there is no valid current game, and always resumes exactly the intended game.*
+
+### Phase 9 — MYSpolly Economy Model (§7.16)
+
+> Intentional MYSpolly variant: personal resource stockpiles, per‑round production from your
+> buildings, no free resources from others, market buying for shortfalls, starting resources,
+> cost+benefit previews, and era‑morphing geography. Document all of it in the Rules Library +
+> contextual help; localize EN/RU/UZ; cover with tests so it is bug‑free.
+
+**Resources & stockpiles**
+- [ ] **9.1** Add a **per‑player resource stockpile** `{ coal, iron, juice }` to `PlayerState`;
+      show it live in the HUD/`PlayerStrip` next to money/income/VP.
+- [ ] **9.2** **Remove free resource sharing**: actions consume resources **only from the acting
+      player's own stockpile** — never free from other players' mines/works. Update the engine
+      consumption logic and `legalActions`.
+- [ ] **9.3** Grant **starting resources** to every player at setup (tunable, e.g. coal 2 / iron 1
+      / juice 1), defined per map/player‑count and shown in Game Setup.
+
+**Per‑round production & upgrades**
+- [ ] **9.4** Implement **per‑round production**: at the income/end‑of‑round step, each player's
+      owned production buildings add resources to their stockpile based on **type + level** (use
+      the tunable table in §7.16.2; expose values in data). Coal Mine→coal, Iron Works→iron,
+      Juice Works→juice.
+- [ ] **9.5** **Develop/upgrade raises production**: upgrading a production building makes it
+      produce the higher amount **from the next round onward**.
+- [ ] **9.6** Show, per building and as a player total, **how much it will produce next round** in
+      the UI; add a clear end‑of‑round "resources produced" summary/animation.
+- [ ] **9.7** Optional tunable **stockpile caps** per resource to prevent runaway hoarding.
+
+**Market buying when short**
+- [ ] **9.8** When an action needs more of a resource than the player's stockpile **and** they are
+      connected to the relevant market, offer to **buy the shortfall**: show **current market
+      price**, **units needed**, and **total cost**; on confirm, pay money, move market prices
+      (cheapest‑first; empty→fixed price), and complete the action.
+- [ ] **9.9** If **not connected** to the market and short on a resource, the action is **disabled
+      with a clear reason** (per §7.13) — never allow an illegal build.
+
+**Cost & benefit preview**
+- [ ] **9.10** Extend the action/build preview (§7.13 / §7.16.6) to show, before confirming:
+      **cost** (money + coal/iron/juice consumed, with any market purchase priced out) **and the
+      potential benefit** (income gained, VP it can score, per‑round production it adds, what it
+      unlocks). Draw from stockpile first, then market.
+
+**Era‑morphing geography (islands → land → air) — extends Phase 8 (§7.16.7)**
+- [ ] **9.11** Implement the era world transform: **Canal = islands separated by water** (water
+      routes), **Rail = connected land** (locations reposition on land, **names change**, rail
+      routes), **Air = air hubs** (positions/names/network change again, air routes). Each location
+      keeps a **stable logical `id`** across eras (so persistent level‑2+ tiles map correctly)
+      while position/display‑name/routes are per‑era data; animate the morph at era transition.
+
+**Quality**
+- [ ] **9.12** Tests: no free resource use; stockpile math; per‑round production by level; upgrade
+      raises output next round; market shortfall purchase + price movement; not‑connected ⇒
+      disabled; starting resources; era‑morph keeps tiles correctly mapped to logical ids across a
+      mid‑game save/load.
+      *DoD: players manage personal coal/iron/juice stockpiles fed by their own buildings each
+      round (more when upgraded), can't freeload off others, can buy shortfalls from a connected
+      market at shown prices, see full cost+benefit before acting, start with seed resources, and
+      watch the world morph from islands → land → air across eras — all consistent, localized
+      EN/RU/UZ, and bug‑free.*
 
 ### Phase 7 — Stretch (post‑1.0)
 - [ ] **7.1** Online multiplayer (authoritative server reusing the pure engine).
