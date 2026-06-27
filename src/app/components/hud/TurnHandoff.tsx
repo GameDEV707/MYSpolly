@@ -1,13 +1,17 @@
+import { useEffect } from 'react';
 import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PLAYER_CSS_VAR } from '../ui.tsx';
+import { TURN_BANNER_MS } from './useTurnHandoff.ts';
 import type { HandoffState } from './useTurnHandoff.ts';
 
 /**
  * Prominent "Player X's turn" transition cue (§7.13 / task 3R.26). In `banner`
  * mode it briefly animates in the active player's colour (with an avatar) and
- * fades out on its own. In `confirm` mode it covers the screen until the next
- * human taps "Ready", so hot-seat hands stay secret between players.
+ * fades out on its own (the hook's timer removes it); the player can also
+ * dismiss it early by click/tap/key (task 3R.27). In `confirm` mode it covers
+ * the screen until the next human taps "Ready", so hot-seat hands stay secret
+ * between players.
  */
 export function TurnHandoff(props: {
   handoff: HandoffState | null;
@@ -15,11 +19,30 @@ export function TurnHandoff(props: {
 }): JSX.Element | null {
   const { handoff, onReady } = props;
   const { t } = useTranslation();
+
+  const confirm = handoff?.mode === 'confirm';
+  const token = handoff?.token;
+
+  // Banner mode: allow dismissing early with any key (task 3R.27). Confirm mode
+  // keeps its explicit "Ready" button so a player can't accidentally reveal the
+  // next hand. Re-registered per handoff token so it always targets the latest.
+  useEffect(() => {
+    if (!handoff || confirm) return;
+    const onKey = (e: KeyboardEvent): void => {
+      // Ignore pure modifier presses so e.g. holding Shift doesn't dismiss.
+      if (e.key === 'Shift' || e.key === 'Control' || e.key === 'Alt' || e.key === 'Meta') return;
+      onReady();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, confirm]);
+
   if (!handoff) return null;
 
   const color = PLAYER_CSS_VAR[handoff.color] ?? 'var(--accent)';
-  const confirm = handoff.mode === 'confirm';
   const initial = handoff.name.slice(0, 1).toUpperCase();
+  const durationMs = handoff.durationMs ?? TURN_BANNER_MS;
 
   const headline = handoff.isAI
     ? t('handoff.aiPlaying', { name: handoff.name })
@@ -36,8 +59,11 @@ export function TurnHandoff(props: {
     justifyContent: 'center',
     gap: 'var(--space-4)',
     zIndex: 260,
-    pointerEvents: confirm ? 'auto' : 'none',
+    // Banner is brief and tap-to-dismiss; after it fades the board is fully
+    // interactive again. Confirm blocks until the next human is ready.
+    pointerEvents: 'auto',
     background: confirm ? 'var(--bg)' : 'transparent',
+    cursor: confirm ? 'default' : 'pointer',
   };
 
   const cardStyle: CSSProperties = {
@@ -50,10 +76,9 @@ export function TurnHandoff(props: {
     border: `3px solid ${color}`,
     background: 'rgba(0,0,0,0.62)',
     boxShadow: `0 12px 48px -8px ${color}, var(--shadow-2)`,
-    // Restart the entrance animation on each handoff via the token-based key.
-    animation: confirm
-      ? undefined
-      : 'handoffIn calc(2000ms * max(var(--anim-scale), 0.0001)) ease-out',
+    // The fade-in/out runs over the same window the hook uses to remove the
+    // banner, so the visual fade-out coincides with the dismiss (task 3R.27).
+    animation: confirm ? undefined : `handoffIn ${durationMs}ms ease-out forwards`,
     color: 'var(--text)',
     textAlign: 'center',
     maxWidth: 460,
@@ -77,7 +102,12 @@ export function TurnHandoff(props: {
   };
 
   return (
-    <div style={overlayStyle} role={confirm ? 'dialog' : 'status'} aria-live="polite">
+    <div
+      style={overlayStyle}
+      role={confirm ? 'dialog' : 'status'}
+      aria-live="polite"
+      onClick={confirm ? undefined : onReady}
+    >
       <div key={handoff.token} style={cardStyle}>
         <div style={avatarStyle} aria-hidden>
           <span style={{ position: 'absolute', top: -22, fontSize: 26 }}>🎩</span>

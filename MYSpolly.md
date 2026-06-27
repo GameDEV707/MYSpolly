@@ -1002,7 +1002,7 @@ having the player perform them:
 **Turn‑handoff banner BUGFIX (regression: the overlay does not disappear and blocks the board)**
 > The "Player X's turn / Get ready!" transition overlay currently **stays on screen and covers the
 > board**, blocking play. The cue must appear briefly and then go away on its own.
-- [ ] **3R.27** **Auto‑dismiss the turn banner**: show the "Player X's turn" overlay for a short,
+- [x] **3R.27** **Auto‑dismiss the turn banner**: show the "Player X's turn" overlay for a short,
       configurable duration (≈1.2–1.8s) then **fade it out automatically**; never leave it on
       screen. Allow the player to dismiss it early by click/tap/key. Ensure the dismiss timer is
       cleared/reset correctly on rapid turn changes (e.g. fast AI turns) so banners don't stack or

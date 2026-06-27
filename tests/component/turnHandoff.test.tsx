@@ -50,4 +50,46 @@ describe('TurnHandoff', () => {
     render(<TurnHandoff handoff={handoff} onReady={() => {}} />);
     expect(screen.getByText('Bot is playing…')).toBeInTheDocument();
   });
+
+  it('dismisses the brief banner early on click (task 3R.27)', () => {
+    const onReady = vi.fn();
+    const handoff: HandoffState = {
+      color: 'blue',
+      name: 'Blue',
+      isAI: false,
+      mode: 'banner',
+      token: 4,
+    };
+    const { container } = render(<TurnHandoff handoff={handoff} onReady={onReady} />);
+    fireEvent.click(container.firstChild as Element);
+    expect(onReady).toHaveBeenCalledTimes(1);
+  });
+
+  it('dismisses the brief banner early on key press (task 3R.27)', () => {
+    const onReady = vi.fn();
+    const handoff: HandoffState = {
+      color: 'blue',
+      name: 'Blue',
+      isAI: false,
+      mode: 'banner',
+      token: 5,
+    };
+    render(<TurnHandoff handoff={handoff} onReady={onReady} />);
+    fireEvent.keyDown(window, { key: 'Enter' });
+    expect(onReady).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not dismiss the hot-seat confirmation by clicking the backdrop', () => {
+    const onReady = vi.fn();
+    const handoff: HandoffState = {
+      color: 'red',
+      name: 'Red',
+      isAI: false,
+      mode: 'confirm',
+      token: 6,
+    };
+    const { container } = render(<TurnHandoff handoff={handoff} onReady={onReady} />);
+    fireEvent.click(container.firstChild as Element);
+    expect(onReady).not.toHaveBeenCalled();
+  });
 });
