@@ -769,6 +769,13 @@ The board is wrapped in a **camera/viewport controller** that applies a 2D trans
   shown; never an opaque "option 1…8" list.
 - **Turn HUD**: clearly show era, round, whose turn it is, actions remaining, and a concise
   prompt of the current step ("Pick a card to build a Cotton Mill in Birmingham").
+- **Per‑player "VP to win" indicator**: in every player's panel (`PlayerStrip`), **next to that
+  player's own income and VP (star) icons**, also show how many victory points that player still
+  needs to win the game. Since Brass has no fixed VP threshold, "to win" = the gap to the current
+  leader: `max(0, (highest VP among the other players) − this player's VP + 1)`. The leader shows
+  **0 / "Leading"**; everyone else shows the points needed to overtake the leader. This value
+  updates live as VP changes (builds/sells/era scoring) and is fully localized (EN/RU/UZ) with a
+  clear icon + tooltip ("Points needed to take the lead").
 - **Turn handoff (player change) clarity**: when play passes from one player to the next, it must
   be **unmistakable whose turn it now is**. On every turn change show a brief, prominent
   transition cue — e.g. a centred "Player X's turn" banner/overlay in that player's colour (with
@@ -1042,6 +1049,13 @@ interface MapDefinition {
 - [x] **3.10** **BoardSvg**: locations, link lines, merchants from data (layout coordinates).
 - [x] **3.11** Industry/link tile rendering (level/owner/flipped) drawn on the board nodes.
 - [x] **3.12** **PlayerStrip** (player overview): money, income, VP, spent — per player.
+- [ ] **3.12a** **Per‑player "VP to win" indicator**: in each player's `PlayerStrip`, **next to
+      that player's own income and VP (star) icons**, show the points they still need to win =
+      `max(0, (highest VP among the other players) − this player's VP + 1)`; the current leader
+      shows **0 / "Leading"**. Update it live on every VP change and localize it EN/RU/UZ with an
+      icon + tooltip ("Points needed to take the lead").
+      *DoD: every player can see, beside their own income/VP, how many points they still need to
+      win, kept accurate as scores change.*
 - [x] **3.13** **Hand** rendering (hidden for AI seats in hot‑seat).
 - [x] **3.14** **Coal/Iron Market** panels + merchant beer indicators on the board.
 - [x] **3.15** Turn‑order + spent‑money display (in `PlayerStrip`).
