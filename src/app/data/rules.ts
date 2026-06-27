@@ -350,6 +350,49 @@ export const RULE_CHAPTERS: RuleChapter[] = [
     ],
   },
   {
+    id: 'economy',
+    icon: '🪙',
+    titleKey: 'rulesLib.economy.title',
+    summaryKey: 'rulesLib.economy.summary',
+    sections: [
+      {
+        id: 'stockpile',
+        headingKey: 'rulesLib.economy.stockpile.h',
+        blocks: [
+          p('rulesLib.economy.stockpile.p1'),
+          list(
+            'rulesLib.economy.stockpile.l1',
+            'rulesLib.economy.stockpile.l2',
+            'rulesLib.economy.stockpile.l3',
+          ),
+          note('rulesLib.economy.stockpile.note'),
+        ],
+      },
+      {
+        id: 'production',
+        headingKey: 'rulesLib.economy.production.h',
+        blocks: [
+          p('rulesLib.economy.production.p1'),
+          list(
+            'rulesLib.economy.production.l1',
+            'rulesLib.economy.production.l2',
+            'rulesLib.economy.production.l3',
+          ),
+        ],
+      },
+      {
+        id: 'market',
+        headingKey: 'rulesLib.economy.market.h',
+        blocks: [p('rulesLib.economy.market.p1'), note('rulesLib.economy.market.note')],
+      },
+      {
+        id: 'morph',
+        headingKey: 'rulesLib.economy.morph.h',
+        blocks: [p('rulesLib.economy.morph.p1'), note('rulesLib.economy.morph.note')],
+      },
+    ],
+  },
+  {
     id: 'endRound',
     icon: '📊',
     titleKey: 'rulesLib.endRound.title',
@@ -444,7 +487,8 @@ export const HELP_TOPIC_CHAPTER: Record<string, string> = {
   pass: 'actPass',
   hand: 'turns',
   markets: 'concepts',
-  players: 'endRound',
+  players: 'economy',
+  economy: 'economy',
   board: 'concepts',
   legend: 'glossary',
 };

@@ -13,6 +13,8 @@ import {
   productionForLevel,
 } from '../../src/core/data/economy.ts';
 import { TOWN_BY_ID } from '../../src/core/data/board.ts';
+import { contextFor } from '../../src/core/maps/context.ts';
+import { serializeState, deserializeState } from '../../src/persistence/serialize.ts';
 import { nextInt } from '../../src/core/rng.ts';
 import type { GameState, PlacedTile, Card } from '../../src/core/model/state.ts';
 import type { GameEvent } from '../../src/core/model/events.ts';
@@ -341,6 +343,35 @@ describe('§9.11 — stable logical id keeps production across eras', () => {
     const railProd = playerProduction(s, me).coal;
     assert.equal(railProd, canalProd, 'same building, same output after the morph');
     assert.equal(s.tiles.find((t) => t.id === tile.id)?.level, 2, 'tile id stable across eras');
+  });
+
+  test('after a real Canal→Rail morph, surviving tiles still map to valid rail locations', () => {
+    let s = newGame(31, 2);
+    let rng = 31 * 2654435761;
+    let guard = 0;
+    while (s.phase === 'playing' && s.era === 'canal' && guard < 20000) {
+      const acts = legalActions(s);
+      const nonPass = acts.filter((a) => a.type !== 'PASS');
+      const step = nextInt(rng, 100);
+      rng = step.state;
+      const pool = nonPass.length > 0 && step.value < 80 ? nonPass : acts;
+      const pick = nextInt(rng, pool.length);
+      rng = pick.state;
+      s = reduce(s, pool[pick.value]!).state;
+      guard += 1;
+    }
+    assert.notEqual(s.era, 'canal', 'reached the rail era via a real morph');
+    const railLocations = new Set(contextFor(s.options.mapId, 'rail').allLocationIds);
+    for (const tile of s.tiles) {
+      // Canal maintenance removed level-1 board tiles; survivors are level >= 2.
+      assert.ok(tile.level >= 2, 'only level-2+ tiles survive the morph');
+      // Each persistent tile's stable logical id still resolves on the rail map.
+      assert.ok(railLocations.has(tile.locationId), `${tile.locationId} maps on the rail board`);
+    }
+    // The morph survives a save/load with no remapping or corruption.
+    const restored = deserializeState(serializeState(s));
+    assert.deepEqual(restored.tiles, s.tiles);
+    assert.equal(restored.era, s.era);
   });
 });
 

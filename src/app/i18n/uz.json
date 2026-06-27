@@ -441,6 +441,35 @@
         "note": "Qisqaroq, faqat Kanal oʻyini uchun yangi oʻyin sozlamalarida kirish variantini yoqing."
       }
     },
+    "economy": {
+      "title": "MYSpolly iqtisodi",
+      "summary": "Shaxsiy zaxiralar, ishlab chiqarish va bozordan xarid.",
+      "stockpile": {
+        "h": "Resurs zaxirangiz",
+        "p1": "MYSpolly’da har bir oʻyinchining shaxsiy koʻmir, temir va sharbat zaxirasi bor — u pul va daromad yonida koʻrsatiladi. Amallar SIZNING zaxirangizdan resurs sarflaydi — ularni boshqa oʻyinchi konlari yoki zavodlaridan tekinga olib boʻlmaydi.",
+        "l1": "Koʻmir koʻp sanoatlarni qurish va temir yoʻl aloqalarini yotqizish uchun kerak.",
+        "l2": "Temir baʼzi sanoatlarni qurish va Rivojlantirish uchun kerak.",
+        "l3": "Sharbat tovar Sotish va bir vaqtda ikkita temir yoʻl qurish uchun kerak.",
+        "note": "Hamma kichik boshlangʻich zaxira bilan boshlaydi, shunda oʻyin boshlanishi hech qachon toʻsilmaydi."
+      },
+      "production": {
+        "h": "Raunddagi ishlab chiqarish",
+        "p1": "Ishlab chiqaruvchi binolaringiz har raund oxirida bino va uning darajasiga qarab zaxirangizni toʻldiradi.",
+        "l1": "Koʻmir koni → koʻmir, zavod → temir, sharbat zavodi → sharbat.",
+        "l2": "Yuqori darajali binolar koʻproq ishlab chiqaradi — yuksaltirish resurs daromadini oshirishning asosiy yoʻli.",
+        "l3": "Yuksaltirish keyingi raunddan boshlab koʻproq beradi; ixtiyoriy chegara cheksiz toʻplashning oldini oladi."
+      },
+      "market": {
+        "h": "Yetishmovchilikni bozordan sotib olish",
+        "p1": "Agar amalga sizdagidan koʻproq koʻmir yoki temir kerak boʻlsa va siz tegishli bozorga ulangan boʻlsangiz, yetishmovchilikni sotib olishingiz mumkin — koʻrib chiqish tasdiqdan oldin narx, kerakli miqdor va jami summani koʻrsatadi. Avval eng arzon kataklar sotib olinadi; boʻsh bozor belgilangan narxda sotadi.",
+        "note": "Koʻmirni faqat shahringiz savdogarga ulangan boʻlsa sotib olish mumkin; sharbatning bozori yoʻq — uni oʻzingiz ishlab chiqarishingiz kerak. Yetmasa va ulanmagan boʻlsangiz, amal aniq sabab bilan oʻchiriladi."
+      },
+      "morph": {
+        "h": "Har davrda oʻzgaradigan dunyo",
+        "p1": "Xarita davrlar bilan oʻzgaradi: Kanal davrida suv bilan ajralgan orollar Temir yoʻl davrida bogʻlangan quruqlikka aylanadi (joylar siljiydi va qayta nomlanadi), Havo davrida esa avia-hablarga — yoʻnalishlar tarmogʻi har safar oʻzgaradi.",
+        "note": "Har bir joy davrlar aro barqaror identifikatorni saqlaydi, shuning uchun uzoq turuvchi (2+ daraja) binolaringiz dunyo oʻzgargach ham doim toʻgʻri joyga mos keladi."
+      }
+    },
     "glossary": {
       "title": "Belgilar lugʻati",
       "summary": "Har bir belgi — izoh bilan.",

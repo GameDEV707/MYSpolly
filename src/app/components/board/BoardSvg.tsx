@@ -194,8 +194,13 @@ export function BoardSvg(props: {
         return (
           <g
             key={loc.id}
-            transform={`translate(${xy.x},${xy.y})`}
-            style={{ cursor: highlighted ? 'pointer' : 'default', opacity: dim ? 0.32 : 1 }}
+            style={{
+              cursor: highlighted ? 'pointer' : 'default',
+              opacity: dim ? 0.32 : 1,
+              transform: `translate(${xy.x}px,${xy.y}px)`,
+              transition:
+                'transform var(--era-morph-ms, 750ms) ease, opacity var(--anim-base) ease',
+            }}
             onClick={() => highlighted && onLocationClick?.(loc.id)}
             onMouseEnter={() => setHovered(loc.id)}
             onMouseLeave={() => setHovered((c) => (c === loc.id ? null : c))}
@@ -283,8 +288,13 @@ export function BoardSvg(props: {
         return (
           <g
             key={m.id}
-            transform={`translate(${xy.x},${xy.y})`}
-            style={{ cursor: highlighted ? 'pointer' : 'default', opacity: dim ? 0.32 : 1 }}
+            style={{
+              cursor: highlighted ? 'pointer' : 'default',
+              opacity: dim ? 0.32 : 1,
+              transform: `translate(${xy.x}px,${xy.y}px)`,
+              transition:
+                'transform var(--era-morph-ms, 750ms) ease, opacity var(--anim-base) ease',
+            }}
             onClick={() => highlighted && onLocationClick?.(m.id)}
             onMouseEnter={() => setHovered(m.id)}
             onMouseLeave={() => setHovered((c) => (c === m.id ? null : c))}

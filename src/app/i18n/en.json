@@ -441,6 +441,35 @@
         "note": "Enable the Introductory variant in New Game setup for a shorter, Canal-only game."
       }
     },
+    "economy": {
+      "title": "MYSpolly Economy",
+      "summary": "Personal stockpiles, production & market buying.",
+      "stockpile": {
+        "h": "Your resource stockpile",
+        "p1": "In MYSpolly every player keeps a personal stockpile of coal, iron and juice, shown beside your money and income. Actions spend resources from YOUR stockpile — you can never take them for free from another player's mines or works.",
+        "l1": "Coal is needed to build many industries and to lay rail links.",
+        "l2": "Iron is needed to build some industries and to Develop.",
+        "l3": "Juice is needed to Sell goods and to build two rail links at once.",
+        "note": "Everyone starts with a small seed stockpile so the early game is never blocked."
+      },
+      "production": {
+        "h": "Per-round production",
+        "p1": "Your production buildings refill your stockpile at the end of every round, based on the building and its level.",
+        "l1": "Coal Mine → coal, Iron Works → iron, Juice Works → juice.",
+        "l2": "Higher-level buildings produce more — upgrading is the main way to grow your resource income.",
+        "l3": "An upgrade produces the higher amount from the next round onward; an optional cap prevents runaway hoarding."
+      },
+      "market": {
+        "h": "Buying a shortfall from the market",
+        "p1": "If an action needs more coal or iron than you hold and you are connected to the relevant market, you may buy the shortfall — the preview shows the price, units needed and total cost before you confirm. The cheapest spaces are bought first; an empty market sells at a fixed price.",
+        "note": "Coal can only be bought when your location is connected to a merchant; juice has no market, so you must produce your own. If you are short and unconnected, the action is disabled with a clear reason."
+      },
+      "morph": {
+        "h": "A world that morphs each era",
+        "p1": "The map transforms as the eras advance: islands separated by water in the Canal era become connected land in the Rail era (locations reposition and are renamed), and air hubs in the Air era — with the route network changing each time.",
+        "note": "Each location keeps a stable identity across eras, so your lasting (level-2+) buildings always map to the right place after the world morphs."
+      }
+    },
     "glossary": {
       "title": "Icon Glossary",
       "summary": "Every icon, explained.",
