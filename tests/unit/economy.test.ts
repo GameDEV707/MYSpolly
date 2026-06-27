@@ -8,6 +8,7 @@ import { planResource, consumeResource } from '../../src/core/engine/consume.ts'
 import { playerProduction, produceResources } from '../../src/core/engine/production.ts';
 import {
   DEFAULT_STARTING_RESOURCES,
+  FIXED_RESOURCE_PRICE,
   PRODUCTION_TABLE,
   STOCKPILE_CAP,
   productionForLevel,
@@ -181,36 +182,57 @@ describe('§9.7 — optional stockpile caps', () => {
 // 9.2 / 9.8 / 9.9 — consumption from own stockpile + market shortfall
 // ---------------------------------------------------------------------------
 
-describe('§9.8 — planResource (stockpile first, then market shortfall)', () => {
-  test('covered entirely from the stockpile → no market spend', () => {
+describe('§9.8/§7.17 — planResource (stockpile → market → player → supply)', () => {
+  function zeroOthers(s: GameState, me: PlayerColor, res: 'coal' | 'iron' | 'juice'): void {
+    for (const c of s.turnOrder) if (c !== me) s.players[c]!.resources[res] = 0;
+  }
+
+  test('covered entirely from the stockpile → no purchase', () => {
     const s = newGame();
     const me = s.activePlayer;
     s.players[me]!.resources.iron = 3;
     const plan = planResource(s, me, 'iron', 2);
-    assert.deepEqual(plan, { ok: true, fromStock: 2, fromMarket: 0, marketCost: 0 });
+    assert.equal(plan.ok, true);
+    assert.equal(plan.fromStock, 2);
+    assert.equal(plan.fromMarket, 0);
+    assert.equal(plan.totalCost, 0);
   });
 
   test('iron shortfall is always buyable (no connection needed) and priced out', () => {
     const s = newGame();
     const me = s.activePlayer;
     s.players[me]!.resources.iron = 0;
+    zeroOthers(s, me, 'iron');
     const plan = planResource(s, me, 'iron', 2);
     assert.equal(plan.ok, true);
     assert.equal(plan.fromStock, 0);
     assert.equal(plan.fromMarket, 2);
-    assert.ok(plan.marketCost > 0, 'market cost computed');
+    assert.ok(plan.totalCost > 0, 'market cost computed');
   });
 
-  test('coal shortfall is illegal when NOT connected to a merchant (§9.9)', () => {
+  test('coal shortfall is illegal when NOT connected AND no player has coal', () => {
     const s = newGame();
     const me = s.activePlayer;
     s.players[me]!.resources.coal = 0;
+    zeroOthers(s, me, 'coal');
     const plan = planResource(s, me, 'coal', 1, 'dudley'); // no links → not connected
     assert.equal(plan.ok, false);
-    assert.equal(plan.reasonKey, 'flow.why.noMarket');
+    assert.equal(plan.reasonKey, 'flow.why.noResource');
   });
 
-  test('coal shortfall is buyable once connected to a merchant', () => {
+  test('coal shortfall is buyable from ANOTHER PLAYER when not connected (§7.17.3)', () => {
+    const s = newGame();
+    const [me, them] = s.turnOrder;
+    s.players[me!]!.resources.coal = 0;
+    s.players[them!]!.resources.coal = 3;
+    const plan = planResource(s, me!, 'coal', 2, 'dudley');
+    assert.equal(plan.ok, true);
+    assert.equal(plan.fromMarket, 0, 'no market connection → not from market');
+    assert.equal(plan.fromPlayers[them!], 2, 'both units sourced from the other player');
+    assert.ok(plan.totalCost > 0, 'paid the seller at the coal market price');
+  });
+
+  test('coal shortfall is bought from the market once connected', () => {
     const s = newGame();
     const me = s.activePlayer;
     s.players[me]!.resources.coal = 0;
@@ -218,16 +240,29 @@ describe('§9.8 — planResource (stockpile first, then market shortfall)', () =
     const plan = planResource(s, me, 'coal', 1, 'coalbrookdale');
     assert.equal(plan.ok, true);
     assert.equal(plan.fromMarket, 1);
-    assert.ok(plan.marketCost > 0);
+    assert.ok(plan.totalCost > 0);
   });
 
-  test('juice has no market → a shortfall is always illegal', () => {
+  test('juice shortfall is now buyable at a fixed price (§7.17.4)', () => {
     const s = newGame();
     const me = s.activePlayer;
     s.players[me]!.resources.juice = 0;
+    zeroOthers(s, me, 'juice');
     const plan = planResource(s, me, 'juice', 1, 'dudley');
-    assert.equal(plan.ok, false);
-    assert.equal(plan.reasonKey, 'flow.why.noJuice');
+    assert.equal(plan.ok, true, 'juice is no longer illegal — it has a fixed price');
+    assert.equal(plan.fromSupply, 1);
+    assert.equal(plan.totalCost, FIXED_RESOURCE_PRICE.juice);
+  });
+
+  test('juice shortfall prefers buying from another player over the supply', () => {
+    const s = newGame();
+    const [me, them] = s.turnOrder;
+    s.players[me!]!.resources.juice = 0;
+    s.players[them!]!.resources.juice = 1;
+    const plan = planResource(s, me!, 'juice', 1);
+    assert.equal(plan.ok, true);
+    assert.equal(plan.fromPlayers[them!], 1, 'bought from the player who has juice');
+    assert.equal(plan.fromSupply, 0);
   });
 });
 
@@ -279,13 +314,12 @@ describe('§9.2/9.9 — no freeloading via legal actions', () => {
     };
   }
 
-  test("an opponent's coal mine does NOT let you build a coal-needing tile", () => {
+  test("an opponent's coal mine does NOT give you free coal (no stockpile, no money, not connected)", () => {
     const s = newGame();
     const [me, them] = s.turnOrder;
-    // Make `me` active and give them a location card for coalbrookdale.
     s.activeIndex = s.turnOrder.indexOf(me!);
     s.activePlayer = me!;
-    // Opponent owns a (producing) coal mine — irrelevant under §7.16.
+    // Opponent owns a (producing) coal mine — its cubes are never freeloaded.
     placeTile(s, {
       owner: them!,
       industry: 'coal',
@@ -293,13 +327,14 @@ describe('§9.2/9.9 — no freeloading via legal actions', () => {
       locationId: 'dudley',
       slotId: 's-cz',
     });
-    // `me` has no coal and is not connected to a merchant.
+    // `me` has no coal, no money to buy any, and is not connected to a merchant;
+    // every other player's coal stockpile is empty too.
     s.players[me!]!.resources.coal = 0;
+    s.players[me!]!.money = 0;
+    for (const c of s.turnOrder) if (c !== me) s.players[c]!.resources.coal = 0;
     injectCard(s, me!, { id: 'L-bw', kind: 'location', locationId: 'coalbrookdale', name: 'x' });
-    // Iron Works needs 1 coal → must come from my own stockpile or a connected
-    // market. I have neither → illegal.
     const action = buildIronWorks('coalbrookdale');
-    assert.notEqual(validate(s, action), null, 'cannot freeload coal from the opponent');
+    assert.notEqual(validate(s, action), null, 'no free coal from the opponent');
   });
 
   test('with your own stockpile coal, the same build is legal and consumes YOUR coal', () => {

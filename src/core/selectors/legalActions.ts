@@ -36,10 +36,13 @@ function autoJuiceForSell(
 
 /**
  * Enumerate legal actions for the active player. Resource sources for Build,
- * Network and Develop are auto-resolved (cheapest-first) by the engine, so they
- * are left empty here; Sell actions include explicit auto-resolved juice. Every
- * returned action passes `validate`. This is a practical (not exhaustive over
- * all resource permutations) enumeration that drives the UI affordances and AI.
+ * Network and Develop are auto-resolved (stockpile → market → another player →
+ * fixed-price supply, §7.17.3) by the engine, so they are left empty here; Sell
+ * actions include explicit auto-resolved juice. Every returned action passes
+ * `validate`, which now enforces full-total-cost affordability (§7.17.1), so an
+ * action the player cannot fully pay for is never enumerated. This is a
+ * practical (not exhaustive over all resource/seller permutations) enumeration
+ * that drives the UI affordances and the AI.
  */
 export function legalActions(state: GameState): Action[] {
   if (state.phase !== 'playing') return [];

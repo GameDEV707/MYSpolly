@@ -77,6 +77,32 @@ export function logLine(t: TFunction, game: GameState, e: GameEvent): string | n
         tiles: e.tilesSold,
         vp: e.vpLost,
       });
+    case 'RESOURCE_CONSUMED': {
+      // Only surface a peer-to-peer purchase as its own line; stockpile/market/
+      // supply units are summarised in the action's own log line + preview.
+      if (typeof e.from === 'string' && e.from.startsWith('player:') && (e.cost ?? 0) > 0) {
+        const seller = e.from.slice('player:'.length) as PlayerColor;
+        return t('log.resourceBought', {
+          name: playerName(t, game, e.player),
+          resource: t(`legend.${e.resource}`),
+          seller: playerName(t, game, seller),
+          amount: e.cost ?? 0,
+        });
+      }
+      return null;
+    }
+    case 'BANKRUPTCY_STARTED':
+      return t('log.bankruptcy', { name: playerName(t, game, e.player), due: e.due });
+    case 'TILE_SOLD_TO_BANK':
+      return t('log.soldToBank', { name: playerName(t, game, e.player), amount: e.refund });
+    case 'AUCTION_OPENED':
+      return t('log.auctionOpened', { name: playerName(t, game, e.seller), opening: e.opening });
+    case 'AUCTION_BID':
+      return t('log.auctionBid', { name: playerName(t, game, e.bidder), amount: e.amount });
+    case 'AUCTION_RESULT':
+      return e.toBank || !e.winner
+        ? t('log.auctionToBank', { amount: e.price })
+        : t('log.auctionWon', { winner: playerName(t, game, e.winner), amount: e.price });
     case 'ROUND_ENDED':
       return t('log.roundEnded', { round: e.round });
     case 'ERA_ENDED':

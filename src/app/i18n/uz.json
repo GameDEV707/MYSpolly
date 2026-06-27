@@ -402,9 +402,9 @@
         "caption": "Har raund: daromad darajangizga teng pul olasiz."
       },
       "shortfall": {
-        "h": "Salbiy daromad va kamomad",
-        "p1": "Agar daromad darajangiz salbiy boʻlsa, oʻsha summani toʻlashingiz kerak. Toʻlay olmasangiz, agʻdarilmagan plitkalarni yarim narxda sotasiz, baribir yetmasa qolganini qoplash uchun GʻO yoʻqotasiz.",
-        "note": "Salbiy daromadli raund sizga GʻO yoʻqotmasligi uchun kichik naqd zaxira saqlang."
+        "h": "Salbiy daromad va bankrotlik",
+        "p1": "Agar daromad darajangiz salbiy boʻlsa, oʻsha summani toʻlashingiz kerak. Toʻlay olmasangiz — bankrotlik boshlanadi: plitkalaringizni bankka qurilish narxining yarmiga soting yoki ularni boshqa oʻyinchilar oʻrtasida (yarmidan boshlab) kim oshdi savdosiga qoʻying. Plitkalar tugasa, qolgan qarz har £1 uchun 1 GʻO turadi. Pul va GʻO hech qachon noldan pastga tushmaydi.",
+        "note": "Salbiy daromadli raund sizni fabrikani sotishga majbur qilmasligi uchun kichik naqd zaxira saqlang."
       }
     },
     "scoring": {
@@ -446,7 +446,7 @@
       "summary": "Shaxsiy zaxiralar, ishlab chiqarish va bozordan xarid.",
       "stockpile": {
         "h": "Resurs zaxirangiz",
-        "p1": "MYSpolly’da har bir oʻyinchining shaxsiy koʻmir, temir va sharbat zaxirasi bor — u pul va daromad yonida koʻrsatiladi. Amallar SIZNING zaxirangizdan resurs sarflaydi — ularni boshqa oʻyinchi konlari yoki zavodlaridan tekinga olib boʻlmaydi.",
+        "p1": "MYSpolly’da har bir oʻyinchining shaxsiy koʻmir, temir va sharbat zaxirasi bor — u pul va daromad yonida koʻrsatiladi. Amallar avval SIZNING zaxirangizdan resurs sarflaydi; yetmasa farqni sotib olasiz — koʻmir/temir bozoridan, boshqa oʻyinchidan (unga toʻlab) yoki sharbat uchun belgilangan narxda.",
         "l1": "Koʻmir koʻp sanoatlarni qurish va temir yoʻl aloqalarini yotqizish uchun kerak.",
         "l2": "Temir baʼzi sanoatlarni qurish va Rivojlantirish uchun kerak.",
         "l3": "Sharbat tovar Sotish va bir vaqtda ikkita temir yoʻl qurish uchun kerak.",
@@ -460,14 +460,42 @@
         "l3": "Yuksaltirish keyingi raunddan boshlab koʻproq beradi; ixtiyoriy chegara cheksiz toʻplashning oldini oladi."
       },
       "market": {
-        "h": "Yetishmovchilikni bozordan sotib olish",
-        "p1": "Agar amalga sizdagidan koʻproq koʻmir yoki temir kerak boʻlsa va siz tegishli bozorga ulangan boʻlsangiz, yetishmovchilikni sotib olishingiz mumkin — koʻrib chiqish tasdiqdan oldin narx, kerakli miqdor va jami summani koʻrsatadi. Avval eng arzon kataklar sotib olinadi; boʻsh bozor belgilangan narxda sotadi.",
-        "note": "Koʻmirni faqat shahringiz savdogarga ulangan boʻlsa sotib olish mumkin; sharbatning bozori yoʻq — uni oʻzingiz ishlab chiqarishingiz kerak. Yetmasa va ulanmagan boʻlsangiz, amal aniq sabab bilan oʻchiriladi."
+        "h": "Yetishmovchilikni sotib olish",
+        "p1": "Agar amalga sizdagidan koʻproq resurs kerak boʻlsa, farqni sotib olasiz. Koʻmir va temir bozorda savdo qilinadi (ulangan boʻlsangiz): avval arzon kataklar olinadi, narx sotib olishlar bilan koʻtariladi, boʻsh bozor belgilangan narxda sotadi. Sharbatning bozori yoʻq — u umumiy taʼminot yoki boshqa oʻyinchidan belgilangan narxda olinadi. Toʻliq summani toʻlay olmaguningizcha amal qila olmaysiz.",
+        "note": "Koʻmirni bozordan faqat savdogarga ulangan boʻlsangiz olish mumkin; aks holda uni boshqa oʻyinchidan soting oling. Hech bir manba narxni qoplamasa, amal aniq sabab bilan oʻchiriladi."
       },
       "morph": {
         "h": "Har davrda oʻzgaradigan dunyo",
         "p1": "Xarita davrlar bilan oʻzgaradi: Kanal davrida suv bilan ajralgan orollar Temir yoʻl davrida bogʻlangan quruqlikka aylanadi (joylar siljiydi va qayta nomlanadi), Havo davrida esa avia-hablarga — yoʻnalishlar tarmogʻi har safar oʻzgaradi.",
         "note": "Har bir joy davrlar aro barqaror identifikatorni saqlaydi, shuning uchun uzoq turuvchi (2+ daraja) binolaringiz dunyo oʻzgargach ham doim toʻgʻri joyga mos keladi."
+      }
+    },
+    "money": {
+      "title": "Pul, savdo va bankrotlik",
+      "summary": "Toʻliq toʻlang, resurs savdo qiling yoki bankrot boʻling.",
+      "gating": {
+        "h": "Toʻliq toʻlashingiz kerak",
+        "p1": "Amal faqat uning TOʻLIQ narxini — pul plus toʻldirish uchun sotib olishingiz kerak boʻlgan har bir resursni — £0 dan pastga tushmasdan toʻlay olsangiz ruxsat etiladi. £0 turadigan fabrika ham kerakli koʻmir, temir yoki sharbatni toʻlay olmasangiz bloklanadi.",
+        "note": "Pulsiz oʻyinchi haqiqiy narxi pulidan koʻp boʻlgan hech narsani qura yoki ololmaydi."
+      },
+      "trading": {
+        "h": "Resurslar qayerdan keladi",
+        "p1": "Qurish, Tarmoq, Rivojlantirish yoki Sotishga kerakli har bir birlik tartib bilan olinadi, va har bir sotib olingan birlik tasdiqdan oldin narxlanadi va xarajat tafsilotida koʻrsatiladi.",
+        "l1": "Avval oʻz zaxirangizdan (bepul).",
+        "l2": "Keyin koʻmir/temir bozoridan, agar savdogarga ulangan boʻlsangiz.",
+        "l3": "Keyin unga ega boshqa oʻyinchidan — oʻsha oʻyinchiga toʻgʻridan-toʻgʻri toʻlaysiz."
+      },
+      "fixed": {
+        "h": "Bozor narxi va belgilangan narx",
+        "p1": "Faqat koʻmir va temir bozorda savdo qilinadi, sotib olish narxni koʻtaradi, sotish esa tushiradi. Boshqa resurslar, masalan sharbat, oʻzgarmas yagona narxga ega — shuning uchun sharbat yetishmovchiligi oʻsha narxda (umumiy taʼminot yoki boshqa oʻyinchidan) sotib olinadi, amal imkonsiz boʻlib qolmaydi.",
+        "note": "Sotib olish oynasi har doim birlik bozor narxida yoki belgilangan narxda ekanini koʻrsatadi."
+      },
+      "bankruptcy": {
+        "h": "Bankrotlik: sotish yoki kim oshdi savdosi",
+        "p1": "Agar majburiy toʻlov (odatda salbiy daromad) pulingizdan koʻp boʻlsa, qolganini fabrikalarni birma-bir sotib yigʻishingiz kerak.",
+        "l1": "Fabrikani bankka qurilish narxining yarmiga (pastga yaxlitlangan) soting; u maydondan olib tashlanadi.",
+        "l2": "Yoki uni boshqa oʻyinchilar oʻrtasida yarmidan boshlab kim oshdi savdosiga qoʻying; eng yuqori taklif qilgan sizga toʻlaydi va uni oladi. Hech kim boshlangʻichdan oshirmasa, bank uni yarmiga sotib oladi.",
+        "note": "Qarz qoplanmaguncha davom eting. Fabrika qolmasa, har £1 qarz uchun 1 GO yoʻqotasiz — pul va GO hech qachon noldan pastga tushmaydi."
       }
     },
     "glossary": {
@@ -549,7 +577,8 @@
     "railBegins": "Temir yoʻl davri boshlandi",
     "gameOver": "Oʻyin tugadi",
     "airBegins": "Havo davri boshlanadi",
-    "eraMorph": "Maydon oʻzgaradi"
+    "eraMorph": "Maydon oʻzgaradi",
+    "bankruptcy": "Bankrotlik!"
   },
   "handoff": {
     "turnOf": "{{name}} yurishi",
@@ -685,6 +714,13 @@
     "perRound": "/raund",
     "production": "ishlab chiqarish",
     "fromMarket": "bozordan sotib olindi",
+    "fromStock": "zaxiradan",
+    "fromPlayer": "{{player}} dan sotib olindi",
+    "fromSupply": "belgilangan narxda sotib olindi",
+    "marketPrice": "bozor narxi",
+    "fixedPrice": "belgilangan narx",
+    "buyFrom": "{{resource}} ni kimdan sotib olish:",
+    "itemized": "Xarajat tafsiloti",
     "benefit": "Foyda",
     "noCost": "Xarajatsiz.",
     "noPreview": "Koʻrib chiqish mavjud emas.",
@@ -697,7 +733,8 @@
       "scout": "3 ta wild boʻlmagan karta va mavjud wild kartalar kerak.",
       "pass": "Hozir pas qila olmaysiz.",
       "noJuice": "Zaxirada sharbat yetarli emas (sharbat bozori yoʻq).",
-      "noMarket": "Yetishmovchilikni sotib olish uchun bozorga ulanmagansiz."
+      "noMarket": "Yetishmovchilikni sotib olish uchun bozorga ulanmagansiz.",
+      "noResource": "Kerakli resursni yetarlicha ololmaysiz (bozor, oʻyinchi yoki taʼminot yoʻq)."
     },
     "prompt": {
       "action": "Harakatni tanlang.",
@@ -724,6 +761,27 @@
     "player": "Pul (£), daromad (📈) va gʻalaba ochkolari (⭐). Bu raundda eng kam sarflagan keyingi raundda birinchi yuradi.",
     "actionHint": "Maslahat: mavjud boʻlmagan amalga sababini koʻrish uchun kursorni olib boring yoki qoidalar uchun ? ni bosing."
   },
+  "bankruptcy": {
+    "title": "Bankrotlik",
+    "intro": "{{name}} £{{due}} qarzdor va toʻlay olmaydi. Fabrikalarni sotib pul yigʻing.",
+    "raise": "Yana yigʻish kerak: £{{amount}}",
+    "chooseTile": "Sotish uchun fabrikani tanlang.",
+    "chooseMethod": "Uni qanday sotmoqchisiz?",
+    "sellToBank": "Bankka sotish (£{{amount}})",
+    "sellToBankDesc": "Bank qurilish narxining yarmini toʻlaydi, plitka olib tashlanadi.",
+    "auction": "Oʻyinchilar oʻrtasida kim oshdi savdosi",
+    "auctionDesc": "Oʻyinchilar narx taklif qiladi; eng yuqori narx taklif qilgan sizga toʻlaydi va fabrikani oladi.",
+    "opening": "Boshlangʻich narx: £{{amount}}",
+    "currentBid": "Joriy narx: £{{amount}} ({{name}})",
+    "yourBid": "Sizning taklifingiz",
+    "bid": "£{{amount}} taklif qilish",
+    "pass": "Oʻtkazib yuborish",
+    "won": "{{name}} £{{amount}} ga yutdi.",
+    "noBid": "Taklif yoʻq — bank £{{amount}} ga sotib oladi.",
+    "vpLost": "Fabrika qolmadi — £{{amount}} uchun {{vp}} GO yoʻqotildi.",
+    "resolved": "Bankrotlik hal qilindi.",
+    "stillOwed": "£{{amount}} hisobdan oʻchirildi (toʻlab boʻlmadi)."
+  },
   "log": {
     "built": "{{name}} {{location}} shahrida {{industry}} ({{level}}-daraja) qurdi.",
     "overbuilt": "{{name}} {{location}} shahrida {{industry}} ({{level}}-daraja) ustiga qurdi.",
@@ -737,6 +795,13 @@
     "income": "{{name}} £{{amount}} daromad oldi.",
     "produced": "{{name}} binolari {{summary}} ishlab chiqardi.",
     "shortfall": "{{name}} {{tiles}} plitka sotdi va daromadni qoplash uchun {{vp}} GO yoʻqotdi.",
+    "bankruptcy": "{{name}} £{{due}} toʻlay olmaydi va fabrikalarni sotishi kerak.",
+    "soldToBank": "{{name}} fabrikani bankka £{{amount}} ga sotdi.",
+    "auctionOpened": "{{name}} fabrikani kim oshdi savdosiga qoʻydi (boshlangʻich £{{opening}}).",
+    "auctionBid": "{{name}} £{{amount}} taklif qildi.",
+    "auctionWon": "{{winner}} kim oshdi savdosida £{{amount}} ga yutdi va fabrikani oldi.",
+    "auctionToBank": "Taklif yoʻq — bank fabrikani £{{amount}} ga sotib oldi.",
+    "resourceBought": "{{name}} {{seller}} dan {{resource}} ni £{{amount}} ga sotib oldi.",
     "roundEnded": "{{round}}-raund tugadi.",
     "eraEnded": "{{era}} tugadi.",
     "turn": "Endi {{name}} navbati.",

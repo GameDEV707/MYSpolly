@@ -402,9 +402,9 @@
         "caption": "Each round: gain money equal to your income level."
       },
       "shortfall": {
-        "h": "Negative income & shortfall",
-        "p1": "If your income level is negative you must pay that amount. If you cannot, you sell unflipped tiles back for half value and, if still short, lose VP to cover the rest.",
-        "note": "Keep a small cash buffer so a negative-income round never costs you VP."
+        "h": "Negative income & bankruptcy",
+        "p1": "If your income level is negative you must pay that amount. If you cannot, you enter bankruptcy: repeatedly sell one of your tiles to the bank at half its build cost, or auction it to the other players (starting at half). If you run out of tiles, the rest of the debt costs 1 VP per £1. Money and VP never go below zero.",
+        "note": "Keep a small cash buffer so a negative-income round never forces you to sell a factory."
       }
     },
     "scoring": {
@@ -446,7 +446,7 @@
       "summary": "Personal stockpiles, production & market buying.",
       "stockpile": {
         "h": "Your resource stockpile",
-        "p1": "In MYSpolly every player keeps a personal stockpile of coal, iron and juice, shown beside your money and income. Actions spend resources from YOUR stockpile — you can never take them for free from another player's mines or works.",
+        "p1": "In MYSpolly every player keeps a personal stockpile of coal, iron and juice, shown beside your money and income. Actions spend resources from YOUR stockpile first; if you are short you buy the difference — from the coal/iron market, from another player (paying them), or at a fixed price for juice.",
         "l1": "Coal is needed to build many industries and to lay rail links.",
         "l2": "Iron is needed to build some industries and to Develop.",
         "l3": "Juice is needed to Sell goods and to build two rail links at once.",
@@ -460,14 +460,42 @@
         "l3": "An upgrade produces the higher amount from the next round onward; an optional cap prevents runaway hoarding."
       },
       "market": {
-        "h": "Buying a shortfall from the market",
-        "p1": "If an action needs more coal or iron than you hold and you are connected to the relevant market, you may buy the shortfall — the preview shows the price, units needed and total cost before you confirm. The cheapest spaces are bought first; an empty market sells at a fixed price.",
-        "note": "Coal can only be bought when your location is connected to a merchant; juice has no market, so you must produce your own. If you are short and unconnected, the action is disabled with a clear reason."
+        "h": "Buying a shortfall",
+        "p1": "If an action needs more of a resource than you hold, you buy the difference. Coal and iron trade in a market (when connected): the cheapest spaces are bought first, prices rise as cubes are taken, and an empty market sells at a fixed price. Juice has no market — it is bought at a fixed unit price from a general supply or another player. You can never act unless you can pay the full total.",
+        "note": "Coal can only be bought from the market when connected to a merchant; otherwise buy it from another player. If no source can cover the cost, the action is disabled with a clear reason."
       },
       "morph": {
         "h": "A world that morphs each era",
         "p1": "The map transforms as the eras advance: islands separated by water in the Canal era become connected land in the Rail era (locations reposition and are renamed), and air hubs in the Air era — with the route network changing each time.",
         "note": "Each location keeps a stable identity across eras, so your lasting (level-2+) buildings always map to the right place after the world morphs."
+      }
+    },
+    "money": {
+      "title": "Money, Trading & Bankruptcy",
+      "summary": "Pay in full, trade resources, or go bankrupt.",
+      "gating": {
+        "h": "You must pay in full",
+        "p1": "An action is only allowed if you can pay its FULL cost — the money cost plus every resource you must buy to complete it — without dropping below £0. A factory that costs £0 to build is still blocked if you can't afford the coal, iron or juice it needs.",
+        "note": "A broke player can never build or acquire anything whose true cost is more than their money."
+      },
+      "trading": {
+        "h": "Where resources come from",
+        "p1": "Each unit a Build, Network, Develop or Sell needs is sourced in order, and every purchased unit is priced and shown in the cost breakdown before you confirm.",
+        "l1": "First from your own stockpile (free).",
+        "l2": "Then the coal/iron market, if you are connected to a merchant.",
+        "l3": "Then from another player who has it — you pay that player directly."
+      },
+      "fixed": {
+        "h": "Market price vs fixed price",
+        "p1": "Only coal and iron trade in a market, where buying raises the price and selling lowers it. Other resources, such as juice, have a single fixed price that never changes — so a juice shortfall is bought at that price (from a general supply or another player) instead of being impossible.",
+        "note": "The buy dialog always shows whether a unit is priced by the market or at a fixed rate."
+      },
+      "bankruptcy": {
+        "h": "Bankruptcy: sell or auction",
+        "p1": "If a mandatory payment (usually negative income) is more than your cash, you must raise the rest by liquidating factories one at a time.",
+        "l1": "Sell a factory to the bank for half its build cost (rounded down); it leaves the board.",
+        "l2": "Or auction it to the other players starting at half; the highest bidder pays you and takes ownership. If no one bids above the opening, the bank buys it at half.",
+        "note": "Keep going until the debt is covered. With no factories left, you lose 1 VP per £1 still owed — money and VP never go below zero."
       }
     },
     "glossary": {
@@ -549,7 +577,8 @@
     "railBegins": "The Rail Era begins",
     "gameOver": "Game Over",
     "airBegins": "The Air Era begins",
-    "eraMorph": "The board transforms"
+    "eraMorph": "The board transforms",
+    "bankruptcy": "Bankruptcy!"
   },
   "handoff": {
     "turnOf": "{{name}}'s turn",
@@ -685,6 +714,13 @@
     "perRound": "/round",
     "production": "production",
     "fromMarket": "bought from market",
+    "fromStock": "from stockpile",
+    "fromPlayer": "bought from {{player}}",
+    "fromSupply": "bought at fixed price",
+    "marketPrice": "market price",
+    "fixedPrice": "fixed price",
+    "buyFrom": "Buy {{resource}} from:",
+    "itemized": "Cost breakdown",
     "benefit": "Benefit",
     "noCost": "No cost.",
     "noPreview": "Preview unavailable.",
@@ -697,7 +733,8 @@
       "scout": "You need 3 non-wild cards and available wild cards.",
       "pass": "You can't pass right now.",
       "noJuice": "Not enough juice in your stockpile (juice has no market).",
-      "noMarket": "Not connected to a market to buy the shortfall."
+      "noMarket": "Not connected to a market to buy the shortfall.",
+      "noResource": "You can't get enough of a required resource (no market, player or supply)."
     },
     "prompt": {
       "action": "Choose an action.",
@@ -724,6 +761,27 @@
     "player": "Money (£), income (📈) and Victory Points (⭐). Spending the least this round means you act first next round.",
     "actionHint": "Tip: hover a greyed-out action to see why it's unavailable, or tap ? for the rules."
   },
+  "bankruptcy": {
+    "title": "Bankruptcy",
+    "intro": "{{name}} owes £{{due}} and can't pay. Raise it by liquidating factories.",
+    "raise": "Still to raise: £{{amount}}",
+    "chooseTile": "Choose a factory to liquidate.",
+    "chooseMethod": "How do you want to liquidate it?",
+    "sellToBank": "Sell to bank (£{{amount}})",
+    "sellToBankDesc": "The bank pays half the build cost and the tile is removed.",
+    "auction": "Auction to players",
+    "auctionDesc": "Other players bid; the highest bidder pays you and takes the tile.",
+    "opening": "Opening bid: £{{amount}}",
+    "currentBid": "Current bid: £{{amount}} ({{name}})",
+    "yourBid": "Your bid",
+    "bid": "Bid £{{amount}}",
+    "pass": "Pass",
+    "won": "{{name}} won for £{{amount}}.",
+    "noBid": "No bids — the bank buys it for £{{amount}}.",
+    "vpLost": "No factories left — lost {{vp}} VP to cover £{{amount}}.",
+    "resolved": "Bankruptcy resolved.",
+    "stillOwed": "£{{amount}} written off (could not be paid)."
+  },
   "log": {
     "built": "{{name}} built a {{industry}} (L{{level}}) in {{location}}.",
     "overbuilt": "{{name}} overbuilt a {{industry}} (L{{level}}) in {{location}}.",
@@ -737,6 +795,13 @@
     "income": "{{name}} collected £{{amount}} income.",
     "produced": "{{name}}'s buildings produced {{summary}}.",
     "shortfall": "{{name}} sold {{tiles}} tile(s) and lost {{vp}} VP to cover income.",
+    "bankruptcy": "{{name}} can't pay £{{due}} and must liquidate factories.",
+    "soldToBank": "{{name}} sold a factory to the bank for £{{amount}}.",
+    "auctionOpened": "{{name}} put a factory up for auction (opening £{{opening}}).",
+    "auctionBid": "{{name}} bid £{{amount}}.",
+    "auctionWon": "{{winner}} won the auction for £{{amount}} and took the factory.",
+    "auctionToBank": "No one bid — the bank bought the factory for £{{amount}}.",
+    "resourceBought": "{{name}} bought {{resource}} from {{seller}} for £{{amount}}.",
     "roundEnded": "Round {{round}} ended.",
     "eraEnded": "{{era}} ended.",
     "turn": "It is now {{name}}'s turn.",

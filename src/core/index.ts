@@ -35,8 +35,19 @@ export {
   planResource,
   consumeResource,
   consumeSellJuice,
+  preferredSellers,
   type ResourcePlan,
+  type ResourceUnit,
 } from './engine/consume.ts';
+export {
+  resolveBankruptcy,
+  payOrBankrupt,
+  runAuction,
+  tileHalfCost,
+  defaultDecider,
+  type BankruptcyDecider,
+  type LiquidationChoice,
+} from './engine/bankruptcy.ts';
 export * from './model/types.ts';
 export type { GameState, PlayerState, PlacedTile, PlacedLink, Card } from './model/state.ts';
 export type { Action } from './model/actions.ts';

@@ -270,6 +270,14 @@ export interface ActionPreview {
   juice: number;
   /** Resource units in the cost that are bought from the market (vs. stockpile). */
   fromMarket: number;
+  /** Resource units drawn from the player's own stockpile. */
+  fromStock: number;
+  /** Resource units bought from another player (paying them). */
+  fromPlayer: number;
+  /** Resource units bought from the general fixed-price supply. */
+  fromSupply: number;
+  /** Total money paid for resource purchases (market + player + supply). */
+  resourceCost: number;
   /** Extra per-round production this action adds to the player's stockpile. */
   production: { coal: number; iron: number; juice: number };
   flips: number;
@@ -304,6 +312,10 @@ export function previewAction(game: GameState, action: Action): ActionPreview | 
     iron: 0,
     juice: 0,
     fromMarket: 0,
+    fromStock: 0,
+    fromPlayer: 0,
+    fromSupply: 0,
+    resourceCost: 0,
     production: { coal: 0, iron: 0, juice: 0 },
     flips: 0,
     placedTiles: [],
@@ -317,7 +329,11 @@ export function previewAction(game: GameState, action: Action): ActionPreview | 
       if (e.resource === 'coal') p.coal += 1;
       else if (e.resource === 'iron') p.iron += 1;
       else if (e.resource === 'juice') p.juice += 1;
+      p.resourceCost += e.cost ?? 0;
       if (e.from === 'market') p.fromMarket += 1;
+      else if (e.from === 'stock') p.fromStock += 1;
+      else if (e.from === 'supply') p.fromSupply += 1;
+      else if (typeof e.from === 'string' && e.from.startsWith('player:')) p.fromPlayer += 1;
     } else if (e.t === 'TILE_FLIPPED' && e.player === player) p.flips += 1;
     else if (e.t === 'TILE_PLACED') p.placedTiles.push(e.tile);
     else if (e.t === 'LINK_PLACED') p.placedLinks.push(e.link);

@@ -43,6 +43,18 @@ export function eventToFx(e: GameEvent): EventFx {
       return { sfx: 'cardDraw', durationMs: 200 };
     case 'MERCHANT_BONUS':
       return { sfx: 'coin', durationMs: 200 };
+    case 'BANKRUPTCY_STARTED':
+      return { durationMs: 500, banner: 'banner.bankruptcy' };
+    case 'TILE_SOLD_TO_BANK':
+      return { sfx: 'coin', durationMs: 350 };
+    case 'AUCTION_OPENED':
+      return { durationMs: 400 };
+    case 'AUCTION_BID':
+      return { sfx: 'coin', durationMs: 250 };
+    case 'AUCTION_RESULT':
+      return { sfx: 'coin', durationMs: 450 };
+    case 'BANKRUPTCY_RESOLVED':
+      return { durationMs: 200 };
     case 'ROUND_ENDED':
       return { durationMs: 400, banner: 'banner.roundEnd' };
     case 'ERA_ENDED':

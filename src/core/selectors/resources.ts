@@ -1,5 +1,13 @@
 import type { GameState, PlacedTile } from '../model/state.ts';
 import type { PlayerColor } from '../model/types.ts';
+import { PLAYER_COLORS } from '../model/types.ts';
+import {
+  isMarketResource,
+  fixedUnitPrice,
+  PLAYER_TRADE_MARKUP,
+  type StockResource,
+} from '../data/economy.ts';
+import { nextBuyPrice } from '../engine/market.ts';
 import { boardContext } from '../maps/context.ts';
 import { connected, distance, reachableFrom } from './connectivity.ts';
 
@@ -63,4 +71,38 @@ export function sellableMerchants(
 /** Convenience: are two locations connected (re-exported for resource code). */
 export function locConnected(state: GameState, a: string, b: string): boolean {
   return connected(state, a, b);
+}
+
+/** A candidate seller for a player-to-player resource purchase (§7.17.3). */
+export interface ResourceSellerOption {
+  color: PlayerColor;
+  /** Units of the resource the seller currently holds. */
+  available: number;
+  /** Money price per unit the buyer would pay this seller. */
+  unitPrice: number;
+}
+
+/**
+ * The other players a `buyer` could buy `resource` from (§7.17.3), with how much
+ * each holds and the per-unit price (the current market buy price for coal/iron,
+ * or the fixed price for non-market resources). Sorted most-available first —
+ * the data behind the UI's "buy from which player?" picker (§11.7). Pure.
+ */
+export function resourceSellerOptions(
+  state: GameState,
+  buyer: PlayerColor,
+  resource: StockResource,
+): ResourceSellerOption[] {
+  const market =
+    resource === 'coal' ? state.coalMarket : resource === 'iron' ? state.ironMarket : null;
+  const unitPrice =
+    (isMarketResource(resource) ? nextBuyPrice(market!) : (fixedUnitPrice(resource) ?? 0)) +
+    PLAYER_TRADE_MARKUP;
+  const out: ResourceSellerOption[] = [];
+  for (const color of PLAYER_COLORS) {
+    if (color === buyer) continue;
+    const available = state.players[color]?.resources[resource] ?? 0;
+    if (available > 0) out.push({ color, available, unitPrice });
+  }
+  return out.sort((a, b) => b.available - a.available);
 }

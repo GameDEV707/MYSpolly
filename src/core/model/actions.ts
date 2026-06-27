@@ -1,4 +1,4 @@
-import type { IndustryType } from './types.ts';
+import type { IndustryType, PlayerColor } from './types.ts';
 
 /**
  * Action input types. Humans (via UI) and AI bots both construct these and feed
@@ -11,14 +11,18 @@ export interface CardRef {
 }
 
 /**
- * Where a consumed resource comes from (§7.16). In the MYSpolly economy a player
- * draws from their OWN stockpile first, then buys a shortfall from the relevant
- * market (coal/iron only, and only when connected). On a Sell, juice may instead
- * come from a connected merchant's barrel (which also grants its bonus).
+ * Where a consumed resource comes from (§7.16 / §7.17). In the MYSpolly economy
+ * a player draws from their OWN stockpile first, then buys a shortfall in this
+ * order: the relevant market (coal/iron only, when connected) → another player's
+ * stockpile (paying that player) → a general fixed-price supply (non-market
+ * resources such as juice). On a Sell, juice may instead come from a connected
+ * merchant's barrel (which also grants its bonus).
  */
 export type ResourceSource =
   | { from: 'stock' } // the acting player's own stockpile (coal / iron / juice)
   | { from: 'market' } // buy a shortfall from the coal / iron market
+  | { from: 'player'; color: PlayerColor } // buy from another player's stockpile (§7.17.3)
+  | { from: 'supply' } // buy a non-market resource at its fixed price (§7.17.4)
   | { from: 'merchantJuice'; merchantId: string }; // merchant juice (Sell only)
 
 export interface BuildAction {

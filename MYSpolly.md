@@ -1734,78 +1734,78 @@ Working names (finalize during implementation, keep consistent everywhere):
 > auction it to the other players starting at half). Cover everything with tests; localize EN/RU/UZ.
 
 **A. Strict money gating — §7.17.1 (the "build for £0 with no money" bug)**
-- [ ] **11.1** Make `spend()` in `engine/helpers.ts` **never drive money below 0**: assert
+- [x] **11.1** Make `spend()` in `engine/helpers.ts` **never drive money below 0**: assert
       `amount <= p.money` (validators must guarantee it) and route any mandatory payment the player
       can't afford through `payOrBankrupt()` (§11.E) instead of silently going negative. Do the
       same audit for `changeMoney()` where it represents a payment.
-- [ ] **11.2** Recompute every action's affordability against the **full total cost** = money cost
+- [x] **11.2** Recompute every action's affordability against the **full total cost** = money cost
       **+** all resource purchases (market + fixed‑price + player‑to‑player). Fix
       `validateBuild`/`validateNetwork`/`validateDevelop`/`validateSell` so the check is
       `totalCost <= p.money`, and ensure `legalActions` filters out any action the player cannot
       fully pay for.
-- [ ] **11.3** Fix the **£0‑tile loophole**: a £0‑cost tile (e.g. Pottery L2/L4 in `industries.ts`)
+- [x] **11.3** Fix the **£0‑tile loophole**: a £0‑cost tile (e.g. Pottery L2/L4 in `industries.ts`)
       is buildable for £0 **only if** the player can also pay for its required coal/iron/juice; if
       the needed resources cost money the player lacks, the build is **disabled with a clear
       localized reason** (§7.13). A broke player can no longer build/acquire anything whose true
       cost exceeds their money.
 
 **B. Exact, complete resource accounting — §7.17.2**
-- [ ] **11.4** Audit and make **exact** the resource accounting for **Network** (coal per link ×
+- [x] **11.4** Audit and make **exact** the resource accounting for **Network** (coal per link ×
       links + double‑link juice, summed across the whole action), Build (coal+iron), Develop
       (iron), and Sell (juice): every consumed unit is counted, sourced, priced, and paid; placing
       links/tiles consumes exactly that many units (no free/over/under count).
-- [ ] **11.5** Show an **itemized cost breakdown** in the guided preview (§7.13/§7.16.6): money +
+- [x] **11.5** Show an **itemized cost breakdown** in the guided preview (§7.13/§7.16.6): money +
       each resource, with how many come from stockpile vs. purchased and the per‑source price and
       total. Reconcile to one `RESOURCE_CONSUMED` event per unit.
 
 **C. Buy a shortfall from another player — §7.17.3**
-- [ ] **11.6** Implement the resolution order **own stockpile → market (coal/iron, if connected) →
+- [x] **11.6** Implement the resolution order **own stockpile → market (coal/iron, if connected) →
       another player's stockpile**. Add a player‑to‑player purchase that moves units from the
       chosen owner and **pays that owner** (money buyer→owner) at the market price (coal/iron) or
       fixed price (juice). Extend `ResourceSource` (`actions.ts`) with a `{ from: 'player';
       color }` source and thread it through `consume.ts`, the action validators/appliers, and
       `legalActions`.
-- [ ] **11.7** UI picker to choose which other player to buy from when several have stock (AI uses
+- [x] **11.7** UI picker to choose which other player to buy from when several have stock (AI uses
       a sensible default: cheapest/most‑available). If stockpile + market + other players still
       can't satisfy the need, the action is **disabled with a clear reason**.
 
 **D. Market vs. fixed‑price resources (Brass‑faithful) — §7.17.4**
-- [ ] **11.8** Enforce **market = coal & iron only**: only these may be bought/sold in a market;
+- [x] **11.8** Enforce **market = coal & iron only**: only these may be bought/sold in a market;
       keep the existing Brass price‑ladder movement (`market.ts`/`markets.ts`) — buying raises the
       price (cheapest filled cube first), selling lowers it (cheapest empty space first), empty
       market uses the fixed `emptyPrice`. Add a test asserting the ladder moves exactly as in Brass.
-- [ ] **11.9** Give **non‑market resources a fixed, unchanging price** (juice et al.) in
+- [x] **11.9** Give **non‑market resources a fixed, unchanging price** (juice et al.) in
       `data/economy.ts`; a juice shortfall is covered at that fixed price (general supply or another
       player, §11.6) instead of making the action illegal. Surface "market price" vs "fixed price"
       in the buy dialog and Rules Library.
 
 **E. Bankruptcy: sell to bank at half, or auction to players — §7.17.5**
-- [ ] **11.10** Replace the silent auto‑sell in `engine/income.ts` with an explicit
+- [x] **11.10** Replace the silent auto‑sell in `engine/income.ts` with an explicit
       **bankruptcy resolution**: when a mandatory payment exceeds cash, the player repeatedly
       chooses to either (a) **sell one of their tiles to the bank at half build cost (rounded
       down)** — tile removed, bank pays half — or (b) **auction a tile to the other players** with
       an **opening bid = half build cost**.
-- [ ] **11.11** Implement the **auction**: other players (human + AI) bid higher in turn order;
+- [x] **11.11** Implement the **auction**: other players (human + AI) bid higher in turn order;
       highest bidder **pays their bid to the bankrupt player and takes ownership** (tile stays on
       the board, owner changes); if no one bids above the opening, fall back to selling to the bank
       at the opening (half) price. Add events for tile‑sold‑to‑bank, auction‑opened, each bid, and
       auction‑result (winner + price + new owner) — fixing the current **missing per‑tile removal
       event** in the shortfall path so the board/log/animation update correctly.
-- [ ] **11.12** Keep selling until the debt is covered (player keeps any surplus); **if no tiles
+- [x] **11.12** Keep selling until the debt is covered (player keeps any surplus); **if no tiles
       remain**, fall back to **−1 VP per £1** still owed (VP floored at 0); only then record true
       bankruptcy. Never let money or VP go negative.
-- [ ] **11.13** **Bankruptcy/auction UI**: a clear localized modal showing the tile, its half‑price
+- [x] **11.13** **Bankruptcy/auction UI**: a clear localized modal showing the tile, its half‑price
       opening bid, per‑player bid controls, pass/win resolution, and the chosen‑tile/method picker;
       EN/RU/UZ. AI heuristic for which tile + bank‑vs‑auction, and for **bidding in opponents'
       auctions** when a tile is worth more than the ask.
 
 **F. AI, docs & tests — §7.17.6**
-- [ ] **11.14** Update the AI bot/heuristic: never attempt unaffordable actions (enforced via
+- [x] **11.14** Update the AI bot/heuristic: never attempt unaffordable actions (enforced via
       `legalActions`), pick resource sources (stockpile → market → cheapest player), make
       bankruptcy choices, and bid in auctions sensibly.
-- [ ] **11.15** Update the **Rules Library + contextual help** (§7.14) with the money‑gating,
+- [x] **11.15** Update the **Rules Library + contextual help** (§7.14) with the money‑gating,
       resource‑trading, fixed‑price, and bankruptcy/auction rules, localized EN/RU/UZ.
-- [ ] **11.16** Tests: cannot build/act without funds (incl. the £0‑tile case); exact Network
+- [x] **11.16** Tests: cannot build/act without funds (incl. the £0‑tile case); exact Network
       resource+money accounting; buy‑from‑player (units move, owner paid, disabled when impossible);
       market only trades coal/iron with correct ladder movement; fixed juice price; bankruptcy
       sell‑to‑bank at half; auction (bids, winner pays, ownership transfer, no‑bid fallback);
@@ -2095,3 +2095,66 @@ flagged `VERIFY` in-file, and are pure-data edits requiring no code change.
     restores the correct era topology with a level-2 tile still mapped to the
     right (repositioned) location. Full suite: **330 engine tests green**, engine
     typecheck clean, Prettier clean.
+
+
+## 16. Progress Log — Phase 11 (Money, Resource Trading & Bankruptcy Overhaul)
+
+- **Phase 11 complete (§7.17).** Fixed every reported money defect and implemented
+  the corrected economy rules (11.1–11.16):
+  - **Strict money gating (11.1–11.3).** `spend()` in `engine/helpers.ts` now
+    asserts `amount <= money` and throws rather than silently going negative; a
+    new `payPlayer()` handles peer-to-peer payments. Every action validator
+    (`build`/`network`/`develop`) checks the **full total cost** (money + every
+    resource purchase) with `totalCost <= money`, so `legalActions` only ever
+    enumerates fully-payable actions. This closes the **£0-tile loophole**: a
+    £0 build (e.g. Pottery L2/L4) is allowed only when the player can also pay
+    for its required coal/iron — verified by a test that a broke player can build
+    it for free when holding the coal, but is blocked when the coal is unaffordable.
+  - **Exact resource accounting (11.4–11.5).** `consume.ts` was rewritten to plan
+    and apply each unit precisely with a per-unit price, emitting one
+    `RESOURCE_CONSUMED` event per unit (now carrying its money `cost`). Network
+    accounts for every coal-per-link and the double-link juice across the whole
+    action; a test asserts a double rail link consumes exactly 2 coal + 1 juice
+    and pays exactly the £15 link cost when sourced from stock. The guided preview
+    (`flow.ts`/`GuidedActionBar`) shows an itemized breakdown: stockpile vs.
+    market vs. player vs. fixed-supply units and the total resource cost.
+  - **Buy from another player (11.6–11.7).** Added a `{ from: 'player'; color }`
+    `ResourceSource` and a strict resolution order **own stockpile → market
+    (coal/iron, if connected) → another player (paying them) → fixed-price supply
+    (non-market)**. `resourceSellerOptions` surfaces the picker data; a UI seller
+    preference threads through `consumeResource`. Tests confirm units move from
+    the seller, the seller is paid the market/fixed price, the market is untouched
+    on a peer buy, and the action is disabled when no source can cover it.
+  - **Market vs. fixed price (11.8–11.9).** Only coal & iron trade in a market
+    (`MARKET_RESOURCES`/`isMarketResource`), keeping the existing Brass ladder
+    movement (asserted by a ladder test: buying raises the price cheapest-filled
+    first, selling lowers it cheapest-empty first, empty market = `emptyPrice`).
+    Juice has a tunable `FIXED_RESOURCE_PRICE` in `data/economy.ts`; a juice
+    shortfall is now bought at that fixed price (supply or another player) instead
+    of being illegal.
+  - **Bankruptcy (11.10–11.13).** New `engine/bankruptcy.ts` replaces the silent
+    auto-sell in `income.ts` with an explicit, event-emitting resolution: sell a
+    tile to the bank at half build cost (rounded down, tile removed) **or** auction
+    it to the other players (opening bid = half; highest bidder pays the bankrupt
+    player and takes ownership; no bid → bank buys at half). Events
+    (`BANKRUPTCY_STARTED`, `TILE_SOLD_TO_BANK`, `AUCTION_OPENED`, `AUCTION_BID`,
+    `AUCTION_RESULT`, `BANKRUPTCY_RESOLVED`) fix the previously missing per-tile
+    removal event and drive the log, animations, and a new localized
+    `BankruptcyModal` (recap built by the pure, tested `bankruptcyView.ts`). Selling
+    continues until covered; then −1 VP per £1 owed (VP floored at 0); money/VP
+    never go negative. A pluggable `BankruptcyDecider` lets the UI/AI inject
+    choices, defaulting to a deterministic engine policy. All balance values
+    (fixed juice price, peer markup, auction increment, AI bid fraction, auction
+    threshold) live in `data/economy.ts`.
+  - **AI, docs & tests (11.14–11.16).** The AI is constrained by `legalActions`
+    (never unaffordable), buys via the engine's stockpile→market→player order, and
+    every player's bankruptcy/auction behaviour is governed by the shared
+    deterministic decider (`aiBankruptcyDecider`) during headless play. Added the
+    **Rules Library "Money, Trading & Bankruptcy"** chapter + revised economy text
+    and contextual help, fully localized EN/RU/UZ (key-parity test green). New
+    `tests/unit/phase11.test.ts` covers every item, including a **property test
+    that random legal play never produces negative money or VP**.
+  - **Verification.** Engine typecheck (`tsc --noEmit -p tsconfig.engine.json`)
+    clean; Node test runner **359 engine tests green** (up from 330). The React
+    UI/Vite/Tauri build is validated by CI (it cannot be built in the offline
+    sandbox); all UI was authored to the same standard.

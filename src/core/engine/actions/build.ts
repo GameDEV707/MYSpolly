@@ -8,7 +8,7 @@ import { boardContext } from '../../maps/context.ts';
 import { buildableInEra } from '../../maps/eraRules.ts';
 import { getPlayer, spend, advanceIncome } from '../helpers.ts';
 import { mintId } from '../setup.ts';
-import { consumeResource, planResource } from '../consume.ts';
+import { consumeResource, planResource, preferredSellers } from '../consume.ts';
 import { playerNetwork, hasNoPresence } from '../../selectors/connectivity.ts';
 
 function occupantAt(state: GameState, locationId: string, slotId: string): PlacedTile | undefined {
@@ -95,19 +95,29 @@ export function validateBuild(
     return 'overbuildTileId set but slot is empty';
   }
 
-  // Resource availability (drawn from the player's stockpile, then a connected
-  // market shortfall). Coal needs the build location connected to a merchant
-  // for any market purchase; iron may always be bought; juice (not used to
-  // build) has no market.
-  const ironPlan = def.costIron > 0 ? planResource(state, player, 'iron', def.costIron) : null;
+  // Resource availability + sourcing (§7.17.3): each unit is drawn from the
+  // player's stockpile first, then the connected market (coal/iron), then bought
+  // from another player, then (non-market only) a fixed-price supply. Coal needs
+  // the build location connected to a merchant for any market purchase.
+  const ironPrefer = preferredSellers(a.ironSources);
+  const coalPrefer = preferredSellers(a.coalSources);
+  const ironPlan =
+    def.costIron > 0
+      ? planResource(state, player, 'iron', def.costIron, undefined, ironPrefer)
+      : null;
   if (ironPlan && !ironPlan.ok) return 'Not enough iron (and none buyable)';
   const coalPlan =
-    def.costCoal > 0 ? planResource(state, player, 'coal', def.costCoal, a.locationId) : null;
-  if (coalPlan && !coalPlan.ok) return 'Not enough coal (no market connection)';
+    def.costCoal > 0
+      ? planResource(state, player, 'coal', def.costCoal, a.locationId, coalPrefer)
+      : null;
+  if (coalPlan && !coalPlan.ok) return 'Not enough coal (no market connection or seller)';
 
-  // Affordability (money cost + market purchases).
-  const marketCost = (ironPlan?.marketCost ?? 0) + (coalPlan?.marketCost ?? 0);
-  if (p.money < def.costMoney + marketCost) return 'Not enough money';
+  // Affordability: the FULL total cost (money + every resource purchase) must be
+  // payable without going below £0 (§7.17.1). This also closes the £0-tile
+  // loophole: a £0 tile (e.g. Pottery L2/L4) is only buildable when the player
+  // can also pay for its required coal/iron.
+  const resourceCost = (ironPlan?.totalCost ?? 0) + (coalPlan?.totalCost ?? 0);
+  if (p.money < def.costMoney + resourceCost) return 'Not enough money for the full cost';
 
   return null;
 }
@@ -158,13 +168,30 @@ export function applyBuild(
   // Pay money cost.
   spend(state, player, def.costMoney, events);
 
-  // Consume iron (stockpile, else market) and coal (stockpile, else connected
-  // market) entirely from the acting player's own resources (§7.16).
+  // Consume iron then coal entirely from the acting player's own resources,
+  // buying any shortfall (market → another player → fixed-price supply) per
+  // §7.17.3. The UI picker's chosen sellers (if any) are honoured first.
   if (def.costIron > 0) {
-    consumeResource(state, player, 'iron', def.costIron, undefined, events);
+    consumeResource(
+      state,
+      player,
+      'iron',
+      def.costIron,
+      undefined,
+      events,
+      preferredSellers(a.ironSources),
+    );
   }
   if (def.costCoal > 0) {
-    consumeResource(state, player, 'coal', def.costCoal, a.locationId, events);
+    consumeResource(
+      state,
+      player,
+      'coal',
+      def.costCoal,
+      a.locationId,
+      events,
+      preferredSellers(a.coalSources),
+    );
   }
 
   // In the MYSpolly economy, production buildings (Coal Mine / Iron Works /

@@ -38,17 +38,49 @@ export function changeMoney(
   events.push({ t: 'MONEY_CHANGED', player: color, delta, total: p.money });
 }
 
-/** Spend money on an action: leaves the pool and is recorded on the character tile. */
+/**
+ * Spend money on an action: leaves the pool and is recorded on the character
+ * tile. Per §7.17.1 this must **never** silently drive money below £0 — the
+ * action validators guarantee affordability (`totalCost <= money`) before any
+ * `spend()`. An attempt to overspend is an engine error (a validation bug), not
+ * a silent debt; mandatory payments a player cannot afford go through
+ * `payOrBankrupt()` (see `engine/bankruptcy.ts`) instead.
+ */
 export function spend(
   state: GameState,
   color: PlayerColor,
   amount: number,
   events: GameEvent[],
 ): void {
+  if (amount < 0) throw new Error(`spend() amount must be ≥ 0, got ${amount}`);
   const p = getPlayer(state, color);
+  if (amount > p.money) {
+    throw new Error(
+      `spend() would drive ${color} below £0 (have ${p.money}, need ${amount}) — affordability must be validated first`,
+    );
+  }
   p.money -= amount;
   p.spentThisTurn += amount;
   events.push({ t: 'MONEY_CHANGED', player: color, delta: -amount, total: p.money });
+}
+
+/**
+ * A buyer pays another player for a peer-to-peer resource trade (§7.17.3):
+ * money moves buyer → owner. The buyer's payment counts as money spent this
+ * turn (so it influences next round's turn order, like any other purchase); the
+ * owner simply receives it. The buyer must be able to afford it (validated up
+ * front) — this never drives the buyer below £0.
+ */
+export function payPlayer(
+  state: GameState,
+  buyer: PlayerColor,
+  owner: PlayerColor,
+  amount: number,
+  events: GameEvent[],
+): void {
+  if (amount <= 0) return;
+  spend(state, buyer, amount, events);
+  changeMoney(state, owner, amount, events);
 }
 
 /**

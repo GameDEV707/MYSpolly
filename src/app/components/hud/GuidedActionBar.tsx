@@ -490,6 +490,21 @@ function ConfirmPanel(props: {
               🛒 {preview.fromMarket} {t('flow.fromMarket')}
             </Pill>
           )}
+          {preview.fromPlayer > 0 && (
+            <Pill color="var(--text-muted)">
+              🤝 {preview.fromPlayer} {t('flow.fromPlayer', { player: '' })}
+            </Pill>
+          )}
+          {preview.fromSupply > 0 && (
+            <Pill color="var(--text-muted)">
+              🏷 {preview.fromSupply} {t('flow.fromSupply')}
+            </Pill>
+          )}
+          {preview.resourceCost > 0 && (
+            <Pill color="var(--text-muted)">
+              {t('flow.itemized')}: £{preview.resourceCost}
+            </Pill>
+          )}
           {preview.money === 0 &&
             preview.coal === 0 &&
             preview.iron === 0 &&

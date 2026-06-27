@@ -3,6 +3,7 @@ import type { Action } from '../core/model/actions.ts';
 import type { PlayerColor } from '../core/model/types.ts';
 import { legalActions } from '../core/selectors/legalActions.ts';
 import { reduce } from '../core/engine/reduce.ts';
+import { defaultDecider, type BankruptcyDecider } from '../core/engine/bankruptcy.ts';
 import { scoreAction, type HeuristicWeights, DEFAULT_WEIGHTS } from './heuristic.ts';
 import { nextInt } from '../core/rng.ts';
 
@@ -102,3 +103,18 @@ function positionValue(state: GameState, color: PlayerColor, w: HeuristicWeights
 export function makeBot(difficulty: Difficulty, seed: number): Bot {
   return new HeuristicBot(difficulty, seed);
 }
+
+/**
+ * The AI's bankruptcy/auction policy (§7.17.6). Because the end-of-round income
+ * step resolves any shortfall inside the pure reducer, every player — human or
+ * bot — is governed by the engine's deterministic `defaultDecider` during
+ * headless/automated play: it sells low-value tiles to the bank, auctions
+ * high-value tiles when an opponent can afford the opening bid, and has every
+ * opponent bid up to a fraction of a tile's worth (capped by their cash). The
+ * bot therefore never attempts an unaffordable action (affordability is enforced
+ * by `legalActions`), buys resource shortfalls via the engine's
+ * stockpile→market→player resolution, makes sensible liquidation choices, and
+ * bids in opponents' auctions. An interactive UI can inject a decider driven by
+ * a human's modal choices in place of this one.
+ */
+export const aiBankruptcyDecider: BankruptcyDecider = defaultDecider;

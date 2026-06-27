@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../store/appStore.ts';
@@ -15,6 +15,8 @@ import { TurnHud } from '../components/hud/TurnHud.tsx';
 import { Log } from '../components/hud/Log.tsx';
 import { Banner } from '../components/hud/Banner.tsx';
 import { TurnHandoff } from '../components/hud/TurnHandoff.tsx';
+import { BankruptcyModal } from '../components/hud/BankruptcyModal.tsx';
+import { bankruptcyEpisodes } from '../components/hud/bankruptcyView.ts';
 import { useTurnHandoff } from '../components/hud/useTurnHandoff.ts';
 import { HelpButton } from '../components/help/HelpButton.tsx';
 import { useFlow } from '../components/hud/flowStore.ts';
@@ -41,6 +43,14 @@ export function GameScreen(props: { replay?: boolean }): JSX.Element {
   const replayActions = useApp((s) => s.replayActions);
   const { settings } = useSettings();
   const flow = useFlow();
+
+  // Surface any end-of-round bankruptcy / auction as a clear recap modal
+  // (§7.17.5 / task 11.13), dismissible per batch of events.
+  const [bankruptcyClosed, setBankruptcyClosed] = useState<unknown>(null);
+  const bankruptcyEpisode = useMemo(() => {
+    const eps = bankruptcyEpisodes(events);
+    return eps.length ? eps[eps.length - 1]! : null;
+  }, [events]);
 
   const activeState = game ? game.players[game.activePlayer] : undefined;
   const skipAnims = !!activeState?.isAI && settings.skipAiAnimations;
@@ -101,6 +111,11 @@ export function GameScreen(props: { replay?: boolean }): JSX.Element {
     >
       <Banner messageKey={banner} />
       <TurnHandoff handoff={handoff} onReady={dismissHandoff} />
+      <BankruptcyModal
+        game={game}
+        episode={bankruptcyClosed === events ? null : bankruptcyEpisode}
+        onClose={() => setBankruptcyClosed(events)}
+      />
       {/* Left: header + board */}
       <div
         style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', minHeight: 0 }}

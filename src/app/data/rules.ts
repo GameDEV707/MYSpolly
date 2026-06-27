@@ -393,6 +393,49 @@ export const RULE_CHAPTERS: RuleChapter[] = [
     ],
   },
   {
+    id: 'money',
+    icon: '💷',
+    titleKey: 'rulesLib.money.title',
+    summaryKey: 'rulesLib.money.summary',
+    sections: [
+      {
+        id: 'gating',
+        headingKey: 'rulesLib.money.gating.h',
+        blocks: [p('rulesLib.money.gating.p1'), note('rulesLib.money.gating.note')],
+      },
+      {
+        id: 'trading',
+        headingKey: 'rulesLib.money.trading.h',
+        blocks: [
+          p('rulesLib.money.trading.p1'),
+          list(
+            'rulesLib.money.trading.l1',
+            'rulesLib.money.trading.l2',
+            'rulesLib.money.trading.l3',
+          ),
+        ],
+      },
+      {
+        id: 'fixed',
+        headingKey: 'rulesLib.money.fixed.h',
+        blocks: [
+          p('rulesLib.money.fixed.p1'),
+          diagram('marketTrack', 'rulesLib.concepts.markets.caption'),
+          note('rulesLib.money.fixed.note'),
+        ],
+      },
+      {
+        id: 'bankruptcy',
+        headingKey: 'rulesLib.money.bankruptcy.h',
+        blocks: [
+          p('rulesLib.money.bankruptcy.p1'),
+          list('rulesLib.money.bankruptcy.l1', 'rulesLib.money.bankruptcy.l2'),
+          note('rulesLib.money.bankruptcy.note'),
+        ],
+      },
+    ],
+  },
+  {
     id: 'endRound',
     icon: '📊',
     titleKey: 'rulesLib.endRound.title',
@@ -489,6 +532,8 @@ export const HELP_TOPIC_CHAPTER: Record<string, string> = {
   markets: 'concepts',
   players: 'economy',
   economy: 'economy',
+  money: 'money',
+  bankruptcy: 'money',
   board: 'concepts',
   legend: 'glossary',
 };

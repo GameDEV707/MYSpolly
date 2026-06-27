@@ -17,10 +17,18 @@ export type GameEvent =
       income: number;
     }
   | {
+      /**
+       * One event per consumed unit (§7.17.2) so previews/logs reconcile to the
+       * cube. `from` is the unit's source: `'stock'` (own stockpile), `'market'`
+       * (coal/iron market), `'supply'` (general fixed-price supply), a player
+       * color (bought from that player, §7.17.3), or a tile/merchant id. `cost`
+       * is the money paid for that single unit (0 when drawn from the stockpile).
+       */
       t: 'RESOURCE_CONSUMED';
       resource: 'coal' | 'iron' | 'juice';
       from: string;
       player: PlayerColor;
+      cost?: number;
     }
   | { t: 'TILE_FLIPPED'; tileId: string; incomeGain: number; player: PlayerColor }
   | {
@@ -62,6 +70,50 @@ export type GameEvent =
   | { t: 'ROUND_ENDED'; round: number; newOrder: PlayerColor[] }
   | { t: 'INCOME_COLLECTED'; player: PlayerColor; amount: number }
   | { t: 'SHORTFALL'; player: PlayerColor; tilesSold: number; vpLost: number }
+  // --- Bankruptcy & auction (§7.17.5) ---
+  | {
+      /** A mandatory payment exceeded a player's cash; resolution begins. */
+      t: 'BANKRUPTCY_STARTED';
+      player: PlayerColor;
+      /** Money still owed at the moment resolution started. */
+      due: number;
+    }
+  | {
+      /** A player sold one of their tiles to the bank at half build cost. */
+      t: 'TILE_SOLD_TO_BANK';
+      player: PlayerColor;
+      tileId: string;
+      refund: number;
+    }
+  | {
+      /** A tile was put up for auction with `opening` as the starting bid. */
+      t: 'AUCTION_OPENED';
+      seller: PlayerColor;
+      tileId: string;
+      opening: number;
+    }
+  | { t: 'AUCTION_BID'; bidder: PlayerColor; tileId: string; amount: number }
+  | {
+      /**
+       * Auction resolved. `toBank` true ⇒ nobody bid above the opening and the
+       * bank bought the tile at `price` (tile removed). Otherwise `winner` paid
+       * `price` to the seller and now owns the tile (it stays on the board).
+       */
+      t: 'AUCTION_RESULT';
+      seller: PlayerColor;
+      tileId: string;
+      price: number;
+      winner: PlayerColor | null;
+      toBank: boolean;
+    }
+  | {
+      /** Bankruptcy resolved: how much was raised, VP lost, and any unpaid debt. */
+      t: 'BANKRUPTCY_RESOLVED';
+      player: PlayerColor;
+      raised: number;
+      vpLost: number;
+      stillOwed: number;
+    }
   | {
       t: 'ERA_SCORING';
       era: Era;

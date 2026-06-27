@@ -1,13 +1,13 @@
 import type { GameState, PlacedLink } from '../../model/state.ts';
 import type { GameEvent } from '../../model/events.ts';
 import type { NetworkAction } from '../../model/actions.ts';
-import type { PlayerColor } from '../../model/types.ts';
 import { boardContext } from '../../maps/context.ts';
-import { buyCost } from '../market.ts';
+import { buyCost, nextBuyPrice } from '../market.ts';
 import { getPlayer, spend } from '../helpers.ts';
 import { mintId } from '../setup.ts';
-import { consumeResource } from '../consume.ts';
+import { consumeResource, planResource, preferredSellers } from '../consume.ts';
 import { hasNoPresence, playerNetwork } from '../../selectors/connectivity.ts';
+import { PLAYER_COLORS, type PlayerColor } from '../../model/types.ts';
 
 function lineEndpoints(state: GameState, lineId: string): [string, string] | null {
   const line = boardContext(state).lineById[lineId];
@@ -137,30 +137,61 @@ export function validateNetwork(
   let money =
     a.links.length === 1 ? params.singleLinkCost : (params.doubleLinkCost ?? params.singleLinkCost);
 
-  // Per-link coal (rail / air): drawn from the player's stockpile, else bought
-  // from the coal market — which requires a connection to a merchant once the
-  // links are placed (§7.16.4). Coal is NEVER taken from other players' mines.
+  // Exact coal accounting (§7.17.2): coalPerLink × links, summed across the
+  // whole action. Coal is drawn from the player's stockpile first, then the coal
+  // market (only when an endpoint will be connected to a merchant once the links
+  // are placed), then bought from another player at the current market price.
   const coalNeeded = params.coalPerLink * a.links.length;
   if (coalNeeded > 0) {
     const fromStock = Math.min(p.resources.coal, coalNeeded);
-    const shortfall = coalNeeded - fromStock;
+    let shortfall = coalNeeded - fromStock;
     if (shortfall > 0) {
-      if (!merchantReachableAfter(state, lineIds)) {
-        return 'Not enough coal (no market connection for the new link)';
+      if (merchantReachableAfter(state, lineIds)) {
+        // Market covers the whole shortfall (Brass ladder, then emptyPrice).
+        money += buyCost(state.coalMarket, shortfall);
+        shortfall = 0;
+      } else {
+        // No market connection: buy the shortfall from other players' coal.
+        const price = nextBuyPrice(state.coalMarket);
+        const available = otherPlayersStock(state, player, 'coal');
+        if (available < shortfall) {
+          return 'Not enough coal (no market connection or seller for the new link)';
+        }
+        money += shortfall * price;
+        shortfall = 0;
       }
-      money += buyCost(state.coalMarket, shortfall);
     }
   }
 
-  // A multi-link build consumes juice — only from the player's own stockpile.
+  // Exact juice accounting for a multi-link build (§7.17.2): drawn from the
+  // player's stockpile, then bought from another player or the fixed-price
+  // supply (§7.17.4) — a juice shortfall no longer makes the action illegal.
   if (a.links.length === 2 && params.juicePerDoubleLink > 0) {
-    if (p.resources.juice < params.juicePerDoubleLink) {
-      return 'Building two links requires juice in your stockpile';
-    }
+    const juicePrefer = preferredSellers(a.juiceSource ? [a.juiceSource] : undefined);
+    const juicePlan = planResource(
+      state,
+      player,
+      'juice',
+      params.juicePerDoubleLink,
+      undefined,
+      juicePrefer,
+    );
+    if (!juicePlan.ok) return 'Cannot obtain the juice for two links';
+    money += juicePlan.totalCost;
   }
 
-  if (p.money < money) return 'Not enough money';
+  if (p.money < money) return 'Not enough money for the full cost';
   return null;
+}
+
+/** Total units of `resource` held by every player other than `player`. */
+function otherPlayersStock(state: GameState, player: PlayerColor, resource: 'coal'): number {
+  let n = 0;
+  for (const c of PLAYER_COLORS) {
+    if (c === player) continue;
+    n += state.players[c]?.resources[resource] ?? 0;
+  }
+  return n;
 }
 
 export function applyNetwork(
@@ -190,19 +221,31 @@ export function applyNetwork(
     events.push({ t: 'LINK_PLACED', link: { ...link } });
   }
 
-  // Consume coal for the links (stockpile, then connected market shortfall).
+  // Consume coal for the links (stockpile → connected market → another player).
   const coalNeeded = params.coalPerLink * a.links.length;
   if (coalNeeded > 0) {
     const loc = coalConsumeLoc(
       state,
       a.links.map((l) => l.lineId),
     );
-    consumeResource(state, player, 'coal', coalNeeded, loc, events);
+    const coalPrefer = preferredSellers(
+      a.links.map((l) => l.coalSource).filter((s): s is NonNullable<typeof s> => s !== undefined),
+    );
+    consumeResource(state, player, 'coal', coalNeeded, loc, events, coalPrefer);
   }
 
-  // Consume juice for a multi-link build (from the player's own stockpile).
+  // Consume juice for a multi-link build (stockpile → player → fixed supply).
   if (a.links.length === 2 && params.juicePerDoubleLink > 0) {
-    consumeResource(state, player, 'juice', params.juicePerDoubleLink, undefined, events);
+    const juicePrefer = preferredSellers(a.juiceSource ? [a.juiceSource] : undefined);
+    consumeResource(
+      state,
+      player,
+      'juice',
+      params.juicePerDoubleLink,
+      undefined,
+      events,
+      juicePrefer,
+    );
   }
 }
 
