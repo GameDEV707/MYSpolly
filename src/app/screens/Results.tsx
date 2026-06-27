@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../store/appStore.ts';
+import { fullBreakdown } from '../../core/selectors/standings.ts';
 import { Button, Panel, ScreenShell, PLAYER_CSS_VAR } from '../components/ui.tsx';
 
 /** Final results with standings and Rematch / Main Menu / Replay options. */
@@ -43,14 +44,27 @@ export function Results(): JSX.Element {
                 <th>
                   {t('setup.human')}/{t('setup.ai')}
                 </th>
-                <th style={{ textAlign: 'right' }}>{t('game.income')}</th>
-                <th style={{ textAlign: 'right' }}>{t('game.money')}</th>
+                <th style={{ textAlign: 'right' }} title={t('results.inPlayTip')}>
+                  {t('results.inPlay')}
+                </th>
+                <th style={{ textAlign: 'right' }} title={t('results.linksTip')}>
+                  {t('results.links')}
+                </th>
+                <th style={{ textAlign: 'right' }} title={t('results.tilesTip')}>
+                  {t('results.tiles')}
+                </th>
                 <th style={{ textAlign: 'right' }}>{t('results.total')}</th>
               </tr>
             </thead>
             <tbody>
               {game.ranking.map((color, i) => {
                 const p = game.players[color]!;
+                const b = fullBreakdown(game, color);
+                // Fold the intro-variant bonus (Canal-only games) into the
+                // in-play column so the row always reads inPlay + links + tiles
+                // = total; a tooltip notes the included bonus.
+                const inPlayShown = b.inPlay + b.intro;
+                const inPlayTip = b.intro !== 0 ? t('results.inPlayBonusTip', { n: b.intro }) : t('results.inPlayTip');
                 return (
                   <tr key={color}>
                     <td>{i + 1}</td>
@@ -68,14 +82,20 @@ export function Results(): JSX.Element {
                       </span>
                     </td>
                     <td>{p.isAI ? t('setup.ai') : t('setup.human')}</td>
-                    <td style={{ textAlign: 'right' }}>{p.incomeLevel}</td>
-                    <td style={{ textAlign: 'right' }}>£{p.money}</td>
-                    <td style={{ textAlign: 'right', fontWeight: 700 }}>{p.vp}</td>
+                    <td style={{ textAlign: 'right' }} title={inPlayTip}>
+                      {inPlayShown}
+                    </td>
+                    <td style={{ textAlign: 'right' }}>{b.links}</td>
+                    <td style={{ textAlign: 'right' }}>{b.tiles}</td>
+                    <td style={{ textAlign: 'right', fontWeight: 700 }}>{b.total}</td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
+          <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 'var(--space-2)' }}>
+            {t('results.breakdownNote')}
+          </p>
         </Panel>
         <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
           {lastConfig && (

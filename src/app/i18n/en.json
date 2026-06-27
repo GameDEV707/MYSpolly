@@ -108,7 +108,11 @@
     "ironMarket": "Iron Market",
     "turnOrder": "Turn Order",
     "spent": "spent",
-    "air": "Air Era"
+    "air": "Air Era",
+    "toWinShort": "{{n}} to lead",
+    "toWinTip": "Needs {{n}} more VP to take the lead",
+    "leading": "Leading",
+    "leadingTip": "Currently in the lead"
   },
   "action": {
     "build": "Build",
@@ -164,7 +168,13 @@
     "viewReplay": "View Replay",
     "links": "Links",
     "tiles": "Tiles",
-    "total": "Total VP"
+    "total": "Total VP",
+    "inPlay": "In-play",
+    "inPlayTip": "VP earned during play (merchant bonuses, income shortfalls)",
+    "inPlayBonusTip": "In-play VP including the intro-variant bonus (+{{n}})",
+    "linksTip": "VP from scoring links at the end of each era",
+    "tilesTip": "VP from scoring flipped industry tiles at the end of each era",
+    "breakdownNote": "In-play + Links + Tiles = Total VP"
   },
   "rules": {
     "title": "How to Play",

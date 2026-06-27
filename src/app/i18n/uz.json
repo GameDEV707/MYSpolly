@@ -108,7 +108,11 @@
     "ironMarket": "Temir bozori",
     "turnOrder": "Yurish tartibi",
     "spent": "sarflandi",
-    "air": "Havo davri"
+    "air": "Havo davri",
+    "toWinShort": "Yetakchigacha {{n}}",
+    "toWinTip": "Yetakchi boʻlish uchun yana {{n}} GʻB kerak",
+    "leading": "Yetakchi",
+    "leadingTip": "Hozir yetakchilikda"
   },
   "action": {
     "build": "Qurish",
@@ -164,7 +168,13 @@
     "viewReplay": "Takrorni koʻrish",
     "links": "Bogʻlanishlar",
     "tiles": "Plitkalar",
-    "total": "Jami GʻB"
+    "total": "Jami GʻB",
+    "inPlay": "Oʻyinda",
+    "inPlayTip": "Oʻyin davomida olingan GʻB (savdogar bonuslari, daromad yetishmovchiligi)",
+    "inPlayBonusTip": "Oʻyindagi GʻB, kirish varianti bonusi bilan (+{{n}})",
+    "linksTip": "Har davr oxirida bogʻlanishlarni sanashdan olingan GʻB",
+    "tilesTip": "Har davr oxirida agʻdarilgan sanoat plitkalaridan olingan GʻB",
+    "breakdownNote": "Oʻyinda + Bogʻlanishlar + Plitkalar = Jami GʻB"
   },
   "rules": {
     "title": "Qanday oʻynaladi",
