@@ -721,6 +721,13 @@ The board is wrapped in a **camera/viewport controller** that applies a 2D trans
   shown; never an opaque "option 1…8" list.
 - **Turn HUD**: clearly show era, round, whose turn it is, actions remaining, and a concise
   prompt of the current step ("Pick a card to build a Cotton Mill in Birmingham").
+- **Turn handoff (player change) clarity**: when play passes from one player to the next, it must
+  be **unmistakable whose turn it now is**. On every turn change show a brief, prominent
+  transition cue — e.g. a centred "Player X's turn" banner/overlay in that player's colour (with
+  their avatar/character), a sound cue, and a colour accent applied to the active player's panel
+  and the board frame. The previously active player's UI visibly de‑emphasizes; the new active
+  player's panel highlights/pulses. This applies to **both** human hot‑seat handoffs (where a
+  clear "Pass device to Player X — Ready?" confirmation may be shown) and AI→human transitions.
 - **Localization**: every action name, description, prompt, tooltip, and log line is an i18n key
   in EN/RU/UZ. Log messages read as full sentences (e.g. "Blue built a Coal Mine in Dudley"),
   not terse fragments.
@@ -979,8 +986,17 @@ having the player perform them:
       "Blue built a Coal Mine in Dudley".
 - [x] **3R.25** Render **AI moves** as readable animated actions with a short log line; no internal
       enumerations shown to the player.
-      *DoD: the board pans/zooms with the mouse, locations are self‑explanatory, and every move is
-      chosen through a clear guided flow — no cryptic option lists. The game reads like Brass:
+- [ ] **3R.26** **Turn handoff clarity (player change)**: make it unmistakable whose turn it is
+      whenever play passes to the next player. On each turn change, show a brief, prominent
+      transition cue — a centred **"Player X's turn"** banner/overlay in that player's colour (with
+      avatar/character) + a sound cue — then highlight the new active player's panel (pulse/colour
+      accent + board‑frame accent) and visibly de‑emphasize the previous player. Update the Turn
+      HUD and add a localized log line ("It is now Blue's turn"). Cover human hot‑seat handoffs
+      (optionally a "Pass device to Player X — Ready?" confirmation) and AI→human transitions, in
+      EN/RU/UZ.
+      *DoD: the board pans/zooms with the mouse, locations are self‑explanatory, every move is
+      chosen through a clear guided flow, and each change of turn is clearly and prominently
+      signalled so the next player always knows it is their turn. The game reads like Brass:
       Birmingham.*
 
 ### Phase 3T — "How to Play": Complete In‑Game Rules, Tutorial & Help (§7.14)
