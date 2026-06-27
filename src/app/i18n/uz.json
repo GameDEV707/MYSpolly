@@ -660,6 +660,14 @@
     "canal": "kanal",
     "rail": "temir yoʻl"
   },
+  "help": {
+    "openChapter": "Bu panel uchun qoidalarni ochish",
+    "card": "Amal uchun sarflanadigan karta — joy kartalari shu shaharda, sanoat kartalari shu sanoatni tarmogʻingizda quradi; istalgan kartani Tarmoq, Qarz, Razvedka yoki Pas uchun tashlash mumkin.",
+    "hiddenHand": "Yashirin — bu kartalarni faqat navbatdagi oʻyinchi koʻradi.",
+    "market": "Koʻmir va temir bozorlari: bogʻlangan manba boʻlmasa shu yerdan sotib oling. Kublar sotib olinganda narx oshadi, sotilganda tushadi.",
+    "player": "Pul (£), daromad (📈) va gʻalaba ochkolari (⭐). Bu raundda eng kam sarflagan keyingi raundda birinchi yuradi.",
+    "actionHint": "Maslahat: mavjud boʻlmagan amalga sababini koʻrish uchun kursorni olib boring yoki qoidalar uchun ? ni bosing."
+  },
   "log": {
     "built": "{{name}} {{location}} shahrida {{industry}} ({{level}}-daraja) qurdi.",
     "overbuilt": "{{name}} {{location}} shahrida {{industry}} ({{level}}-daraja) ustiga qurdi.",

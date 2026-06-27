@@ -11,6 +11,11 @@ export function Hand(props: { cards: Card[]; hidden?: boolean }): JSX.Element {
       {props.cards.map((card) => (
         <div
           key={card.id}
+          title={
+            props.hidden
+              ? t('help.hiddenHand')
+              : `${cardLabel(t, card)} · ${cardKindLabel(t, card)} — ${t('help.card')}`
+          }
           style={{
             width: 80,
             height: 110,

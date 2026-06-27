@@ -660,6 +660,14 @@
     "canal": "canal",
     "rail": "rail"
   },
+  "help": {
+    "openChapter": "Open the rules for this panel",
+    "card": "A card you spend to act — Location cards build in that town, Industry cards build that industry in your network; any card can be discarded to Network, Loan, Scout or Pass.",
+    "hiddenHand": "Hidden — only the player whose turn it is sees these cards.",
+    "market": "Coal & iron markets: buy here when you have no connected source. Prices rise as cubes are bought and fall as they are sold.",
+    "player": "Money (£), income (📈) and Victory Points (⭐). Spending the least this round means you act first next round.",
+    "actionHint": "Tip: hover a greyed-out action to see why it's unavailable, or tap ? for the rules."
+  },
   "log": {
     "built": "{{name}} built a {{industry}} (L{{level}}) in {{location}}.",
     "overbuilt": "{{name}} overbuilt a {{industry}} (L{{level}}) in {{location}}.",

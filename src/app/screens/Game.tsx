@@ -16,6 +16,7 @@ import { Log } from '../components/hud/Log.tsx';
 import { Banner } from '../components/hud/Banner.tsx';
 import { TurnHandoff } from '../components/hud/TurnHandoff.tsx';
 import { useTurnHandoff } from '../components/hud/useTurnHandoff.ts';
+import { HelpButton } from '../components/help/HelpButton.tsx';
 import { useFlow } from '../components/hud/flowStore.ts';
 import { flowHighlights, isBoardTargetStep } from '../components/hud/flow.ts';
 import { useAnimateEvents } from '../animation/useAnimateEvents.ts';
@@ -172,8 +173,20 @@ export function GameScreen(props: { replay?: boolean }): JSX.Element {
         <Markets coal={game.coalMarket} iron={game.ironMarket} />
         {isHumanTurn && <GuidedActionBar game={game} onDispatch={dispatch} />}
         <div>
-          <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 4 }}>
-            {t('game.hand')} — {active.name}
+          <div
+            style={{
+              fontSize: 13,
+              color: 'var(--text-muted)',
+              marginBottom: 4,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+            }}
+          >
+            <span>
+              {t('game.hand')} — {active.name}
+            </span>
+            <HelpButton topic="hand" from="game" />
           </div>
           <Hand cards={active.hand} hidden={active.isAI} />
         </div>

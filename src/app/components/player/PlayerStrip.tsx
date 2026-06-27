@@ -2,13 +2,19 @@ import { useTranslation } from 'react-i18next';
 import type { CSSProperties } from 'react';
 import type { GameState } from '../../../core/model/state.ts';
 import { Panel, PLAYER_CSS_VAR } from '../ui.tsx';
+import { HelpButton } from '../help/HelpButton.tsx';
 
 /** Compact overview of all players (turn order, money, income, VP, spent). */
 export function PlayerStrip(props: { game: GameState }): JSX.Element {
   const { game } = props;
   const { t } = useTranslation();
   return (
-    <Panel style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+    <Panel
+      style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap', position: 'relative' }}
+    >
+      <div style={{ position: 'absolute', top: 6, right: 6, zIndex: 1 }}>
+        <HelpButton topic="players" from="game" />
+      </div>
       {game.turnOrder.map((color) => {
         const p = game.players[color]!;
         const active = color === game.activePlayer;
@@ -18,6 +24,7 @@ export function PlayerStrip(props: { game: GameState }): JSX.Element {
             key={color}
             className={active ? 'active-player-panel' : undefined}
             aria-current={active ? 'true' : undefined}
+            title={t('help.player')}
             style={
               {
                 flex: 1,

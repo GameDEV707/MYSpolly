@@ -1031,10 +1031,10 @@ having the player perform them:
       re‑launchable anytime from Main Menu / How to Play. Localize EN/RU/UZ.
 
 **Contextual Help (in‑situ) — §7.14.3**
-- [ ] **3T.9** Add **hover/long‑press tooltips** to every interactive element (actions, cards,
+- [x] **3T.9** Add **hover/long‑press tooltips** to every interactive element (actions, cards,
       tiles, slots, markets, merchants, tracks, icons) explaining what it is + the rule behind it.
-- [ ] **3T.10** Add **"why is this disabled?"** explanations on greyed‑out actions/targets.
-- [ ] **3T.11** Add a **"?" help button** on each panel that opens the relevant Rules chapter, and
+- [x] **3T.10** Add **"why is this disabled?"** explanations on greyed‑out actions/targets.
+- [x] **3T.11** Add a **"?" help button** on each panel that opens the relevant Rules chapter, and
       a Settings **rules‑hint toggle** for inline reminders (on for new players, off for experts).
       *DoD: a brand‑new player can open the app, learn the complete rules via the Rules Library and
       the interactive tutorial, understand every on‑screen element via contextual help, and play a

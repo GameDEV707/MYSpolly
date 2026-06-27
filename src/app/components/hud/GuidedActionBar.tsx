@@ -11,6 +11,8 @@ import {
   LINK_LINES,
 } from '../../../core/data/board.ts';
 import { Panel } from '../ui.tsx';
+import { HelpButton } from '../help/HelpButton.tsx';
+import { useSettings } from '../../store/settings.ts';
 import { INDUSTRY_ICON, MERCHANT_BONUS_ICON, RESOURCE_ICON } from '../board/icons.ts';
 import { cardLabel, cardKindLabel } from '../cards/cardText.ts';
 import { useFlow } from './flowStore.ts';
@@ -98,6 +100,7 @@ export function GuidedActionBar(props: {
   const { game, onDispatch } = props;
   const { t } = useTranslation();
   const flow = useFlow();
+  const rulesHints = useSettings((s) => s.settings.rulesHints);
   const acts = useMemo(() => legalActions(game), [game]);
   const avail = useMemo(() => availableActionTypes(acts), [acts]);
 
@@ -115,7 +118,12 @@ export function GuidedActionBar(props: {
   if (step === 'action') {
     return (
       <Panel style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>{t('flow.prompt.action')}</div>
+        <div
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}
+        >
+          <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>{t('flow.prompt.action')}</div>
+          <HelpButton topic="actions" from="game" />
+        </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
           {ACTION_ORDER.map((type) => {
             const ok = avail.has(type);
@@ -150,6 +158,9 @@ export function GuidedActionBar(props: {
             );
           })}
         </div>
+        {rulesHints && (
+          <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t('help.actionHint')}</div>
+        )}
       </Panel>
     );
   }
@@ -166,7 +177,8 @@ export function GuidedActionBar(props: {
         <strong style={{ fontSize: 14 }}>
           {ACTION_GLYPH[actionType]} {t(`action.${actionType.toLowerCase()}`)}
         </strong>
-        <div style={{ display: 'flex', gap: 6 }}>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+          <HelpButton topic={actionType.toLowerCase()} from="game" />
           <SmallBtn onClick={flow.back}>← {t('flow.back')}</SmallBtn>
           <SmallBtn onClick={flow.reset}>✕ {t('game.cancel')}</SmallBtn>
         </div>
