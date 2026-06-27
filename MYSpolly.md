@@ -1342,17 +1342,17 @@ Working names (finalize during implementation, keep consistent everywhere):
 > **Bug:** after quitting, the game is kept as the **Continue** game; if the player saves it,
 > deletes that saved game, then presses **Continue**, the app still loads the deleted game.
 > Continue and the saved‑slot list are out of sync.
-- [ ] **8B.1** Make **Continue** use a single **current‑game pointer** (slot id reference), not a
+- [x] **8B.1** Make **Continue** use a single **current‑game pointer** (slot id reference), not a
       stale duplicate copy.
-- [ ] **8B.2** **Enable Continue only if** the referenced save still exists; otherwise disable/grey
+- [x] **8B.2** **Enable Continue only if** the referenced save still exists; otherwise disable/grey
       it out (validate on launch and on returning to the Main Menu).
-- [ ] **8B.3** **Deleting** a save also **clears the Continue pointer** when it is the current game,
+- [x] **8B.3** **Deleting** a save also **clears the Continue pointer** when it is the current game,
       and refreshes the Main Menu so Continue immediately becomes disabled; never leave a dangling
       pointer.
-- [ ] **8B.4** **Finishing or Abandoning** a game clears the current‑game pointer.
-- [ ] **8B.5** Ensure **saving + continuing** the same game resolves to the **same** state (no fork
+- [x] **8B.4** **Finishing or Abandoning** a game clears the current‑game pointer.
+- [x] **8B.5** Ensure **saving + continuing** the same game resolves to the **same** state (no fork
       between Continue and the Load slot).
-- [ ] **8B.6** Tests: delete‑then‑Continue (disabled / does not load), finish‑then‑Continue,
+- [x] **8B.6** Tests: delete‑then‑Continue (disabled / does not load), finish‑then‑Continue,
       save → delete → Continue, and resume‑matches‑saved‑state.
       *DoD: it is impossible to resume a deleted or finished game; Continue is disabled whenever
       there is no valid current game, and always resumes exactly the intended game.*

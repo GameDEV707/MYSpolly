@@ -4,7 +4,7 @@ import { useSettings, type AnimSpeed, type AiSpeed } from '../store/settings.ts'
 import { Button, Panel, ScreenShell } from '../components/ui.tsx';
 import { LANGUAGES, type Lang } from '../i18n/index.ts';
 import { downloadText, pickTextFile } from '../util/file.ts';
-import { loadAutosave } from '../../persistence/save.ts';
+import { continueState } from '../../persistence/save.ts';
 import { serializeState, deserializeState } from '../../persistence/serialize.ts';
 
 function Row(props: { label: string; children: React.ReactNode }): JSX.Element {
@@ -33,7 +33,7 @@ export function SettingsScreen(): JSX.Element {
   const { settings, update, reset } = useSettings();
 
   async function exportSave(): Promise<void> {
-    const game = await loadAutosave();
+    const game = await continueState();
     if (game) downloadText('myspolly-save.json', serializeState(game));
   }
   async function importSave(): Promise<void> {

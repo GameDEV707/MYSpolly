@@ -2,11 +2,10 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../store/appStore.ts';
 import { useSettings } from '../store/settings.ts';
-import { hasAutosave, loadAutosave } from '../../persistence/save.ts';
+import { hasValidCurrentGame, currentGameMeta } from '../../persistence/save.ts';
 import { LANGUAGES } from '../i18n/index.ts';
 import { Button, Panel } from '../components/ui.tsx';
 import type { SaveMeta } from '../../persistence/types.ts';
-import { makeSaveMeta } from '../../persistence/serialize.ts';
 
 /**
  * Main Menu (§7.10.2). Continue is enabled only when an autosave exists.
@@ -24,9 +23,12 @@ export function MainMenu(): JSX.Element {
 
   useEffect(() => {
     void (async () => {
-      if (await hasAutosave()) {
-        const g = await loadAutosave();
-        if (g) setAutosaveMeta(makeSaveMeta(g));
+      // Validate the current-game pointer on every Main Menu visit so Continue
+      // is enabled only when it references a save that still exists (§7.10.6).
+      if (await hasValidCurrentGame()) {
+        setAutosaveMeta(await currentGameMeta());
+      } else {
+        setAutosaveMeta(null);
       }
     })();
   }, []);

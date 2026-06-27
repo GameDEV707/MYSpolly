@@ -6,7 +6,12 @@ import type { PlayerColor } from '../../core/model/types.ts';
 import { buildInitialState, type PlayerSeat } from '../../core/engine/setup.ts';
 import { reduce } from '../../core/engine/reduce.ts';
 import { makeBot, type Bot, type Difficulty } from '../../ai/bot.ts';
-import { autosave, loadAutosave } from '../../persistence/save.ts';
+import {
+  autosave,
+  startCurrentGame,
+  continueState,
+  clearCurrentGame,
+} from '../../persistence/save.ts';
 import { useSettings } from './settings.ts';
 
 export type AppScreen =
@@ -71,6 +76,8 @@ interface AppStore {
   loadGame: (state: GameState) => void;
   dispatch: (action: Action) => void;
   abandon: () => void;
+  /** Leave to the Main Menu while keeping the current game resumable (Save & Quit). */
+  quitToMenu: () => void;
   startReplay: () => void;
   replayStep: (dir: number) => void;
   replayIndex: number;
@@ -140,12 +147,12 @@ export const useApp = create<AppStore>((set, get) => ({
     const difficulties = new Map(config.seats.map((s) => [s.color, s.difficulty]));
     rebuildBots(game, difficulties, seed);
     set({ game, events: [], actionLog: [], screen: 'game', lastConfig: { ...config, seed } });
-    void autosave(game);
+    void startCurrentGame(game);
     maybeRunAi(get, set);
   },
 
   async continueGame() {
-    const game = await loadAutosave();
+    const game = await continueState();
     if (!game) return false;
     // Difficulties aren't stored in the save; AI seats resume at 'normal'.
     rebuildBots(game, new Map(), game.seed);
@@ -167,6 +174,8 @@ export const useApp = create<AppStore>((set, get) => ({
     set((s) => ({ game: state, events, actionLog: [...s.actionLog, action] }));
     void autosave(state);
     if (state.phase === 'gameOver') {
+      // A finished game is no longer resumable — clear the Continue pointer.
+      void clearCurrentGame();
       set({ screen: 'results' });
       return;
     }
@@ -176,6 +185,15 @@ export const useApp = create<AppStore>((set, get) => ({
   abandon() {
     if (aiTimer) clearTimeout(aiTimer);
     bots.clear();
+    // Abandoning clears the current-game pointer so Continue becomes disabled.
+    void clearCurrentGame();
+    set({ game: null, events: [], actionLog: [], screen: 'mainMenu' });
+  },
+
+  quitToMenu() {
+    if (aiTimer) clearTimeout(aiTimer);
+    bots.clear();
+    // Keep the current-game pointer intact; the game stays resumable via Continue.
     set({ game: null, events: [], actionLog: [], screen: 'mainMenu' });
   },
 

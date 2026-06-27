@@ -11,6 +11,7 @@ export function PauseMenu(): JSX.Element {
   const openSettings = useApp((s) => s.openSettings);
   const openRules = useApp((s) => s.openRules);
   const abandon = useApp((s) => s.abandon);
+  const quitToMenu = useApp((s) => s.quitToMenu);
   const game = useApp((s) => s.game);
   const [saved, setSaved] = useState(false);
 
@@ -51,9 +52,10 @@ export function PauseMenu(): JSX.Element {
         </Button>
         <Button
           variant="ghost"
-          onClick={async () => {
-            if (game) await saveNamed('Quick save', game);
-            abandon();
+          onClick={() => {
+            // The current game is already autosaved each turn; just leave to the
+            // menu keeping the Continue pointer intact (game stays resumable).
+            quitToMenu();
           }}
         >
           {t('pause.saveQuit')}
