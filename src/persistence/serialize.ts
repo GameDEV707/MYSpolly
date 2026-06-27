@@ -14,9 +14,9 @@ export function serializeState(state: GameState): string {
 
 export class SaveVersionError extends Error {}
 
-/** Migrate an older save shape forward. Currently only v1 exists. */
+/** Migrate an older save shape forward. */
 function migrate(raw: unknown): GameState {
-  const obj = raw as { version?: number };
+  const obj = raw as { version?: number; options?: Record<string, unknown> };
   if (typeof obj?.version !== 'number') {
     throw new SaveVersionError('Save has no version field');
   }
@@ -25,7 +25,13 @@ function migrate(raw: unknown): GameState {
       `Save version ${obj.version} is newer than this build (${STATE_VERSION})`,
     );
   }
-  // Future migrations would transform obj here based on obj.version.
+  // v1 → v2: single-map saves gain an explicit mapId (the classic board).
+  if (obj.version < 2) {
+    if (obj.options && typeof obj.options === 'object' && obj.options.mapId === undefined) {
+      obj.options.mapId = 'birmingham';
+    }
+    obj.version = STATE_VERSION;
+  }
   return raw as GameState;
 }
 

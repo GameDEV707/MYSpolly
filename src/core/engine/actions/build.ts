@@ -2,8 +2,9 @@ import type { GameState, PlacedTile, Card } from '../../model/state.ts';
 import type { GameEvent } from '../../model/events.ts';
 import type { BuildAction } from '../../model/actions.ts';
 import type { IndustryType, PlayerColor } from '../../model/types.ts';
-import { TOWN_BY_ID } from '../../data/board.ts';
-import { getLevelDef, JUICE_BARRELS_BY_ERA } from '../../data/industries.ts';
+import { getLevelDef, juiceBarrelsForEra } from '../../data/industries.ts';
+import { boardContext } from '../../maps/context.ts';
+import { buildableInEra } from '../../maps/eraRules.ts';
 import { getPlayer, spend } from '../helpers.ts';
 import { mintId } from '../setup.ts';
 import { consumeCoal, consumeIron, resolveCoal, resolveIron } from '../consume.ts';
@@ -38,7 +39,7 @@ export function validateBuild(
   const card = p.hand.find((c) => c.id === a.card.cardId);
   if (!card) return 'Card not in hand';
 
-  const loc = TOWN_BY_ID[a.locationId];
+  const loc = boardContext(state).locationById[a.locationId];
   if (!loc) return 'Unknown or non-buildable location';
   const isFarm = loc.isFarmJuice === true;
 
@@ -71,10 +72,9 @@ export function validateBuild(
   if (!stack || stack.length === 0) return 'No tiles of that industry left on your mat';
   const level = stack[0] as number;
   const def = getLevelDef(a.industry, level);
-  if (state.era === 'canal' && !def.buildableInCanal)
-    return 'That tile cannot be built in the Canal Era';
-  if (state.era === 'rail' && !def.buildableInRail)
-    return 'That tile cannot be built in the Rail Era';
+  if (!buildableInEra(def, state.era)) {
+    return 'That tile cannot be built in the current era';
+  }
 
   // One tile per player per location.
   if (
@@ -177,7 +177,7 @@ export function applyBuild(
   if (a.industry === 'coal' || a.industry === 'iron') {
     resourcesLeft = def.resourceCount;
   } else if (a.industry === 'juice') {
-    resourcesLeft = JUICE_BARRELS_BY_ERA[state.era];
+    resourcesLeft = juiceBarrelsForEra(state.era);
   }
 
   const tile: PlacedTile = {

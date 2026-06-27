@@ -1,9 +1,6 @@
 import type { GameState, PlayerState, Card, MerchantState, MarketTrack } from '../model/state.ts';
 import type { IndustryType, PlayerColor } from '../model/types.ts';
 import {
-  buildDeckCards,
-  MERCHANT_LOCATIONS,
-  MERCHANT_TILE_DEFS,
   COAL_MARKET,
   IRON_MARKET,
   STARTING_MONEY,
@@ -12,9 +9,10 @@ import {
   HAND_SIZE,
   LINK_TILES_PER_PLAYER,
   ROUNDS_PER_ERA,
-  EMPTY_MERCHANTS_BY_PLAYERS,
   initialMatStacks,
 } from '../data/index.ts';
+import { getMap, DEFAULT_MAP_ID } from '../maps/registry.ts';
+import { buildMapDeck } from '../maps/builder.ts';
 import { makeSeed, shuffle } from '../rng.ts';
 import { STATE_VERSION } from '../index.ts';
 
@@ -29,6 +27,8 @@ export interface SetupConfig {
   introMode?: boolean;
   boardSide?: 'day' | 'night';
   lang?: 'en' | 'ru' | 'uz';
+  /** Active map id (§7.15); defaults to the classic Birmingham map. */
+  mapId?: string;
   seed: number;
 }
 
@@ -61,6 +61,9 @@ function validateSeats(seats: PlayerSeat[]): void {
 export function buildInitialState(config: SetupConfig): GameState {
   validateSeats(config.seats);
   const players = config.seats.length;
+  const mapId = config.mapId ?? DEFAULT_MAP_ID;
+  const map = getMap(mapId);
+  const firstEra = map.eras[0]!.id;
   let idSeq = 0;
   const mintId = (prefix: string): string => {
     idSeq += 1;
@@ -70,7 +73,7 @@ export function buildInitialState(config: SetupConfig): GameState {
   let rngState = makeSeed(config.seed);
 
   // --- Deck ---
-  const deckDefs = buildDeckCards(players);
+  const deckDefs = buildMapDeck(map, players);
   const deckCards: Card[] = deckDefs.map((d) => ({
     id: mintId('c'),
     kind: d.kind,
@@ -108,15 +111,16 @@ export function buildInitialState(config: SetupConfig): GameState {
   }
 
   // --- Merchants ---
-  const emptyMerchants = EMPTY_MERCHANTS_BY_PLAYERS[players] ?? [];
+  const emptyMerchants = map.playerCountRules.emptyMerchants[players] ?? [];
+  const merchantLocations = map.merchantLocations[firstEra] ?? [];
   const spaces: { locationId: string; spaceIndex: number }[] = [];
-  for (const m of MERCHANT_LOCATIONS) {
+  for (const m of merchantLocations) {
     if (emptyMerchants.includes(m.id)) continue;
     for (let i = 0; i < m.tileSpaces; i += 1) {
       spaces.push({ locationId: m.id, spaceIndex: i });
     }
   }
-  const eligibleTiles = MERCHANT_TILE_DEFS.filter((t) => t.minPlayers <= players);
+  const eligibleTiles = map.merchantTiles.filter((t) => t.minPlayers <= players);
   const shuffledTiles = shuffle(eligibleTiles, rngState);
   rngState = shuffledTiles.state;
   const merchants: MerchantState[] = spaces.map((sp, idx) => {
@@ -146,8 +150,9 @@ export function buildInitialState(config: SetupConfig): GameState {
       introMode: config.introMode ?? false,
       boardSide: config.boardSide ?? 'night',
       lang: config.lang ?? 'en',
+      mapId,
     },
-    era: 'canal',
+    era: firstEra,
     round: 1,
     isFirstCanalRound: true,
     turnOrder,

@@ -1,8 +1,8 @@
 import type { GameState, Card } from '../model/state.ts';
 import type { Action, ResourceSource, SellSpec } from '../model/actions.ts';
 import { INDUSTRY_TYPES, type IndustryType, type PlayerColor } from '../model/types.ts';
-import { LOCATIONS, LINK_LINES } from '../data/board.ts';
 import { getLevelDef } from '../data/industries.ts';
+import { boardContext } from '../maps/context.ts';
 import { validate } from '../engine/reduce.ts';
 import { juiceTileOptions } from './resources.ts';
 import { reachableFrom } from './connectivity.ts';
@@ -45,6 +45,9 @@ export function legalActions(state: GameState): Action[] {
     if (validate(state, a) === null) out.push(a);
   };
 
+  const ctx = boardContext(state);
+  const locations = ctx.locations;
+  const links = ctx.links;
   const hand = p.hand;
 
   for (const card of hand) {
@@ -58,7 +61,7 @@ export function legalActions(state: GameState): Action[] {
     for (const industry of INDUSTRY_TYPES) {
       const stack = p.matStacks[industry];
       if (!stack || stack.length === 0) continue;
-      for (const loc of LOCATIONS) {
+      for (const loc of locations) {
         for (const slot of loc.slots) {
           if (!slot.allowed.includes(industry)) continue;
           push({
@@ -83,15 +86,15 @@ export function legalActions(state: GameState): Action[] {
     }
 
     // NETWORK: single links (canal & rail handled by validate via era).
-    for (const line of LINK_LINES) {
+    for (const line of links) {
       push({ type: 'NETWORK', card: ref, links: [{ lineId: line.id }] });
     }
-    // Rail double links (a sample of adjacent pairs to keep this tractable).
-    if (state.era === 'rail') {
-      for (let i = 0; i < LINK_LINES.length; i += 1) {
-        const l1 = LINK_LINES[i]!;
-        for (let j = i + 1; j < LINK_LINES.length; j += 1) {
-          const l2 = LINK_LINES[j]!;
+    // Multi-link builds (rail/air): a sample of adjacent pairs to stay tractable.
+    if (ctx.eraDef.params.maxLinksPerAction >= 2) {
+      for (let i = 0; i < links.length; i += 1) {
+        const l1 = links[i]!;
+        for (let j = i + 1; j < links.length; j += 1) {
+          const l2 = links[j]!;
           if (l1.a === l2.a || l1.a === l2.b || l1.b === l2.a || l1.b === l2.b) {
             push({ type: 'NETWORK', card: ref, links: [{ lineId: l1.id }, { lineId: l2.id }] });
           }

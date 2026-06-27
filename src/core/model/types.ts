@@ -13,7 +13,12 @@
 export const PLAYER_COLORS = ['red', 'blue', 'green', 'yellow'] as const;
 export type PlayerColor = (typeof PLAYER_COLORS)[number];
 
-export type Era = 'canal' | 'rail';
+/**
+ * Eras. Standard maps use `['canal','rail']`; large maps may add a third
+ * `'air'` era (§7.15). `EraId` is an alias used by the map system.
+ */
+export type Era = 'canal' | 'rail' | 'air';
+export type EraId = Era;
 
 export const INDUSTRY_TYPES = [
   'cotton',
@@ -25,7 +30,8 @@ export const INDUSTRY_TYPES = [
 ] as const;
 export type IndustryType = (typeof INDUSTRY_TYPES)[number];
 
-export type LinkType = 'canal' | 'rail';
+/** Route/link type. `'air'` is used only by maps that declare an Air Era. */
+export type LinkType = 'canal' | 'rail' | 'air';
 
 export type CardKind = 'location' | 'industry' | 'wildLocation' | 'wildIndustry';
 

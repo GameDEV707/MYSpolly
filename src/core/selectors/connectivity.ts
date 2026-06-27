@@ -1,18 +1,17 @@
 import type { GameState } from '../model/state.ts';
 import type { PlayerColor } from '../model/types.ts';
-import { LINK_LINES } from '../data/board.ts';
-
-const LINE_BY_ID = Object.fromEntries(LINK_LINES.map((l) => [l.id, l]));
+import { boardContext } from '../maps/context.ts';
 
 /** Build an adjacency map from all placed links (any owner). */
 export function buildAdjacency(state: GameState): Map<string, Set<string>> {
+  const { lineById } = boardContext(state);
   const adj = new Map<string, Set<string>>();
   const add = (a: string, b: string): void => {
     if (!adj.has(a)) adj.set(a, new Set());
     adj.get(a)!.add(b);
   };
   for (const link of state.links) {
-    const line = LINE_BY_ID[link.lineId];
+    const line = lineById[link.lineId];
     if (!line) continue;
     add(line.a, line.b);
     add(line.b, line.a);
@@ -73,13 +72,14 @@ export function distance(state: GameState, a: string, b: string): number {
  * link tiles.
  */
 export function playerNetwork(state: GameState, player: PlayerColor): Set<string> {
+  const { lineById } = boardContext(state);
   const net = new Set<string>();
   for (const tile of state.tiles) {
     if (tile.owner === player) net.add(tile.locationId);
   }
   for (const link of state.links) {
     if (link.owner !== player) continue;
-    const line = LINE_BY_ID[link.lineId];
+    const line = lineById[link.lineId];
     if (!line) continue;
     net.add(line.a);
     net.add(line.b);

@@ -3,7 +3,7 @@ import type { GameEvent } from '../../model/events.ts';
 import type { SellAction } from '../../model/actions.ts';
 import { INDUSTRY_TYPES, type IndustryType, type PlayerColor } from '../../model/types.ts';
 import { getLevelDef } from '../../data/industries.ts';
-import { MERCHANT_BY_ID } from '../../data/board.ts';
+import { boardContext } from '../../maps/context.ts';
 import { getPlayer, changeMoney, changeVp, advanceIncome, flipTile, findTile } from '../helpers.ts';
 import { consumeJuice } from '../consume.ts';
 import { reachableFrom } from '../../selectors/connectivity.ts';
@@ -62,7 +62,7 @@ function applyMerchantBonus(
 ): void {
   const merchant = state.merchants.find((m) => m.id === merchantId);
   if (!merchant) return;
-  const def = MERCHANT_BY_ID[merchant.locationId];
+  const def = boardContext(state).merchantById[merchant.locationId];
   if (!def) return;
   events.push({ t: 'MERCHANT_BONUS', player, merchantId, kind: def.bonus });
   switch (def.bonus) {

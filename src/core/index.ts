@@ -9,7 +9,7 @@
  */
 
 /** Save/serialization format version. Bumped when GameState shape changes. */
-export const STATE_VERSION = 1;
+export const STATE_VERSION = 2;
 
 /** Human-readable engine identifier, surfaced in logs and save metadata. */
 export const ENGINE_NAME = 'myspolly-core';

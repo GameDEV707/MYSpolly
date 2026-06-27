@@ -82,6 +82,8 @@ export interface GameOptions {
   introMode: boolean;
   boardSide: 'day' | 'night';
   lang: 'en' | 'ru' | 'uz';
+  /** Active map id (§7.15). Older saves without this default to 'birmingham'. */
+  mapId: string;
 }
 
 export interface GameState {

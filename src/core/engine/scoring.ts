@@ -1,11 +1,9 @@
 import type { GameState } from '../model/state.ts';
 import type { GameEvent } from '../model/events.ts';
 import type { Era, PlayerColor } from '../model/types.ts';
-import { LINK_LINES, MERCHANT_LINK_VP } from '../data/board.ts';
 import { getLevelDef } from '../data/industries.ts';
+import { boardContext } from '../maps/context.ts';
 import { changeVp } from './helpers.ts';
-
-const LINE_BY_ID = Object.fromEntries(LINK_LINES.map((l) => [l.id, l]));
 
 /** Sum of link-VP icons present in a single location (built tiles + merchant). */
 function locationLinkVp(state: GameState, locId: string): number {
@@ -13,7 +11,7 @@ function locationLinkVp(state: GameState, locId: string): number {
   for (const tile of state.tiles) {
     if (tile.locationId === locId) sum += getLevelDef(tile.industry, tile.level).linkVp;
   }
-  sum += MERCHANT_LINK_VP[locId] ?? 0;
+  sum += boardContext(state).merchantLinkVp[locId] ?? 0;
   return sum;
 }
 
@@ -31,8 +29,9 @@ export function scoreEra(state: GameState, era: Era, events: GameEvent[]): Recor
   };
 
   // 1. Links.
+  const lineById = boardContext(state).lineById;
   for (const link of state.links) {
-    const line = LINE_BY_ID[link.lineId];
+    const line = lineById[link.lineId];
     if (!line) continue;
     const vp = locationLinkVp(state, line.a) + locationLinkVp(state, line.b);
     if (vp > 0) {

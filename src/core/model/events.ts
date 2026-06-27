@@ -40,6 +40,7 @@ export type GameEvent =
   | { t: 'SHORTFALL'; player: PlayerColor; tilesSold: number; vpLost: number }
   | { t: 'ERA_SCORING'; era: Era; perPlayer: Record<string, number> }
   | { t: 'ERA_ENDED'; era: Era }
+  | { t: 'ERA_MORPH'; from: Era; to: Era; routeFrom: string; routeTo: string }
   | { t: 'CANAL_MAINTENANCE' }
   | { t: 'GAME_OVER'; ranking: PlayerColor[] };
 

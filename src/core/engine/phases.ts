@@ -1,12 +1,9 @@
 import type { GameState, Card } from '../model/state.ts';
 import type { GameEvent } from '../model/events.ts';
 import type { PlayerColor } from '../model/types.ts';
-import {
-  ROUNDS_PER_ERA,
-  HAND_SIZE,
-  LINK_TILES_PER_PLAYER,
-  MERCHANT_LOCATIONS,
-} from '../data/index.ts';
+import { ROUNDS_PER_ERA, HAND_SIZE, LINK_TILES_PER_PLAYER } from '../data/index.ts';
+import { getMap } from '../maps/registry.ts';
+import { eraDefOf } from '../maps/context.ts';
 import { shuffle } from '../rng.ts';
 import { resortTurnOrder } from './turnOrder.ts';
 import { collectIncome } from './income.ts';
@@ -71,7 +68,8 @@ function endRound(state: GameState, events: GameEvent[]): void {
   events.push({ t: 'ROUND_ENDED', round: state.round, newOrder: [...newOrder] });
 
   const maxRounds = ROUNDS_PER_ERA[state.options.players] ?? 8;
-  const finishedFirstCanal = state.era === 'canal' && state.round === 1;
+  const firstEraId = getMap(state.options.mapId).eras[0]!.id;
+  const finishedFirstRound = state.era === firstEraId && state.round === 1;
 
   if (state.round >= maxRounds) {
     endEra(state, events);
@@ -79,7 +77,7 @@ function endRound(state: GameState, events: GameEvent[]): void {
   }
 
   state.round += 1;
-  if (finishedFirstCanal) state.isFirstCanalRound = false;
+  if (finishedFirstRound) state.isFirstCanalRound = false;
   // Start the new round at the first player who still has cards. If nobody can
   // act (deck and all hands exhausted) the round ends immediately, advancing
   // toward the era end.
@@ -91,27 +89,47 @@ function endEra(state: GameState, events: GameEvent[]): void {
   scoreEra(state, state.era, events);
   events.push({ t: 'ERA_ENDED', era: state.era });
 
-  if (state.era === 'rail' || state.options.introMode) {
-    if (state.options.introMode && state.era === 'canal') {
+  const map = getMap(state.options.mapId);
+  const idx = map.eras.findIndex((e) => e.id === state.era);
+  const nextEra = map.eras[idx + 1];
+  const firstEraId = map.eras[0]!.id;
+
+  // The game ends after the last era, or after the first era in intro mode.
+  if (!nextEra || state.options.introMode) {
+    if (state.options.introMode && state.era === firstEraId) {
       scoreIntroBonus(state, events);
     }
     finishGame(state, events);
     return;
   }
 
-  // Canal → Rail maintenance & transition.
-  canalMaintenance(state, events);
-  state.era = 'rail';
+  // End-of-era maintenance + the animated era-morph transition.
+  const fromEra = state.era;
+  const routeFrom = eraDefOf(map, fromEra).routeType;
+  eraMaintenance(state, events);
+  state.era = nextEra.id;
   state.round = 1;
   state.isFirstCanalRound = false;
   state.activeIndex = 0;
   state.activePlayer = state.turnOrder[0] as PlayerColor;
   state.actionsLeftThisTurn = 2;
   state.phase = 'playing';
+  events.push({
+    t: 'ERA_MORPH',
+    from: fromEra,
+    to: nextEra.id,
+    routeFrom,
+    routeTo: nextEra.routeType,
+  });
   events.push({ t: 'TURN_ENDED', next: state.activePlayer });
 }
 
-function canalMaintenance(state: GameState, events: GameEvent[]): void {
+/**
+ * End-of-era maintenance, applied between eras (Canal→Rail, and Rail→Air on
+ * maps with an Air Era): remove level-1 board tiles, restore link tiles, reset
+ * merchant juice, and reshuffle all cards into a fresh hand of 8 per player.
+ */
+function eraMaintenance(state: GameState, events: GameEvent[]): void {
   // 1. Remove all level-1 industry tiles from the board (mats keep theirs).
   state.tiles = state.tiles.filter((t) => t.level >= 2);
 
@@ -125,7 +143,6 @@ function canalMaintenance(state: GameState, events: GameEvent[]): void {
   for (const m of state.merchants) {
     if (m.accepts.length > 0) m.hasJuice = true;
   }
-  void MERCHANT_LOCATIONS;
 
   // 3. Reshuffle all discards + remaining deck (+ leftover hands) into a fresh
   //    Draw Deck, then deal each player a new hand of 8.

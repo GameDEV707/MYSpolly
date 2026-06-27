@@ -1,4 +1,4 @@
-import type { IndustryLevelDef, IndustryType } from '../model/types.ts';
+import type { IndustryLevelDef, IndustryType, Era } from '../model/types.ts';
 
 /**
  * Per-industry, per-level statistics (the player-mat printouts).
@@ -455,7 +455,12 @@ export const INDUSTRY_TILE_TOTALS: Record<IndustryType, number> = {
 };
 
 /** Juice produced by a juice on build, by era. */
-export const JUICE_BARRELS_BY_ERA = { canal: 1, rail: 2 } as const;
+export const JUICE_BARRELS_BY_ERA = { canal: 1, rail: 2, air: 2 } as const;
+
+/** Juice barrels a JuiceWorks produces when built in the given era. */
+export function juiceBarrelsForEra(era: Era): number {
+  return JUICE_BARRELS_BY_ERA[era];
+}
 
 /** Look up a single industry level definition. */
 export function getLevelDef(industry: IndustryType, level: number): IndustryLevelDef {

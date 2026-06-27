@@ -1,9 +1,7 @@
 import type { GameState, PlacedTile } from '../model/state.ts';
 import type { PlayerColor } from '../model/types.ts';
-import { MERCHANT_LOCATIONS } from '../data/board.ts';
+import { boardContext } from '../maps/context.ts';
 import { connected, distance, reachableFrom } from './connectivity.ts';
-
-const MERCHANT_IDS = new Set(MERCHANT_LOCATIONS.map((m) => m.id));
 
 /** Coal mines (any owner) connected to `loc`, sorted nearest first, with coal left. */
 export function coalMineOptions(state: GameState, loc: string): PlacedTile[] {
@@ -20,9 +18,10 @@ export function ironWorksOptions(state: GameState): PlacedTile[] {
 
 /** Is `loc` connected to any merchant location (so it can use the markets / sell)? */
 export function isConnectedToMerchant(state: GameState, loc: string): boolean {
+  const merchantIds = boardContext(state).merchantIds;
   const reachable = reachableFrom(state, loc);
   for (const id of reachable) {
-    if (MERCHANT_IDS.has(id)) return true;
+    if (merchantIds.has(id)) return true;
   }
   return false;
 }
